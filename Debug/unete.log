@@ -1,0 +1,39 @@
+﻿Build started 3/20/2015 5:42:18 PM.
+     1>Project "C:\projects\nchip.com\projects\unete\unete.vcxproj" on node 2 (build target(s)).
+     1>InitializeBuildStatus:
+         Touching ".\Debug\unete.unsuccessfulbuild".
+       ClCompile:
+         C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /Od /Oy- /D WIN32 /D _DEBUG /D _CONSOLE /D _MBCS.WPCAP /D _VC80_UPGRADE=0x0600 /Gm /EHsc /RTC1 /MTd /Zp1 /GS /Gy- /fp:precise /Zc:wchar_t /Zc:forScope /Fo".\Debug\\" /Fd".\Debug\vc100.pdb" /Gd /TC /analyze- /errorReport:prompt enc28j60.c
+         enc28j60.c
+       Link:
+         C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:".\Debug\unete.exe" /INCREMENTAL:NO /NOLOGO odbc32.lib odbccp32.lib wpcap.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /ManifestFile:".\Debug\unete.exe.intermediate.manifest" /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /DEBUG /PDB:"C:\projects\nchip.com\projects\unete\Debug\unete.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:".\Debug\unete.lib" /MACHINE:X86 .\Debug\arp.obj
+         .\Debug\autobaud.obj
+         .\Debug\conio.obj
+         .\Debug\console.obj
+         .\Debug\dhcp.obj
+         .\Debug\emain.obj
+         .\Debug\enc28j60.obj
+         .\Debug\globals.obj
+         .\Debug\ircmd.obj
+         .\Debug\memory.obj
+         .\Debug\mip.obj
+         .\Debug\msg.obj
+         .\Debug\mtcp.obj
+         .\Debug\mudp.obj
+         .\Debug\resolve.obj
+         .\Debug\sreg.obj
+         .\Debug\time.obj
+         .\Debug\udpcmd.obj
+         .\Debug\winpcap_drv.obj
+     1>arp.obj : warning LNK4075: ignoring '/EDITANDCONTINUE' due to '/INCREMENTAL:NO' specification
+         unete.vcxproj -> C:\projects\nchip.com\projects\unete\.\Debug\unete.exe
+       Manifest:
+         C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\bin\mt.exe /nologo /verbose /outputresource:".\Debug\unete.exe;#1" /manifest .\Debug\unete.exe.intermediate.manifest
+       FinalizeBuildStatus:
+         Deleting file ".\Debug\unete.unsuccessfulbuild".
+         Touching ".\Debug\unete.lastbuildstate".
+     1>Done Building Project "C:\projects\nchip.com\projects\unete\unete.vcxproj" (build target(s)).
+
+Build succeeded.
+
+Time Elapsed 00:00:02.52

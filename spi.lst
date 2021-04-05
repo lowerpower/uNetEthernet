@@ -1,0 +1,324 @@
+   1               		.file	"spi.c"
+   2               		.arch atmega64
+   3               	__SREG__ = 0x3f
+   4               	__SP_H__ = 0x3e
+   5               	__SP_L__ = 0x3d
+   6               	__tmp_reg__ = 0
+   7               	__zero_reg__ = 1
+   8               		.global __do_copy_data
+   9               		.global __do_clear_bss
+  12               		.text
+  13               	.Ltext0:
+ 165               	.global	spiInit
+ 167               	spiInit:
+   1:spi.c         **** /*! \file spi.c \brief SPI interface driver. */
+   2:spi.c         **** //*****************************************************************************
+   3:spi.c         **** //
+   4:spi.c         **** // File Name	: 'spi.c'
+   5:spi.c         **** // Title		: SPI interface driver
+   6:spi.c         **** // Author		: Pascal Stang - Copyright (C) 2000-2002
+   7:spi.c         **** // Created		: 11/22/2000
+   8:spi.c         **** // Revised		: 06/06/2002
+   9:spi.c         **** // Version		: 0.6
+  10:spi.c         **** // Target MCU	: Atmel AVR series
+  11:spi.c         **** // Editor Tabs	: 4
+  12:spi.c         **** //
+  13:spi.c         **** // NOTE: This code is currently below version 1.0, and therefore is considered
+  14:spi.c         **** // to be lacking in some functionality or documentation, or may not be fully
+  15:spi.c         **** // tested.  Nonetheless, you can expect most functions to work.
+  16:spi.c         **** //
+  17:spi.c         **** // This code is distributed under the GNU Public License
+  18:spi.c         **** //		which can be found at http://www.gnu.org/licenses/gpl.txt
+  19:spi.c         **** //
+  20:spi.c         **** //*****************************************************************************
+  21:spi.c         **** 
+  22:spi.c         **** #include <avr/io.h>
+  23:spi.c         **** #include <avr/signal.h>
+  24:spi.c         **** #include <avr/interrupt.h>
+  25:spi.c         **** 
+  26:spi.c         **** #include "econfig.h"
+  27:spi.c         **** #include "spi.h"
+  28:spi.c         **** 
+  29:spi.c         **** 
+  30:spi.c         **** // Define the SPI_USEINT key if you want SPI bus operation to be
+  31:spi.c         **** // interrupt-driven.  The primary reason for not using SPI in
+  32:spi.c         **** // interrupt-driven mode is if the SPI send/transfer commands
+  33:spi.c         **** // will be used from within some other interrupt service routine
+  34:spi.c         **** // or if interrupts might be globally turned off due to of other
+  35:spi.c         **** // aspects of your program
+  36:spi.c         **** //
+  37:spi.c         **** // Comment-out or uncomment this line as necessary
+  38:spi.c         **** //#define SPI_USEINT
+  39:spi.c         **** 
+  40:spi.c         **** // global variables
+  41:spi.c         **** volatile U8 spiTransferComplete;
+  42:spi.c         **** 
+  43:spi.c         **** // SPI interrupt service handler
+  44:spi.c         **** #ifdef SPI_USEINT
+  45:spi.c         **** SIGNAL(SIG_SPI)
+  46:spi.c         **** {
+  47:spi.c         **** 	spiTransferComplete = TRUE;
+  48:spi.c         **** }
+  49:spi.c         **** #endif
+  50:spi.c         **** 
+  51:spi.c         **** // access routines
+  52:spi.c         **** void spiInit()
+  53:spi.c         **** {
+ 169               	.LM1:
+ 170               	/* prologue: frame size=0 */
+ 171               	/* prologue end (size=0) */
+  54:spi.c         **** #ifdef __AVR_ATmega128__ 
+  55:spi.c         **** 	// setup SPI I/O pins
+  56:spi.c         **** 	sbi(PORTB, 1);	// set SCK hi
+  57:spi.c         **** 	sbi(DDRB, 1);	// set SCK as output
+  58:spi.c         **** 	cbi(DDRB, 3);	// set MISO as input
+  59:spi.c         **** 	sbi(DDRB, 2);	// set MOSI as output
+  60:spi.c         **** 	sbi(DDRB, 0);	// SS must be output for Master mode to work
+  61:spi.c         **** #elif __AVR_ATmega64__
+  62:spi.c         **** 		// setup SPI I/O pins
+  63:spi.c         **** 	sbi(PORTB, 1);	// set SCK hi
+ 173               	.LM2:
+ 174 0000 C19A      		sbi 56-0x20,1
+  64:spi.c         **** 	sbi(DDRB, 1);	// set SCK as output
+ 176               	.LM3:
+ 177 0002 B99A      		sbi 55-0x20,1
+  65:spi.c         **** 	cbi(DDRB, 3);	// set MISO as input
+ 179               	.LM4:
+ 180 0004 BB98      		cbi 55-0x20,3
+  66:spi.c         **** 	sbi(DDRB, 2);	// set MOSI as output
+ 182               	.LM5:
+ 183 0006 BA9A      		sbi 55-0x20,2
+  67:spi.c         **** 	sbi(DDRC, 3);	// SS must be output for Master mode to work
+ 185               	.LM6:
+ 186 0008 A39A      		sbi 52-0x20,3
+  68:spi.c         **** #elif __AVR_ATmega8__
+  69:spi.c         ****     // setup SPI I/O pins
+  70:spi.c         ****     sbi(PORTB, 5);  // set SCK hi
+  71:spi.c         ****     sbi(DDRB, 5);   // set SCK as output
+  72:spi.c         ****     cbi(DDRB, 4);   // set MISO as input
+  73:spi.c         ****     sbi(DDRB, 3);   // set MOSI as output
+  74:spi.c         ****     sbi(DDRB, 2);   // SS must be output for Master mode to work
+  75:spi.c         **** #else
+  76:spi.c         **** 	// setup SPI I/O pins
+  77:spi.c         **** 	sbi(PORTB, 7);	// set SCK hi
+  78:spi.c         **** 	sbi(DDRB, 7);	// set SCK as output
+  79:spi.c         **** 	cbi(DDRB, 6);	// set MISO as input
+  80:spi.c         **** 	sbi(DDRB, 5);	// set MOSI as output
+  81:spi.c         **** 	sbi(DDRB, 4);	// SS must be output for Master mode to work
+  82:spi.c         **** #endif
+  83:spi.c         **** 	
+  84:spi.c         **** 	// setup SPI interface :
+  85:spi.c         **** 	// master mode
+  86:spi.c         **** 	sbi(SPCR, MSTR);
+ 188               	.LM7:
+ 189 000a 6C9A      		sbi 45-0x20,4
+  87:spi.c         **** 	// clock = f/4
+  88:spi.c         **** //	cbi(SPCR, SPR0);
+  89:spi.c         **** //	cbi(SPCR, SPR1);
+  90:spi.c         **** 	// clock = f/16
+  91:spi.c         **** 	cbi(SPCR, SPR0);
+ 191               	.LM8:
+ 192 000c 6898      		cbi 45-0x20,0
+  92:spi.c         **** 	sbi(SPCR, SPR1);
+ 194               	.LM9:
+ 195 000e 699A      		sbi 45-0x20,1
+  93:spi.c         **** 	// select clock phase positive-going in middle of data
+  94:spi.c         **** 	cbi(SPCR, CPOL);
+ 197               	.LM10:
+ 198 0010 6B98      		cbi 45-0x20,3
+  95:spi.c         **** 	// Data order MSB first
+  96:spi.c         **** 	cbi(SPCR,DORD);
+ 200               	.LM11:
+ 201 0012 6D98      		cbi 45-0x20,5
+  97:spi.c         **** 	// enable SPI
+  98:spi.c         **** 	sbi(SPCR, SPE);
+ 203               	.LM12:
+ 204 0014 6E9A      		sbi 45-0x20,6
+  99:spi.c         **** 		
+ 100:spi.c         **** 	
+ 101:spi.c         **** 	// some other possible configs
+ 102:spi.c         **** 	//outp((1<<MSTR)|(1<<SPE)|(1<<SPR0), SPCR );
+ 103:spi.c         **** 	//outp((1<<CPHA)|(1<<CPOL)|(1<<MSTR)|(1<<SPE)|(1<<SPR0)|(1<<SPR1), SPCR );
+ 104:spi.c         **** 	//outp((1<<CPHA)|(1<<MSTR)|(1<<SPE)|(1<<SPR0), SPCR );
+ 105:spi.c         **** 	
+ 106:spi.c         **** 	// clear status
+ 107:spi.c         **** 	inb(SPSR);
+ 206               	.LM13:
+ 207 0016 8EB1      		in r24,46-0x20
+ 108:spi.c         **** 	spiTransferComplete = TRUE;
+ 209               	.LM14:
+ 210 0018 8FEF      		ldi r24,lo8(-1)
+ 211 001a 8093 0000 		sts spiTransferComplete,r24
+ 109:spi.c         **** 
+ 110:spi.c         **** 	// enable SPI interrupt
+ 111:spi.c         **** 	#ifdef SPI_USEINT
+ 112:spi.c         **** 	sbi(SPCR, SPIE);
+ 113:spi.c         **** 	#endif
+ 114:spi.c         **** }
+ 213               	.LM15:
+ 214               	/* epilogue: frame size=0 */
+ 215 001e 0895      		ret
+ 216               	/* epilogue end (size=1) */
+ 217               	/* function spiInit size 16 (15) */
+ 219               	.Lscope0:
+ 223               	.global	spiSendByte
+ 225               	spiSendByte:
+ 115:spi.c         **** /*
+ 116:spi.c         **** void spiSetBitrate(u08 spr)
+ 117:spi.c         **** {
+ 118:spi.c         **** 	outb(SPCR, (inb(SPCR) & ((1<<SPR0)|(1<<SPR1))) | (spr&((1<<SPR0)|(1<<SPR1)))));
+ 119:spi.c         **** }
+ 120:spi.c         **** */
+ 121:spi.c         **** void spiSendByte(U8 data)
+ 122:spi.c         **** {
+ 227               	.LM16:
+ 228               	/* prologue: frame size=0 */
+ 229               	/* prologue end (size=0) */
+ 123:spi.c         **** 	// send a byte over SPI and ignore reply
+ 124:spi.c         **** 	#ifdef SPI_USEINT
+ 125:spi.c         **** 		while(!spiTransferComplete);
+ 126:spi.c         **** 	#else
+ 127:spi.c         **** 		while(!(inb(SPSR) & (1<<SPIF)));
+ 231               	.LM17:
+ 232               	.L3:
+ 233 0020 779B      		sbis 46-0x20,7
+ 234 0022 FECF      		rjmp .L3
+ 128:spi.c         **** 	#endif
+ 129:spi.c         **** 
+ 130:spi.c         **** 	spiTransferComplete = FALSE;
+ 236               	.LM18:
+ 237 0024 1092 0000 		sts spiTransferComplete,__zero_reg__
+ 131:spi.c         **** 	outb(SPDR, data);
+ 239               	.LM19:
+ 240 0028 8FB9      		out 47-0x20,r24
+ 132:spi.c         **** }
+ 242               	.LM20:
+ 243               	/* epilogue: frame size=0 */
+ 244 002a 0895      		ret
+ 245               	/* epilogue end (size=1) */
+ 246               	/* function spiSendByte size 6 (5) */
+ 248               	.Lscope1:
+ 252               	.global	spiTransferByte
+ 254               	spiTransferByte:
+ 133:spi.c         **** 
+ 134:spi.c         **** U8 spiTransferByte(U8 data)
+ 135:spi.c         **** {
+ 256               	.LM21:
+ 257               	/* prologue: frame size=0 */
+ 258               	/* prologue end (size=0) */
+ 136:spi.c         **** /*	// make sure interface is idle
+ 137:spi.c         **** 	#ifdef SPI_USEINT
+ 138:spi.c         **** 		while(!spiTransferComplete);
+ 139:spi.c         **** 	#else
+ 140:spi.c         **** 		while(!(inb(SPSR) & (1<<SPIF)));
+ 141:spi.c         **** 	#endif
+ 142:spi.c         **** */
+ 143:spi.c         **** 	// send the given data
+ 144:spi.c         **** 	spiTransferComplete = FALSE;
+ 260               	.LM22:
+ 261 002c 1092 0000 		sts spiTransferComplete,__zero_reg__
+ 145:spi.c         **** 	outb(SPDR, data);
+ 263               	.LM23:
+ 264 0030 8FB9      		out 47-0x20,r24
+ 146:spi.c         **** 
+ 147:spi.c         **** 	// wait for transfer to complete
+ 148:spi.c         **** 	#ifdef SPI_USEINT
+ 149:spi.c         **** 		while(!spiTransferComplete);
+ 150:spi.c         **** 	#else
+ 151:spi.c         **** 		while(!(inb(SPSR) & (1<<SPIF)));
+ 266               	.LM24:
+ 267               	.L8:
+ 268 0032 779B      		sbis 46-0x20,7
+ 269 0034 FECF      		rjmp .L8
+ 152:spi.c         **** 		// *** reading of the SPSR and SPDR are crucial
+ 153:spi.c         **** 		// *** to the clearing of the SPIF flag
+ 154:spi.c         **** 		// *** in non-interrupt mode
+ 155:spi.c         **** 		//inb(SPDR);
+ 156:spi.c         **** 		// set flag
+ 157:spi.c         **** 		spiTransferComplete = TRUE;
+ 271               	.LM25:
+ 272 0036 8FEF      		ldi r24,lo8(-1)
+ 273 0038 8093 0000 		sts spiTransferComplete,r24
+ 158:spi.c         **** 	#endif
+ 159:spi.c         **** 	// return the received data
+ 160:spi.c         **** 	return inb(SPDR);
+ 275               	.LM26:
+ 276 003c 8FB1      		in r24,47-0x20
+ 277 003e 9927      		clr r25
+ 161:spi.c         **** }
+ 279               	.LM27:
+ 280               	/* epilogue: frame size=0 */
+ 281 0040 0895      		ret
+ 282               	/* epilogue end (size=1) */
+ 283               	/* function spiTransferByte size 11 (10) */
+ 285               	.Lscope2:
+ 289               	.global	spiTransferWord
+ 291               	spiTransferWord:
+ 162:spi.c         **** 
+ 163:spi.c         **** U16 spiTransferWord(U16 data)
+ 164:spi.c         **** {
+ 293               	.LM28:
+ 294               	/* prologue: frame size=0 */
+ 295 0042 EF92      		push r14
+ 296 0044 FF92      		push r15
+ 297 0046 0F93      		push r16
+ 298 0048 1F93      		push r17
+ 299               	/* prologue end (size=4) */
+ 300 004a 7C01      		movw r14,r24
+ 165:spi.c         **** 	U16 rxData = 0;
+ 166:spi.c         **** 
+ 167:spi.c         **** 	// send MS byte of given data
+ 168:spi.c         **** 	rxData = (spiTransferByte((data>>8) & 0x00FF))<<8;
+ 302               	.LM29:
+ 303               	.LBB2:
+ 304 004c 892F      		mov r24,r25
+ 305 004e 9927      		clr r25
+ 306 0050 0E94 0000 		call spiTransferByte
+ 307 0054 9927      		clr r25
+ 308 0056 182F      		mov r17,r24
+ 309 0058 0027      		clr r16
+ 169:spi.c         **** 	// send LS byte of given data
+ 170:spi.c         **** 	rxData |= (spiTransferByte(data & 0x00FF));
+ 311               	.LM30:
+ 312 005a 8E2D      		mov r24,r14
+ 313 005c 0E94 0000 		call spiTransferByte
+ 314 0060 9927      		clr r25
+ 315 0062 082B      		or r16,r24
+ 316 0064 192B      		or r17,r25
+ 171:spi.c         **** 
+ 172:spi.c         **** 	// return the received data
+ 173:spi.c         **** 	return rxData;
+ 174:spi.c         **** }
+ 318               	.LM31:
+ 319               	.LBE2:
+ 320 0066 C801      		movw r24,r16
+ 321               	/* epilogue: frame size=0 */
+ 322 0068 1F91      		pop r17
+ 323 006a 0F91      		pop r16
+ 324 006c FF90      		pop r15
+ 325 006e EF90      		pop r14
+ 326 0070 0895      		ret
+ 327               	/* epilogue end (size=5) */
+ 328               	/* function spiTransferWord size 24 (15) */
+ 333               	.Lscope3:
+ 335               		.comm spiTransferComplete,1,1
+ 337               		.text
+ 339               	Letext:
+ 340               	/* File "spi.c": code   57 = 0x0039 (  45), prologues   4, epilogues   8 */
+DEFINED SYMBOLS
+                            *ABS*:00000000 spi.c
+                            *ABS*:0000003f __SREG__
+                            *ABS*:0000003e __SP_H__
+                            *ABS*:0000003d __SP_L__
+                            *ABS*:00000000 __tmp_reg__
+                            *ABS*:00000001 __zero_reg__
+C:\DOCUME~1\mike\LOCALS~1\Temp/cc4Waaaa.s:167    .text:00000000 spiInit
+                            *COM*:00000001 spiTransferComplete
+C:\DOCUME~1\mike\LOCALS~1\Temp/cc4Waaaa.s:225    .text:00000020 spiSendByte
+C:\DOCUME~1\mike\LOCALS~1\Temp/cc4Waaaa.s:254    .text:0000002c spiTransferByte
+C:\DOCUME~1\mike\LOCALS~1\Temp/cc4Waaaa.s:291    .text:00000042 spiTransferWord
+C:\DOCUME~1\mike\LOCALS~1\Temp/cc4Waaaa.s:339    .text:00000072 Letext
+
+UNDEFINED SYMBOLS
+__do_copy_data
+__do_clear_bss

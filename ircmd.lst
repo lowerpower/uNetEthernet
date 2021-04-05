@@ -1,0 +1,1774 @@
+   1               		.file	"ircmd.c"
+   2               		.arch atmega64
+   3               	__SREG__ = 0x3f
+   4               	__SP_H__ = 0x3e
+   5               	__SP_L__ = 0x3d
+   6               	__tmp_reg__ = 0
+   7               	__zero_reg__ = 1
+   8               		.global __do_copy_data
+   9               		.global __do_clear_bss
+  17               	.Ltext0:
+  18               	.global	SocketSelect
+  20               	SocketSelect:
+  21               	.LFB17:
+  22               	.LM1:
+  23               	/* prologue: frame size=0 */
+  24               	/* prologue end (size=0) */
+  25               	.LVL0:
+  26 0000 FC01      		movw r30,r24
+  27               	.LM2:
+  28 0002 8081      		ld r24,Z
+  29               	.LVL1:
+  30 0004 8053      		subi r24,lo8(-(-48))
+  31 0006 8230      		cpi r24,lo8(2)
+  32 0008 00F4      		brsh .L2
+  33               	.LM3:
+  34 000a 8093 0000 		sts soc_num,r24
+  35               	.L4:
+  36               	.LVL2:
+  37               	.LM4:
+  38 000e 8181      		ldd r24,Z+1
+  39 0010 3196      		adiw r30,1
+  40 0012 8032      		cpi r24,lo8(32)
+  41 0014 01F0      		breq .L4
+  42               	.LVL3:
+  43               	.L2:
+  44               	.LM5:
+  45 0016 CF01      		movw r24,r30
+  46               	/* epilogue: frame size=0 */
+  47 0018 0895      		ret
+  48               	/* epilogue end (size=1) */
+  49               	/* function SocketSelect size 13 (12) */
+  50               	.LFE17:
+  52               		.data
+  53               	.LC0:
+  54 0000 0D0A 00   		.string	"\r\n"
+  55               		.text
+  56               	.global	TCPState
+  58               	TCPState:
+  59               	.LFB21:
+  60               	.LM6:
+  61               	/* prologue: frame size=0 */
+  62 001a 1F93      		push r17
+  63               	/* prologue end (size=1) */
+  64               	.LM7:
+  65 001c E091 0000 		lds r30,active_soc
+  66 0020 FF27      		clr r31
+  67 0022 E050      		subi r30,lo8(-(sockets))
+  68 0024 F040      		sbci r31,hi8(-(sockets))
+  69 0026 8081      		ld r24,Z
+  70 0028 0E94 0000 		call tcp_status
+  71 002c 182F      		mov r17,r24
+  72               	.LVL4:
+  73               	.LM8:
+  74 002e 8F70      		andi r24,lo8(15)
+  75 0030 8430      		cpi r24,lo8(4)
+  76 0032 01F4      		brne .L10
+  77               	.LM9:
+  78 0034 10E0      		ldi r17,lo8(0)
+  79 0036 00C0      		rjmp .L12
+  80               	.L10:
+  81               	.LM10:
+  82 0038 84E0      		ldi r24,lo8(4)
+  83 003a 8093 0000 		sts ircmd_state,r24
+  84               	.LM11:
+  85 003e E091 0000 		lds r30,active_soc
+  86 0042 FF27      		clr r31
+  87 0044 E050      		subi r30,lo8(-(sockets))
+  88 0046 F040      		sbci r31,hi8(-(sockets))
+  89 0048 8081      		ld r24,Z
+  90 004a 0E94 0000 		call tcp_close
+  91               	.LM12:
+  92 004e E091 0000 		lds r30,active_soc
+  93 0052 FF27      		clr r31
+  94 0054 E050      		subi r30,lo8(-(sockets))
+  95 0056 F040      		sbci r31,hi8(-(sockets))
+  96 0058 1082      		st Z,__zero_reg__
+  97               	.LM13:
+  98 005a 80E0      		ldi r24,lo8(.LC0)
+  99 005c 90E0      		ldi r25,hi8(.LC0)
+ 100 005e 0E94 0000 		call CONSOLE_puts
+ 101               	.LM14:
+ 102 0062 8DE8      		ldi r24,lo8(-115)
+ 103 0064 0E94 0000 		call displayMessage
+ 104               	.LM15:
+ 105 0068 1092 0000 		sts (snd_count)+1,__zero_reg__
+ 106 006c 1092 0000 		sts snd_count,__zero_reg__
+ 107               	.L12:
+ 108               	.LM16:
+ 109 0070 812F      		mov r24,r17
+ 110 0072 9927      		clr r25
+ 111               	/* epilogue: frame size=0 */
+ 112 0074 1F91      		pop r17
+ 113 0076 0895      		ret
+ 114               	/* epilogue end (size=2) */
+ 115               	/* function TCPState size 47 (44) */
+ 116               	.LFE21:
+ 118               	.global	Check_Reset_EEPROM
+ 120               	Check_Reset_EEPROM:
+ 121               	.LFB23:
+ 122               	.LM17:
+ 123               	/* prologue: frame size=0 */
+ 124               	/* prologue end (size=0) */
+ 125               	.LM18:
+ 126 0078 9F99      		sbic 51-0x20,7
+ 127 007a 00C0      		rjmp .L15
+ 128               	.LM19:
+ 129 007c 8091 0000 		lds r24,reset_status.2628
+ 130 0080 8823      		tst r24
+ 131 0082 01F4      		brne .L17
+ 132               	.LM20:
+ 133 0084 0E94 0000 		call TIMER_Get_Second
+ 134 0088 9093 0000 		sts (reset_timer.2629)+1,r25
+ 135 008c 8093 0000 		sts reset_timer.2629,r24
+ 136               	.LM21:
+ 137 0090 81E0      		ldi r24,lo8(1)
+ 138 0092 8093 0000 		sts reset_status.2628,r24
+ 139 0096 0895      		ret
+ 140               	.L17:
+ 141               	.LM22:
+ 142 0098 0E94 0000 		call TIMER_Get_Second
+ 143 009c 2091 0000 		lds r18,reset_timer.2629
+ 144 00a0 3091 0000 		lds r19,(reset_timer.2629)+1
+ 145 00a4 821B      		sub r24,r18
+ 146 00a6 930B      		sbc r25,r19
+ 147 00a8 0B97      		sbiw r24,11
+ 148 00aa 00F0      		brlo .L23
+ 149               	.LM23:
+ 150 00ac 8091 0000 		lds r24,reset_status.2628
+ 151 00b0 8130      		cpi r24,lo8(1)
+ 152 00b2 01F4      		brne .L21
+ 153               	.LM24:
+ 154 00b4 82E0      		ldi r24,lo8(2)
+ 155 00b6 8093 0000 		sts reset_status.2628,r24
+ 156               	.LBB10:
+ 157               	.LBB11:
+ 158               	.LM25:
+ 159 00ba 80E0      		ldi r24,lo8(0)
+ 160 00bc A0E0      		ldi r26,lo8(0)
+ 161 00be B0E0      		ldi r27,hi8(0)
+ 162               	/* #APP */
+ 163 00c0 082E      		mov __tmp_reg__,r24
+ 164 00c2 0E94 0000 		call __eeprom_write_byte_1C1D1E
+ 165               	.LVL5:
+ 166               	/* #NOAPP */
+ 167 00c6 0895      		ret
+ 168               	.LVL6:
+ 169               	.L21:
+ 170               	.LBE11:
+ 171               	.LBE10:
+ 172               	.LM26:
+ 173 00c8 C59A      		sbi 56-0x20,5
+ 174 00ca 0895      		ret
+ 175               	.L15:
+ 176               	.LM27:
+ 177 00cc 1092 0000 		sts reset_status.2628,__zero_reg__
+ 178               	.L23:
+ 179 00d0 0895      		ret
+ 180               	/* epilogue: frame size=0 */
+ 181               	/* epilogue: noreturn */
+ 182               	/* epilogue end (size=0) */
+ 183               	/* function Check_Reset_EEPROM size 47 (47) */
+ 184               	.LFE23:
+ 186               	.global	EscapeTime
+ 188               	EscapeTime:
+ 189               	.LFB12:
+ 190               	.LM28:
+ 191               	/* prologue: frame size=0 */
+ 192               	/* prologue end (size=0) */
+ 193               	.LM29:
+ 194 00d2 0E94 0000 		call TIMER_Get_Tick
+ 195               	.LM30:
+ 196 00d6 4091 0000 		lds r20,escapeTime
+ 197 00da 4423      		tst r20
+ 198 00dc 01F0      		breq .L25
+ 199               	.LM31:
+ 200 00de 4230      		cpi r20,lo8(2)
+ 201 00e0 01F4      		brne .L30
+ 202               	.L25:
+ 203               	.LM32:
+ 204 00e2 2091 0000 		lds r18,escape_tick
+ 205 00e6 3091 0000 		lds r19,(escape_tick)+1
+ 206               	.LVL7:
+ 207 00ea 281B      		sub r18,r24
+ 208 00ec 390B      		sbc r19,r25
+ 209 00ee 37FF      		sbrs r19,7
+ 210 00f0 00C0      		rjmp .L28
+ 211 00f2 3095      		com r19
+ 212 00f4 2195      		neg r18
+ 213 00f6 3F4F      		sbci r19,lo8(-1)
+ 214               	.L28:
+ 215 00f8 8091 0000 		lds r24,mm+2
+ 216               	.LVL8:
+ 217 00fc 9927      		clr r25
+ 218 00fe 8217      		cp r24,r18
+ 219 0100 9307      		cpc r25,r19
+ 220 0102 04F4      		brge .L30
+ 221               	.LM33:
+ 222 0104 4F5F      		subi r20,lo8(-(1))
+ 223 0106 4093 0000 		sts escapeTime,r20
+ 224               	.L30:
+ 225 010a 0895      		ret
+ 226               	/* epilogue: frame size=0 */
+ 227               	/* epilogue: noreturn */
+ 228               	/* epilogue end (size=0) */
+ 229               	/* function EscapeTime size 29 (29) */
+ 230               	.LFE12:
+ 232               	.global	EscapeAction
+ 234               	EscapeAction:
+ 235               	.LFB13:
+ 236               	.LM34:
+ 237               	/* prologue: frame size=0 */
+ 238 010c 1F93      		push r17
+ 239               	/* prologue end (size=1) */
+ 240               	.LM35:
+ 241 010e 0D99      		sbic 33-0x20,5
+ 242 0110 00C0      		rjmp .L32
+ 243               	.LM36:
+ 244 0112 10E0      		ldi r17,lo8(0)
+ 245               	.LVL9:
+ 246 0114 8091 0000 		lds r24,dtrflag
+ 247 0118 8823      		tst r24
+ 248 011a 01F4      		brne .L34
+ 249 011c 11E0      		ldi r17,lo8(1)
+ 250               	.L34:
+ 251               	.LM37:
+ 252 011e 81E0      		ldi r24,lo8(1)
+ 253 0120 8093 0000 		sts dtrflag,r24
+ 254 0124 00C0      		rjmp .L35
+ 255               	.LVL10:
+ 256               	.L32:
+ 257               	.LM38:
+ 258 0126 1092 0000 		sts dtrflag,__zero_reg__
+ 259 012a 10E0      		ldi r17,lo8(0)
+ 260               	.LVL11:
+ 261               	.L35:
+ 262               	.LM39:
+ 263 012c 0E94 0000 		call EscapeTime
+ 264               	.LM40:
+ 265 0130 8091 0000 		lds r24,escapeCount
+ 266 0134 8330      		cpi r24,lo8(3)
+ 267 0136 01F4      		brne .L36
+ 268 0138 8091 0000 		lds r24,escapeTime
+ 269 013c 8330      		cpi r24,lo8(3)
+ 270 013e 01F4      		brne .L36
+ 271 0140 11E0      		ldi r17,lo8(1)
+ 272               	.L36:
+ 273               	.LM41:
+ 274 0142 812F      		mov r24,r17
+ 275 0144 9927      		clr r25
+ 276               	/* epilogue: frame size=0 */
+ 277 0146 1F91      		pop r17
+ 278 0148 0895      		ret
+ 279               	/* epilogue end (size=2) */
+ 280               	/* function EscapeAction size 31 (28) */
+ 281               	.LFE13:
+ 283               	.global	EscapeReset
+ 285               	EscapeReset:
+ 286               	.LFB10:
+ 287               	.LM42:
+ 288               	/* prologue: frame size=0 */
+ 289               	/* prologue end (size=0) */
+ 290               	.LM43:
+ 291 014a 0E94 0000 		call TIMER_Get_Tick
+ 292 014e 9093 0000 		sts (escape_tick)+1,r25
+ 293 0152 8093 0000 		sts escape_tick,r24
+ 294               	.LM44:
+ 295 0156 1092 0000 		sts escapeCount,__zero_reg__
+ 296               	.LM45:
+ 297 015a 1092 0000 		sts escapeTime,__zero_reg__
+ 298               	/* epilogue: frame size=0 */
+ 299 015e 0895      		ret
+ 300               	/* epilogue end (size=1) */
+ 301               	/* function EscapeReset size 11 (10) */
+ 302               	.LFE10:
+ 304               	.global	EscapeSequence
+ 306               	EscapeSequence:
+ 307               	.LFB11:
+ 308               	.LM46:
+ 309               	/* prologue: frame size=0 */
+ 310 0160 1F93      		push r17
+ 311               	/* prologue end (size=1) */
+ 312               	.LVL12:
+ 313 0162 982F      		mov r25,r24
+ 314               	.LM47:
+ 315 0164 8091 0000 		lds r24,mm
+ 316               	.LVL13:
+ 317 0168 83FF      		sbrs r24,3
+ 318 016a 00C0      		rjmp .L43
+ 319               	.LM48:
+ 320 016c 10E0      		ldi r17,lo8(0)
+ 321               	.LVL14:
+ 322 016e 00C0      		rjmp .L45
+ 323               	.LVL15:
+ 324               	.L43:
+ 325               	.LM49:
+ 326 0170 8091 0000 		lds r24,escapeTime
+ 327 0174 8823      		tst r24
+ 328 0176 01F0      		breq .L46
+ 329 0178 8091 0000 		lds r24,mm+1
+ 330 017c 9817      		cp r25,r24
+ 331 017e 01F4      		brne .L46
+ 332               	.LM50:
+ 333 0180 1091 0000 		lds r17,escapeCount
+ 334               	.LVL16:
+ 335 0184 1F5F      		subi r17,lo8(-(1))
+ 336 0186 1093 0000 		sts escapeCount,r17
+ 337               	.LM51:
+ 338 018a 1430      		cpi r17,lo8(4)
+ 339 018c 00F4      		brsh .L49
+ 340               	.LM52:
+ 341 018e 1330      		cpi r17,lo8(3)
+ 342 0190 01F4      		brne .L55
+ 343               	.LM53:
+ 344 0192 82E0      		ldi r24,lo8(2)
+ 345 0194 8093 0000 		sts escapeTime,r24
+ 346               	.LM54:
+ 347 0198 0E94 0000 		call TIMER_Get_Tick
+ 348               	.LVL17:
+ 349 019c 9093 0000 		sts (escape_tick)+1,r25
+ 350 01a0 8093 0000 		sts escape_tick,r24
+ 351               	.LVL18:
+ 352               	.L55:
+ 353 01a4 1FEF      		ldi r17,lo8(-1)
+ 354 01a6 00C0      		rjmp .L45
+ 355               	.LVL19:
+ 356               	.L46:
+ 357               	.LM55:
+ 358 01a8 1091 0000 		lds r17,escapeCount
+ 359               	.LVL20:
+ 360 01ac 1123      		tst r17
+ 361 01ae 01F0      		breq .L53
+ 362               	.L49:
+ 363               	.LM56:
+ 364 01b0 1F3F      		cpi r17,lo8(-1)
+ 365 01b2 01F0      		breq .L45
+ 366               	.L53:
+ 367               	.LM57:
+ 368 01b4 0E94 0000 		call EscapeReset
+ 369               	.LVL21:
+ 370               	.L45:
+ 371               	.LM58:
+ 372 01b8 812F      		mov r24,r17
+ 373 01ba 9927      		clr r25
+ 374               	/* epilogue: frame size=0 */
+ 375 01bc 1F91      		pop r17
+ 376 01be 0895      		ret
+ 377               	/* epilogue end (size=2) */
+ 378               	/* function EscapeSequence size 48 (45) */
+ 379               	.LFE11:
+ 381               	.global	WriteTCPChar
+ 383               	WriteTCPChar:
+ 384               	.LFB22:
+ 385               	.LM59:
+ 386               	/* prologue: frame size=0 */
+ 387 01c0 1F93      		push r17
+ 388               	/* prologue end (size=1) */
+ 389               	.LVL22:
+ 390 01c2 182F      		mov r17,r24
+ 391               	.LM60:
+ 392 01c4 8091 0000 		lds r24,snd_count
+ 393 01c8 9091 0000 		lds r25,(snd_count)+1
+ 394               	.LVL23:
+ 395 01cc 8038      		cpi r24,128
+ 396 01ce 9105      		cpc r25,__zero_reg__
+ 397 01d0 00F0      		brlo .L57
+ 398               	.LM61:
+ 399 01d2 81E0      		ldi r24,lo8(1)
+ 400 01d4 90E0      		ldi r25,hi8(1)
+ 401 01d6 00C0      		rjmp .L59
+ 402               	.L57:
+ 403               	.LM62:
+ 404 01d8 81E0      		ldi r24,lo8(1)
+ 405 01da 8093 0000 		sts TCPSendFlag,r24
+ 406               	.LM63:
+ 407 01de 0E94 0000 		call TIMER_Get_Tick
+ 408 01e2 9093 0000 		sts (TCPSendTime)+1,r25
+ 409 01e6 8093 0000 		sts TCPSendTime,r24
+ 410               	.LM64:
+ 411 01ea 8091 0000 		lds r24,mm
+ 412 01ee 81FF      		sbrs r24,1
+ 413 01f0 00C0      		rjmp .L60
+ 414               	.LM65:
+ 415 01f2 812F      		mov r24,r17
+ 416 01f4 0E94 0000 		call CONSOLE_putch
+ 417               	.L60:
+ 418               	.LM66:
+ 419 01f8 8091 0000 		lds r24,snd_count
+ 420 01fc 9091 0000 		lds r25,(snd_count)+1
+ 421 0200 FC01      		movw r30,r24
+ 422 0202 E050      		subi r30,lo8(-(snd_buff))
+ 423 0204 F040      		sbci r31,hi8(-(snd_buff))
+ 424 0206 1083      		st Z,r17
+ 425 0208 0196      		adiw r24,1
+ 426 020a 9093 0000 		sts (snd_count)+1,r25
+ 427 020e 8093 0000 		sts snd_count,r24
+ 428 0212 80E0      		ldi r24,lo8(0)
+ 429 0214 90E0      		ldi r25,hi8(0)
+ 430               	.L59:
+ 431               	/* epilogue: frame size=0 */
+ 432 0216 1F91      		pop r17
+ 433 0218 0895      		ret
+ 434               	/* epilogue end (size=2) */
+ 435               	/* function WriteTCPChar size 45 (42) */
+ 436               	.LFE22:
+ 438               	.global	tcp_socket_rx
+ 440               	tcp_socket_rx:
+ 441               	.LFB14:
+ 442               	.LM67:
+ 443               	/* prologue: frame size=0 */
+ 444 021a EF92      		push r14
+ 445 021c FF92      		push r15
+ 446 021e 0F93      		push r16
+ 447 0220 1F93      		push r17
+ 448 0222 CF93      		push r28
+ 449 0224 DF93      		push r29
+ 450               	/* prologue end (size=6) */
+ 451               	.LVL24:
+ 452 0226 7A01      		movw r14,r20
+ 453 0228 C0E0      		ldi r28,lo8(0)
+ 454 022a D0E0      		ldi r29,hi8(0)
+ 455               	.LVL25:
+ 456 022c 8B01      		movw r16,r22
+ 457 022e 00C0      		rjmp .L64
+ 458               	.LVL26:
+ 459               	.L65:
+ 460               	.LM68:
+ 461 0230 F801      		movw r30,r16
+ 462 0232 8191      		ld r24,Z+
+ 463               	.LVL27:
+ 464 0234 8F01      		movw r16,r30
+ 465 0236 0E94 0000 		call CONSOLE_putch
+ 466               	.LM69:
+ 467 023a 2196      		adiw r28,1
+ 468               	.LVL28:
+ 469               	.L64:
+ 470 023c CE15      		cp r28,r14
+ 471 023e DF05      		cpc r29,r15
+ 472 0240 01F4      		brne .L65
+ 473               	.LM70:
+ 474 0242 C701      		movw r24,r14
+ 475               	.LVL29:
+ 476               	/* epilogue: frame size=0 */
+ 477 0244 DF91      		pop r29
+ 478 0246 CF91      		pop r28
+ 479 0248 1F91      		pop r17
+ 480 024a 0F91      		pop r16
+ 481 024c FF90      		pop r15
+ 482 024e EF90      		pop r14
+ 483 0250 0895      		ret
+ 484               	/* epilogue end (size=7) */
+ 485               	/* function tcp_socket_rx size 28 (15) */
+ 486               	.LFE14:
+ 488               	.global	TCPSend
+ 490               	TCPSend:
+ 491               	.LFB20:
+ 492               	.LM71:
+ 493               	/* prologue: frame size=0 */
+ 494               	/* prologue end (size=0) */
+ 495               	.LVL30:
+ 496               	.LM72:
+ 497 0252 8130      		cpi r24,lo8(1)
+ 498 0254 01F4      		brne .L69
+ 499               	.LM73:
+ 500 0256 1092 0000 		sts TCPSendFlag,__zero_reg__
+ 501 025a 00C0      		rjmp .L71
+ 502               	.L69:
+ 503               	.LM74:
+ 504 025c 8091 0000 		lds r24,snd_count
+ 505 0260 9091 0000 		lds r25,(snd_count)+1
+ 506               	.LVL31:
+ 507 0264 8038      		cpi r24,128
+ 508 0266 9105      		cpc r25,__zero_reg__
+ 509 0268 00F4      		brsh .L71
+ 510               	.LM75:
+ 511 026a 8091 0000 		lds r24,TCPSendFlag
+ 512 026e 8823      		tst r24
+ 513 0270 01F0      		breq .L73
+ 514               	.LM76:
+ 515 0272 0E94 0000 		call TIMER_Get_Tick
+ 516 0276 2091 0000 		lds r18,TCPSendTime
+ 517 027a 3091 0000 		lds r19,(TCPSendTime)+1
+ 518 027e 821B      		sub r24,r18
+ 519 0280 930B      		sbc r25,r19
+ 520 0282 9C01      		movw r18,r24
+ 521 0284 97FF      		sbrs r25,7
+ 522 0286 00C0      		rjmp .L75
+ 523 0288 3095      		com r19
+ 524 028a 2195      		neg r18
+ 525 028c 3F4F      		sbci r19,lo8(-1)
+ 526               	.L75:
+ 527 028e 8091 0000 		lds r24,mm+3
+ 528 0292 9927      		clr r25
+ 529 0294 8217      		cp r24,r18
+ 530 0296 9307      		cpc r25,r19
+ 531 0298 04F4      		brge .L73
+ 532               	.LVL32:
+ 533               	.L71:
+ 534               	.LM77:
+ 535 029a 1092 0000 		sts TCPSendFlag,__zero_reg__
+ 536               	.LM78:
+ 537 029e 4091 0000 		lds r20,snd_count
+ 538 02a2 5091 0000 		lds r21,(snd_count)+1
+ 539 02a6 4115      		cp r20,__zero_reg__
+ 540 02a8 5105      		cpc r21,__zero_reg__
+ 541 02aa 01F0      		breq .L76
+ 542               	.LM79:
+ 543 02ac E091 0000 		lds r30,active_soc
+ 544 02b0 FF27      		clr r31
+ 545 02b2 E050      		subi r30,lo8(-(sockets))
+ 546 02b4 F040      		sbci r31,hi8(-(sockets))
+ 547 02b6 8081      		ld r24,Z
+ 548               	.LVL33:
+ 549 02b8 60E0      		ldi r22,lo8(snd_buff)
+ 550 02ba 70E0      		ldi r23,hi8(snd_buff)
+ 551 02bc 9927      		clr r25
+ 552 02be 0E94 0000 		call tcp_send
+ 553               	.LM80:
+ 554 02c2 8823      		tst r24
+ 555 02c4 01F0      		breq .L76
+ 556               	.LM81:
+ 557 02c6 1092 0000 		sts (snd_count)+1,__zero_reg__
+ 558 02ca 1092 0000 		sts snd_count,__zero_reg__
+ 559               	.LVL34:
+ 560               	.L76:
+ 561 02ce 81E0      		ldi r24,lo8(1)
+ 562 02d0 90E0      		ldi r25,hi8(1)
+ 563               	.LVL35:
+ 564 02d2 0895      		ret
+ 565               	.L73:
+ 566 02d4 80E0      		ldi r24,lo8(0)
+ 567 02d6 90E0      		ldi r25,hi8(0)
+ 568               	.LM82:
+ 569 02d8 0895      		ret
+ 570               	/* epilogue: frame size=0 */
+ 571               	/* epilogue: noreturn */
+ 572               	/* epilogue end (size=0) */
+ 573               	/* function TCPSend size 68 (68) */
+ 574               	.LFE20:
+ 576               	.global	Get_IP
+ 578               	Get_IP:
+ 579               	.LFB16:
+ 580               	.LM83:
+ 581               	/* prologue: frame size=0 */
+ 582               	/* prologue end (size=0) */
+ 583               	.LVL36:
+ 584 02da FC01      		movw r30,r24
+ 585 02dc 9B01      		movw r18,r22
+ 586               	.LM84:
+ 587 02de 8081      		ld r24,Z
+ 588               	.LVL37:
+ 589 02e0 8053      		subi r24,lo8(-(-48))
+ 590 02e2 8A30      		cpi r24,lo8(10)
+ 591 02e4 00F4      		brsh .L82
+ 592               	.LVL38:
+ 593               	.LM85:
+ 594 02e6 CF01      		movw r24,r30
+ 595 02e8 0E94 0000 		call s2ip
+ 596               	.LVL39:
+ 597 02ec 81E0      		ldi r24,lo8(1)
+ 598 02ee 90E0      		ldi r25,hi8(1)
+ 599 02f0 0895      		ret
+ 600               	.LVL40:
+ 601               	.L82:
+ 602               	.LM86:
+ 603 02f2 BF01      		movw r22,r30
+ 604 02f4 C901      		movw r24,r18
+ 605 02f6 0E94 0000 		call resolve_name
+ 606               	.LVL41:
+ 607 02fa 20E0      		ldi r18,lo8(0)
+ 608 02fc 892B      		or r24,r25
+ 609 02fe 01F0      		breq .L85
+ 610 0300 21E0      		ldi r18,lo8(1)
+ 611               	.L85:
+ 612 0302 81E0      		ldi r24,lo8(1)
+ 613 0304 2827      		eor r18,r24
+ 614 0306 822F      		mov r24,r18
+ 615 0308 9927      		clr r25
+ 616               	.LM87:
+ 617 030a 0895      		ret
+ 618               	/* epilogue: frame size=0 */
+ 619               	/* epilogue: noreturn */
+ 620               	/* epilogue end (size=0) */
+ 621               	/* function Get_IP size 25 (25) */
+ 622               	.LFE16:
+ 624               		.data
+ 625               	.LC1:
+ 626 0003 456E 7465 		.string	"Enter Bootloader\r\n"
+ 626      7220 426F 
+ 626      6F74 6C6F 
+ 626      6164 6572 
+ 626      0D0A 00
+ 627               		.text
+ 628               	.global	irCommandProcessor
+ 630               	irCommandProcessor:
+ 631               	.LFB18:
+ 632               	.LM88:
+ 633               	/* prologue: frame size=8 */
+ 634 030c CF92      		push r12
+ 635 030e DF92      		push r13
+ 636 0310 EF92      		push r14
+ 637 0312 FF92      		push r15
+ 638 0314 0F93      		push r16
+ 639 0316 1F93      		push r17
+ 640 0318 CF93      		push r28
+ 641 031a DF93      		push r29
+ 642 031c CDB7      		in r28,__SP_L__
+ 643 031e DEB7      		in r29,__SP_H__
+ 644 0320 2897      		sbiw r28,8
+ 645 0322 0FB6      		in __tmp_reg__,__SREG__
+ 646 0324 F894      		cli
+ 647 0326 DEBF      		out __SP_H__,r29
+ 648 0328 0FBE      		out __SREG__,__tmp_reg__
+ 649 032a CDBF      		out __SP_L__,r28
+ 650               	/* prologue end (size=16) */
+ 651               	.LM89:
+ 652 032c 8091 0000 		lds r24,ircmd_buf+1
+ 653 0330 8F7D      		andi r24,lo8(-33)
+ 654 0332 8235      		cpi r24,lo8(82)
+ 655 0334 01F0      		breq .+2
+ 656 0336 00C0      		rjmp .L88
+ 657               	.LM90:
+ 658 0338 1091 0000 		lds r17,ircmd_buf+2
+ 659               	.LVL42:
+ 660 033c 1F7D      		andi r17,lo8(-33)
+ 661 033e 90E0      		ldi r25,lo8(ircmd_buf+3)
+ 662 0340 E92E      		mov r14,r25
+ 663 0342 90E0      		ldi r25,hi8(ircmd_buf+3)
+ 664 0344 F92E      		mov r15,r25
+ 665               	.LVL43:
+ 666 0346 00C0      		rjmp .L90
+ 667               	.L91:
+ 668               	.LM91:
+ 669 0348 0894      		sec
+ 670 034a E11C      		adc r14,__zero_reg__
+ 671 034c F11C      		adc r15,__zero_reg__
+ 672               	.L90:
+ 673               	.LM92:
+ 674 034e F701      		movw r30,r14
+ 675 0350 9081      		ld r25,Z
+ 676 0352 9032      		cpi r25,lo8(32)
+ 677 0354 01F0      		breq .L91
+ 678               	.LM93:
+ 679 0356 1035      		cpi r17,lo8(80)
+ 680 0358 01F4      		brne .+2
+ 681 035a 00C0      		rjmp .L99
+ 682 035c 1135      		cpi r17,lo8(81)
+ 683 035e 00F4      		brsh .L107
+ 684 0360 1634      		cpi r17,lo8(70)
+ 685 0362 01F4      		brne .+2
+ 686 0364 00C0      		rjmp .L93
+ 687 0366 1734      		cpi r17,lo8(71)
+ 688 0368 00F4      		brsh .L108
+ 689 036a 1434      		cpi r17,lo8(68)
+ 690 036c 01F4      		brne .+2
+ 691 036e 00C0      		rjmp .L95
+ 692 0370 1534      		cpi r17,lo8(69)
+ 693 0372 00F4      		brsh .L96
+ 694 0374 1123      		tst r17
+ 695 0376 01F4      		brne .+2
+ 696 0378 00C0      		rjmp .L93
+ 697 037a 1234      		cpi r17,lo8(66)
+ 698 037c 01F0      		breq .+2
+ 699 037e 00C0      		rjmp .L88
+ 700 0380 00C0      		rjmp .L157
+ 701               	.L108:
+ 702 0382 1934      		cpi r17,lo8(73)
+ 703 0384 01F4      		brne .+2
+ 704 0386 00C0      		rjmp .L97
+ 705 0388 1E34      		cpi r17,lo8(78)
+ 706 038a 01F4      		brne .+2
+ 707 038c 00C0      		rjmp .L98
+ 708 038e 1834      		cpi r17,lo8(72)
+ 709 0390 01F0      		breq .+2
+ 710 0392 00C0      		rjmp .L88
+ 711 0394 00C0      		rjmp .L93
+ 712               	.L107:
+ 713 0396 1535      		cpi r17,lo8(85)
+ 714 0398 01F4      		brne .+2
+ 715 039a 00C0      		rjmp .L103
+ 716 039c 1635      		cpi r17,lo8(86)
+ 717 039e 00F4      		brsh .L109
+ 718 03a0 1335      		cpi r17,lo8(83)
+ 719 03a2 01F4      		brne .+2
+ 720 03a4 00C0      		rjmp .L101
+ 721 03a6 1435      		cpi r17,lo8(84)
+ 722 03a8 00F0      		brlo .+2
+ 723 03aa 00C0      		rjmp .L102
+ 724 03ac 1235      		cpi r17,lo8(82)
+ 725 03ae 01F0      		breq .+2
+ 726 03b0 00C0      		rjmp .L88
+ 727 03b2 00C0      		rjmp .L158
+ 728               	.L109:
+ 729 03b4 1935      		cpi r17,lo8(89)
+ 730 03b6 01F4      		brne .+2
+ 731 03b8 00C0      		rjmp .L105
+ 732 03ba 1A35      		cpi r17,lo8(90)
+ 733 03bc 01F4      		brne .+2
+ 734 03be 00C0      		rjmp .L106
+ 735 03c0 1835      		cpi r17,lo8(88)
+ 736 03c2 01F0      		breq .+2
+ 737 03c4 00C0      		rjmp .L88
+ 738 03c6 00C0      		rjmp .L159
+ 739               	.L96:
+ 740               	.LM94:
+ 741 03c8 892F      		mov r24,r25
+ 742 03ca 9927      		clr r25
+ 743 03cc 0E94 0000 		call toupper
+ 744 03d0 8934      		cpi r24,73
+ 745 03d2 9105      		cpc r25,__zero_reg__
+ 746 03d4 01F0      		breq .+2
+ 747 03d6 00C0      		rjmp .L155
+ 748 03d8 00C0      		rjmp .L160
+ 749               	.L99:
+ 750               	.LM95:
+ 751 03da 8091 0000 		lds r24,elink
+ 752 03de 80FF      		sbrs r24,0
+ 753 03e0 00C0      		rjmp .L112
+ 754               	.LM96:
+ 755 03e2 892F      		mov r24,r25
+ 756 03e4 9927      		clr r25
+ 757 03e6 0E94 0000 		call isalnum
+ 758 03ea 892B      		or r24,r25
+ 759 03ec 01F4      		brne .+2
+ 760 03ee 00C0      		rjmp .L88
+ 761               	.LM97:
+ 762 03f0 85E0      		ldi r24,lo8(5)
+ 763 03f2 C82E      		mov r12,r24
+ 764 03f4 D12C      		mov r13,__zero_reg__
+ 765 03f6 CC0E      		add r12,r28
+ 766 03f8 DD1E      		adc r13,r29
+ 767 03fa B601      		movw r22,r12
+ 768 03fc C701      		movw r24,r14
+ 769 03fe 0E94 0000 		call Get_IP
+ 770 0402 8823      		tst r24
+ 771 0404 01F4      		brne .+2
+ 772 0406 00C0      		rjmp .L115
+ 773               	.LM98:
+ 774 0408 81E0      		ldi r24,lo8(1)
+ 775 040a 8093 0000 		sts tmpflag,r24
+ 776               	.LM99:
+ 777 040e 80E0      		ldi r24,lo8(gs(icmp_echo_rx))
+ 778 0410 90E0      		ldi r25,hi8(gs(icmp_echo_rx))
+ 779 0412 0E94 0000 		call ICMP_Echo_Callback
+ 780               	.LM100:
+ 781 0416 68E3      		ldi r22,lo8(56)
+ 782 0418 70E0      		ldi r23,hi8(56)
+ 783 041a C601      		movw r24,r12
+ 784 041c 0E94 0000 		call ICMP_Send_Ping
+ 785               	.LM101:
+ 786 0420 0E94 0000 		call TIMER_Get_Tick
+ 787 0424 9093 0000 		sts (TCPSendTime)+1,r25
+ 788 0428 8093 0000 		sts TCPSendTime,r24
+ 789 042c 00C0      		rjmp .L117
+ 790               	.L118:
+ 791               	.LM102:
+ 792 042e 0E94 0000 		call poll_serial
+ 793               	.L117:
+ 794               	.LM103:
+ 795 0432 0E94 0000 		call TIMER_Get_Tick
+ 796 0436 2091 0000 		lds r18,TCPSendTime
+ 797 043a 3091 0000 		lds r19,(TCPSendTime)+1
+ 798 043e 821B      		sub r24,r18
+ 799 0440 930B      		sbc r25,r19
+ 800 0442 8059      		subi r24,lo8(400)
+ 801 0444 9140      		sbci r25,hi8(400)
+ 802 0446 00F0      		brlo .L118
+ 803               	.LM104:
+ 804 0448 0E94 0000 		call ICMP_Echo_Terminate
+ 805               	.LM105:
+ 806 044c 8091 0000 		lds r24,tmpflag
+ 807 0450 8823      		tst r24
+ 808 0452 01F0      		breq .+2
+ 809 0454 00C0      		rjmp .L120
+ 810 0456 00C0      		rjmp .L93
+ 811               	.L97:
+ 812               	.LM106:
+ 813 0458 8091 0000 		lds r24,mm+14
+ 814 045c 80FF      		sbrs r24,0
+ 815 045e 00C0      		rjmp .L121
+ 816 0460 8091 0000 		lds r24,DhcpLeaseTime
+ 817 0464 9091 0000 		lds r25,(DhcpLeaseTime)+1
+ 818 0468 A091 0000 		lds r26,(DhcpLeaseTime)+2
+ 819 046c B091 0000 		lds r27,(DhcpLeaseTime)+3
+ 820 0470 0B97      		sbiw r24,11
+ 821 0472 A105      		cpc r26,__zero_reg__
+ 822 0474 B105      		cpc r27,__zero_reg__
+ 823 0476 00F4      		brsh .L121
+ 824 0478 14E8      		ldi r17,lo8(-124)
+ 825 047a 00C0      		rjmp .L124
+ 826               	.L121:
+ 827 047c 10E0      		ldi r17,lo8(0)
+ 828               	.L124:
+ 829               	.LM107:
+ 830 047e 8091 0000 		lds r24,elink
+ 831 0482 80FF      		sbrs r24,0
+ 832 0484 00C0      		rjmp .L112
+ 833 0486 00C0      		rjmp .L93
+ 834               	.L95:
+ 835               	.LM108:
+ 836 0488 8091 0000 		lds r24,elink
+ 837 048c 80FF      		sbrs r24,0
+ 838 048e 00C0      		rjmp .L112
+ 839               	.LM109:
+ 840 0490 0E94 0000 		call dhcp_init
+ 841 0494 0197      		sbiw r24,1
+ 842 0496 01F0      		breq .+2
+ 843 0498 00C0      		rjmp .L120
+ 844 049a 00C0      		rjmp .L126
+ 845               	.L98:
+ 846               	.LM110:
+ 847 049c 8091 0000 		lds r24,elink
+ 848 04a0 80FF      		sbrs r24,0
+ 849 04a2 00C0      		rjmp .L112
+ 850               	.LM111:
+ 851 04a4 8E01      		movw r16,r28
+ 852 04a6 0B5F      		subi r16,lo8(-(5))
+ 853 04a8 1F4F      		sbci r17,hi8(-(5))
+ 854 04aa B701      		movw r22,r14
+ 855 04ac C801      		movw r24,r16
+ 856 04ae 0E94 0000 		call resolve_name
+ 857 04b2 892B      		or r24,r25
+ 858 04b4 01F0      		breq .+2
+ 859 04b6 00C0      		rjmp .L115
+ 860               	.LM112:
+ 861 04b8 80E0      		ldi r24,lo8(0)
+ 862 04ba 0E94 0000 		call displayMessage
+ 863               	.LM113:
+ 864 04be C801      		movw r24,r16
+ 865 04c0 0E94 0000 		call printIP
+ 866 04c4 00C0      		rjmp .L161
+ 867               	.L102:
+ 868               	.LM114:
+ 869 04c6 8091 0000 		lds r24,elink
+ 870 04ca 80FF      		sbrs r24,0
+ 871 04cc 00C0      		rjmp .L112
+ 872               	.LM115:
+ 873 04ce C701      		movw r24,r14
+ 874 04d0 0E94 0000 		call SocketSelect
+ 875 04d4 8C01      		movw r16,r24
+ 876               	.LVL44:
+ 877 04d6 E816      		cp r14,r24
+ 878 04d8 F906      		cpc r15,r25
+ 879 04da 01F4      		brne .+2
+ 880 04dc 00C0      		rjmp .L88
+ 881               	.LVL45:
+ 882               	.LM116:
+ 883 04de BE01      		movw r22,r28
+ 884 04e0 6B5F      		subi r22,lo8(-(5))
+ 885 04e2 7F4F      		sbci r23,hi8(-(5))
+ 886 04e4 0E94 0000 		call Get_IP
+ 887               	.LVL46:
+ 888 04e8 8823      		tst r24
+ 889 04ea 01F4      		brne .L156
+ 890 04ec 00C0      		rjmp .L115
+ 891               	.L133:
+ 892               	.LM117:
+ 893 04ee 0F5F      		subi r16,lo8(-(1))
+ 894 04f0 1F4F      		sbci r17,hi8(-(1))
+ 895               	.L156:
+ 896               	.LM118:
+ 897 04f2 F801      		movw r30,r16
+ 898 04f4 8081      		ld r24,Z
+ 899 04f6 8A33      		cpi r24,lo8(58)
+ 900 04f8 01F0      		breq .L134
+ 901 04fa 8823      		tst r24
+ 902 04fc 01F4      		brne .L133
+ 903               	.L134:
+ 904               	.LM119:
+ 905 04fe 8A33      		cpi r24,lo8(58)
+ 906 0500 01F0      		breq .+2
+ 907 0502 00C0      		rjmp .L88
+ 908               	.LM120:
+ 909 0504 BE01      		movw r22,r28
+ 910 0506 6D5F      		subi r22,lo8(-(3))
+ 911 0508 7F4F      		sbci r23,hi8(-(3))
+ 912 050a C801      		movw r24,r16
+ 913 050c 0196      		adiw r24,1
+ 914 050e 0E94 0000 		call s2p
+ 915               	.LVL47:
+ 916               	.LM121:
+ 917 0512 8B81      		ldd r24,Y+3
+ 918 0514 9C81      		ldd r25,Y+4
+ 919 0516 892B      		or r24,r25
+ 920 0518 01F0      		breq .+2
+ 921 051a 00C0      		rjmp .L138
+ 922               	.LVL48:
+ 923 051c 00C0      		rjmp .L88
+ 924               	.LVL49:
+ 925               	.L139:
+ 926               	.LM122:
+ 927 051e 9093 0000 		sts active_soc,r25
+ 928 0522 00C0      		rjmp .L163
+ 929               	.LVL50:
+ 930               	.L158:
+ 931               	.LM123:
+ 932 0524 C701      		movw r24,r14
+ 933 0526 0E94 0000 		call SocketSelect
+ 934 052a E816      		cp r14,r24
+ 935 052c F906      		cpc r15,r25
+ 936 052e 01F4      		brne .+2
+ 937 0530 00C0      		rjmp .L93
+ 938               	.LM124:
+ 939 0532 E091 0000 		lds r30,soc_num
+ 940 0536 FF27      		clr r31
+ 941 0538 E050      		subi r30,lo8(-(sockets))
+ 942 053a F040      		sbci r31,hi8(-(sockets))
+ 943 053c 8081      		ld r24,Z
+ 944 053e 0E94 0000 		call tcp_status
+ 945 0542 0497      		sbiw r24,4
+ 946 0544 01F0      		breq .L141
+ 947 0546 1DE8      		ldi r17,lo8(-115)
+ 948 0548 00C0      		rjmp .L93
+ 949               	.L141:
+ 950               	.LM125:
+ 951 054a 8091 0000 		lds r24,soc_num
+ 952 054e 8093 0000 		sts active_soc,r24
+ 953               	.LVL51:
+ 954               	.L163:
+ 955               	.LM126:
+ 956 0552 1092 0000 		sts (snd_count)+1,__zero_reg__
+ 957 0556 1092 0000 		sts snd_count,__zero_reg__
+ 958               	.LM127:
+ 959 055a 86E0      		ldi r24,lo8(6)
+ 960 055c 8093 0000 		sts ircmd_state,r24
+ 961 0560 00C0      		rjmp .L126
+ 962               	.LVL52:
+ 963               	.L159:
+ 964               	.LM128:
+ 965 0562 C701      		movw r24,r14
+ 966 0564 0E94 0000 		call SocketSelect
+ 967 0568 E816      		cp r14,r24
+ 968 056a F906      		cpc r15,r25
+ 969 056c 01F0      		breq .L143
+ 970               	.LM129:
+ 971 056e E091 0000 		lds r30,soc_num
+ 972 0572 FF27      		clr r31
+ 973 0574 E050      		subi r30,lo8(-(sockets))
+ 974 0576 F040      		sbci r31,hi8(-(sockets))
+ 975 0578 8081      		ld r24,Z
+ 976 057a 0E94 0000 		call tcp_close
+ 977               	.LM130:
+ 978 057e E091 0000 		lds r30,soc_num
+ 979 0582 FF27      		clr r31
+ 980 0584 E050      		subi r30,lo8(-(sockets))
+ 981 0586 F040      		sbci r31,hi8(-(sockets))
+ 982 0588 1082      		st Z,__zero_reg__
+ 983 058a 00C0      		rjmp .L126
+ 984               	.L143:
+ 985               	.LM131:
+ 986 058c 81E0      		ldi r24,lo8(1)
+ 987 058e 0E94 0000 		call tcp_status
+ 988 0592 0E94 0000 		call printByte
+ 989               	.LM132:
+ 990 0596 8DE2      		ldi r24,lo8(45)
+ 991 0598 0E94 0000 		call CONSOLE_putch
+ 992               	.LM133:
+ 993 059c 82E0      		ldi r24,lo8(2)
+ 994 059e 0E94 0000 		call tcp_status
+ 995 05a2 0E94 0000 		call printByte
+ 996 05a6 00C0      		rjmp .L93
+ 997               	.L103:
+ 998               	.LM134:
+ 999 05a8 C701      		movw r24,r14
+ 1000 05aa 0E94 0000 		call udpcmd
+ 1001 05ae 00C0      		rjmp .L162
+ 1002               	.L101:
+ 1003               	.LM135:
+ 1004 05b0 C701      		movw r24,r14
+ 1005 05b2 0E94 0000 		call sRegister
+ 1006               	.L162:
+ 1007 05b6 182F      		mov r17,r24
+ 1008 05b8 00C0      		rjmp .L93
+ 1009               	.L160:
+ 1010               	.LBB12:
+ 1011               	.LBB13:
+ 1012               	.LM136:
+ 1013 05ba 80E0      		ldi r24,lo8(0)
+ 1014 05bc A0E0      		ldi r26,lo8(0)
+ 1015 05be B0E0      		ldi r27,hi8(0)
+ 1016 05c0 00C0      		rjmp .L164
+ 1017               	.L155:
+ 1018               	.LBE13:
+ 1019               	.LBE12:
+ 1020               	.LM137:
+ 1021 05c2 8335      		cpi r24,83
+ 1022 05c4 9105      		cpc r25,__zero_reg__
+ 1023 05c6 01F4      		brne .L145
+ 1024               	.LM138:
+ 1025 05c8 82E0      		ldi r24,lo8(2)
+ 1026 05ca 0E94 0000 		call global_init
+ 1027 05ce 8230      		cpi r24,lo8(2)
+ 1028 05d0 01F0      		breq .+2
+ 1029 05d2 00C0      		rjmp .L88
+ 1030 05d4 00C0      		rjmp .L126
+ 1031               	.L145:
+ 1032               	.LM139:
+ 1033 05d6 8C34      		cpi r24,76
+ 1034 05d8 9105      		cpc r25,__zero_reg__
+ 1035 05da 01F4      		brne .L147
+ 1036               	.LM140:
+ 1037 05dc 81E0      		ldi r24,lo8(1)
+ 1038 05de 0E94 0000 		call global_init
+ 1039 05e2 8130      		cpi r24,lo8(1)
+ 1040 05e4 01F4      		brne .+2
+ 1041 05e6 00C0      		rjmp .L126
+ 1042 05e8 16E8      		ldi r17,lo8(-122)
+ 1043 05ea 00C0      		rjmp .L93
+ 1044               	.L147:
+ 1045               	.LM141:
+ 1046 05ec BE01      		movw r22,r28
+ 1047 05ee 6D5F      		subi r22,lo8(-(3))
+ 1048 05f0 7F4F      		sbci r23,hi8(-(3))
+ 1049 05f2 C701      		movw r24,r14
+ 1050 05f4 0E94 0000 		call s2p
+ 1051 05f8 E816      		cp r14,r24
+ 1052 05fa F906      		cpc r15,r25
+ 1053 05fc 01F0      		breq .L88
+ 1054               	.LM142:
+ 1055 05fe F701      		movw r30,r14
+ 1056 0600 8081      		ld r24,Z
+ 1057 0602 8D33      		cpi r24,lo8(61)
+ 1058 0604 01F4      		brne .L151
+ 1059               	.LM143:
+ 1060 0606 BE01      		movw r22,r28
+ 1061 0608 6F5F      		subi r22,lo8(-(1))
+ 1062 060a 7F4F      		sbci r23,hi8(-(1))
+ 1063 060c C701      		movw r24,r14
+ 1064 060e 0E94 0000 		call Get_Byte
+ 1065               	.LVL53:
+ 1066               	.LM144:
+ 1067 0612 8981      		ldd r24,Y+1
+ 1068               	.LVL54:
+ 1069 0614 AB81      		ldd r26,Y+3
+ 1070 0616 BC81      		ldd r27,Y+4
+ 1071               	.LVL55:
+ 1072               	.L164:
+ 1073               	.LBB14:
+ 1074               	.LBB15:
+ 1075               	.LM145:
+ 1076               	/* #APP */
+ 1077 0618 082E      		mov __tmp_reg__,r24
+ 1078 061a 0E94 0000 		call __eeprom_write_byte_1C1D1E
+ 1079               	/* #NOAPP */
+ 1080 061e 00C0      		rjmp .L126
+ 1081               	.LVL56:
+ 1082               	.L151:
+ 1083               	.LVL57:
+ 1084               	.LBE15:
+ 1085               	.LBE14:
+ 1086               	.LM146:
+ 1087 0620 AB81      		ldd r26,Y+3
+ 1088 0622 BC81      		ldd r27,Y+4
+ 1089               	.LVL58:
+ 1090               	.LBB16:
+ 1091               	.LBB17:
+ 1092               	.LM147:
+ 1093               	/* #APP */
+ 1094 0624 0E94 0000 		call __eeprom_read_byte_1C1D1E
+ 1095 0628 802D      		mov r24,__tmp_reg__
+ 1096               	.LVL59:
+ 1097               	/* #NOAPP */
+ 1098               	.LBE17:
+ 1099               	.LBE16:
+ 1100               	.LM148:
+ 1101 062a 9927      		clr r25
+ 1102               	.LVL60:
+ 1103 062c 9C83      		std Y+4,r25
+ 1104 062e 8B83      		std Y+3,r24
+ 1105               	.LM149:
+ 1106 0630 0E94 0000 		call printByte
+ 1107               	.LVL61:
+ 1108               	.L161:
+ 1109 0634 1FEF      		ldi r17,lo8(-1)
+ 1110 0636 00C0      		rjmp .L93
+ 1111               	.LVL62:
+ 1112               	.L157:
+ 1113               	.LM150:
+ 1114 0638 80E0      		ldi r24,lo8(.LC1)
+ 1115 063a 90E0      		ldi r25,hi8(.LC1)
+ 1116 063c 0E94 0000 		call CONSOLE_puts
+ 1117               	.LM151:
+ 1118 0640 14BE      		out 84-0x20,__zero_reg__
+ 1119               	.LM152:
+ 1120 0642 E091 0000 		lds r30,absolute
+ 1121 0646 F091 0000 		lds r31,(absolute)+1
+ 1122 064a 85EF      		ldi r24,lo8(20981)
+ 1123 064c 91E5      		ldi r25,hi8(20981)
+ 1124 064e 9383      		std Z+3,r25
+ 1125 0650 8283      		std Z+2,r24
+ 1126               	.LM153:
+ 1127               	/* #APP */
+ 1128 0652 0C94 0038 		jmp 0x7000
+ 1129               	/* #NOAPP */
+ 1130 0656 00C0      		rjmp .L93
+ 1131               	.L105:
+ 1132               	.LM154:
+ 1133 0658 0E94 0000 		call enc28j60RegDump
+ 1134 065c 00C0      		rjmp .L93
+ 1135               	.L106:
+ 1136               	.LM155:
+ 1137 065e 0E94 0000 		call nic_intialize
+ 1138 0662 00C0      		rjmp .L126
+ 1139               	.LVL63:
+ 1140               	.L88:
+ 1141               	.LM156:
+ 1142 0664 14E0      		ldi r17,lo8(4)
+ 1143 0666 00C0      		rjmp .L93
+ 1144               	.LVL64:
+ 1145               	.L112:
+ 1146 0668 13E8      		ldi r17,lo8(-125)
+ 1147 066a 00C0      		rjmp .L93
+ 1148               	.L120:
+ 1149 066c 16E0      		ldi r17,lo8(6)
+ 1150 066e 00C0      		rjmp .L93
+ 1151               	.LVL65:
+ 1152               	.L126:
+ 1153 0670 10E0      		ldi r17,lo8(0)
+ 1154 0672 00C0      		rjmp .L93
+ 1155               	.LVL66:
+ 1156               	.L115:
+ 1157 0674 16E9      		ldi r17,lo8(-106)
+ 1158 0676 00C0      		rjmp .L93
+ 1159               	.LVL67:
+ 1160               	.L138:
+ 1161               	.LM157:
+ 1162 0678 E091 0000 		lds r30,soc_num
+ 1163 067c FF27      		clr r31
+ 1164 067e E050      		subi r30,lo8(-(sockets))
+ 1165 0680 F040      		sbci r31,hi8(-(sockets))
+ 1166 0682 8081      		ld r24,Z
+ 1167               	.LVL68:
+ 1168 0684 0E94 0000 		call tcp_close
+ 1169               	.LM158:
+ 1170 0688 8091 0000 		lds r24,soc_num
+ 1171 068c 082F      		mov r16,r24
+ 1172 068e 1127      		clr r17
+ 1173               	.LVL69:
+ 1174 0690 4B81      		ldd r20,Y+3
+ 1175 0692 5C81      		ldd r21,Y+4
+ 1176               	.LVL70:
+ 1177 0694 6D81      		ldd r22,Y+5
+ 1178 0696 7E81      		ldd r23,Y+6
+ 1179 0698 8F81      		ldd r24,Y+7
+ 1180 069a 9885      		ldd r25,Y+8
+ 1181 069c 20E0      		ldi r18,lo8(gs(tcp_socket_rx))
+ 1182 069e 30E0      		ldi r19,hi8(gs(tcp_socket_rx))
+ 1183 06a0 0E94 0000 		call tcp_open
+ 1184 06a4 0050      		subi r16,lo8(-(sockets))
+ 1185 06a6 1040      		sbci r17,hi8(-(sockets))
+ 1186 06a8 F801      		movw r30,r16
+ 1187 06aa 8083      		st Z,r24
+ 1188               	.LM159:
+ 1189 06ac 9091 0000 		lds r25,soc_num
+ 1190 06b0 E92F      		mov r30,r25
+ 1191 06b2 FF27      		clr r31
+ 1192 06b4 E050      		subi r30,lo8(-(sockets))
+ 1193 06b6 F040      		sbci r31,hi8(-(sockets))
+ 1194 06b8 8081      		ld r24,Z
+ 1195 06ba 8823      		tst r24
+ 1196 06bc 01F0      		breq .+2
+ 1197 06be 00C0      		rjmp .L139
+ 1198 06c0 1CE8      		ldi r17,lo8(-116)
+ 1199               	.LVL71:
+ 1200               	.L93:
+ 1201               	.LM160:
+ 1202 06c2 812F      		mov r24,r17
+ 1203               	.LVL72:
+ 1204 06c4 0E94 0000 		call displayMessage
+ 1205               	.LVL73:
+ 1206               	/* epilogue: frame size=8 */
+ 1207 06c8 2896      		adiw r28,8
+ 1208 06ca 0FB6      		in __tmp_reg__,__SREG__
+ 1209 06cc F894      		cli
+ 1210 06ce DEBF      		out __SP_H__,r29
+ 1211 06d0 0FBE      		out __SREG__,__tmp_reg__
+ 1212 06d2 CDBF      		out __SP_L__,r28
+ 1213 06d4 DF91      		pop r29
+ 1214 06d6 CF91      		pop r28
+ 1215 06d8 1F91      		pop r17
+ 1216 06da 0F91      		pop r16
+ 1217 06dc FF90      		pop r15
+ 1218 06de EF90      		pop r14
+ 1219 06e0 DF90      		pop r13
+ 1220 06e2 CF90      		pop r12
+ 1221 06e4 0895      		ret
+ 1222               	/* epilogue end (size=15) */
+ 1223               	/* function irCommandProcessor size 498 (467) */
+ 1224               	.LFE18:
+ 1226               	.global	irCommand
+ 1228               	irCommand:
+ 1229               	.LFB19:
+ 1230               	.LM161:
+ 1231               	/* prologue: frame size=0 */
+ 1232 06e6 1F93      		push r17
+ 1233               	/* prologue end (size=1) */
+ 1234               	.LVL74:
+ 1235 06e8 982F      		mov r25,r24
+ 1236               	.LM162:
+ 1237 06ea 87FF      		sbrs r24,7
+ 1238 06ec 00C0      		rjmp .L166
+ 1239               	.LM163:
+ 1240 06ee 11E0      		ldi r17,lo8(1)
+ 1241               	.LVL75:
+ 1242 06f0 00C0      		rjmp .L168
+ 1243               	.LVL76:
+ 1244               	.L166:
+ 1245 06f2 8091 0000 		lds r24,ircount
+ 1246               	.LVL77:
+ 1247               	.LM164:
+ 1248 06f6 9D30      		cpi r25,lo8(13)
+ 1249 06f8 01F4      		brne .L169
+ 1250               	.LM165:
+ 1251 06fa 8823      		tst r24
+ 1252 06fc 01F4      		brne .L171
+ 1253 06fe 10E0      		ldi r17,lo8(0)
+ 1254               	.LVL78:
+ 1255 0700 00C0      		rjmp .L173
+ 1256               	.LVL79:
+ 1257               	.L171:
+ 1258               	.LM166:
+ 1259 0702 E82F      		mov r30,r24
+ 1260 0704 FF27      		clr r31
+ 1261 0706 E050      		subi r30,lo8(-(ircmd_buf))
+ 1262 0708 F040      		sbci r31,hi8(-(ircmd_buf))
+ 1263 070a 1082      		st Z,__zero_reg__
+ 1264               	.LM167:
+ 1265 070c 80E0      		ldi r24,lo8(.LC0)
+ 1266 070e 90E0      		ldi r25,hi8(.LC0)
+ 1267 0710 0E94 0000 		call CONSOLE_puts
+ 1268               	.LVL80:
+ 1269               	.LM168:
+ 1270 0714 8AE0      		ldi r24,lo8(10)
+ 1271 0716 90E0      		ldi r25,hi8(10)
+ 1272 0718 0E94 0000 		call TIMER_Wait_Tick
+ 1273 071c 00C0      		rjmp .L174
+ 1274               	.L175:
+ 1275               	.LM169:
+ 1276 071e 0E94 0000 		call CONSOLE_getch
+ 1277               	.L174:
+ 1278               	.LM170:
+ 1279 0722 0E94 0000 		call CONSOLE_kbhit
+ 1280 0726 8823      		tst r24
+ 1281 0728 01F4      		brne .L175
+ 1282               	.LM171:
+ 1283 072a 0E94 0000 		call irCommandProcessor
+ 1284 072e 11E0      		ldi r17,lo8(1)
+ 1285               	.LVL81:
+ 1286               	.L173:
+ 1287               	.LM172:
+ 1288 0730 1092 0000 		sts ircount,__zero_reg__
+ 1289               	.LM173:
+ 1290 0734 1092 0000 		sts ccount,__zero_reg__
+ 1291 0738 00C0      		rjmp .L168
+ 1292               	.LVL82:
+ 1293               	.L169:
+ 1294               	.LM174:
+ 1295 073a 8823      		tst r24
+ 1296 073c 01F0      		breq .L177
+ 1297               	.LM175:
+ 1298 073e 9830      		cpi r25,lo8(8)
+ 1299 0740 01F4      		brne .L179
+ 1300               	.LM176:
+ 1301 0742 8150      		subi r24,lo8(-(-1))
+ 1302 0744 8093 0000 		sts ircount,r24
+ 1303               	.LM177:
+ 1304 0748 8F3F      		cpi r24,lo8(-1)
+ 1305 074a 01F4      		brne .L181
+ 1306               	.LM178:
+ 1307 074c 1092 0000 		sts ircount,__zero_reg__
+ 1308               	.LM179:
+ 1309 0750 1092 0000 		sts ccount,__zero_reg__
+ 1310 0754 00C0      		rjmp .L181
+ 1311               	.L179:
+ 1312               	.LM180:
+ 1313 0756 8F33      		cpi r24,lo8(63)
+ 1314 0758 00F4      		brsh .L181
+ 1315               	.LM181:
+ 1316 075a E82F      		mov r30,r24
+ 1317 075c FF27      		clr r31
+ 1318 075e E050      		subi r30,lo8(-(ircmd_buf))
+ 1319 0760 F040      		sbci r31,hi8(-(ircmd_buf))
+ 1320 0762 9083      		st Z,r25
+ 1321 0764 8F5F      		subi r24,lo8(-(1))
+ 1322 0766 00C0      		rjmp .L197
+ 1323               	.L177:
+ 1324               	.LM182:
+ 1325 0768 8091 0000 		lds r24,ccount
+ 1326 076c 8823      		tst r24
+ 1327 076e 01F4      		brne .L196
+ 1328               	.LM183:
+ 1329 0770 892F      		mov r24,r25
+ 1330 0772 8F7D      		andi r24,lo8(-33)
+ 1331 0774 8934      		cpi r24,lo8(73)
+ 1332 0776 01F4      		brne .L187
+ 1333               	.LM184:
+ 1334 0778 9093 0000 		sts ircmd_buf,r25
+ 1335 077c 81E0      		ldi r24,lo8(1)
+ 1336               	.L197:
+ 1337 077e 8093 0000 		sts ircount,r24
+ 1338 0782 00C0      		rjmp .L181
+ 1339               	.L187:
+ 1340               	.LM185:
+ 1341 0784 9A30      		cpi r25,lo8(10)
+ 1342 0786 01F0      		breq .L189
+ 1343 0788 9032      		cpi r25,lo8(32)
+ 1344 078a 01F4      		brne .L191
+ 1345               	.L189:
+ 1346               	.LM186:
+ 1347 078c 1092 0000 		sts ccount,__zero_reg__
+ 1348 0790 00C0      		rjmp .L196
+ 1349               	.L191:
+ 1350               	.LM187:
+ 1351 0792 81E0      		ldi r24,lo8(1)
+ 1352 0794 8093 0000 		sts ccount,r24
+ 1353               	.L196:
+ 1354 0798 10E0      		ldi r17,lo8(0)
+ 1355               	.LVL83:
+ 1356 079a 00C0      		rjmp .L183
+ 1357               	.LVL84:
+ 1358               	.L181:
+ 1359 079c 11E0      		ldi r17,lo8(1)
+ 1360               	.LVL85:
+ 1361               	.L183:
+ 1362               	.LM188:
+ 1363 079e 8091 0000 		lds r24,mm
+ 1364 07a2 80FF      		sbrs r24,0
+ 1365 07a4 00C0      		rjmp .L168
+ 1366 07a6 1123      		tst r17
+ 1367 07a8 01F0      		breq .L168
+ 1368               	.LM189:
+ 1369 07aa 9A30      		cpi r25,lo8(10)
+ 1370 07ac 01F0      		breq .L168
+ 1371               	.LM190:
+ 1372 07ae 892F      		mov r24,r25
+ 1373 07b0 0E94 0000 		call CONSOLE_putch
+ 1374               	.LVL86:
+ 1375               	.L168:
+ 1376               	.LM191:
+ 1377 07b4 812F      		mov r24,r17
+ 1378 07b6 9927      		clr r25
+ 1379               	/* epilogue: frame size=0 */
+ 1380 07b8 1F91      		pop r17
+ 1381 07ba 0895      		ret
+ 1382               	/* epilogue end (size=2) */
+ 1383               	/* function irCommand size 107 (104) */
+ 1384               	.LFE19:
+ 1386               	.global	irCommands
+ 1388               	irCommands:
+ 1389               	.LFB24:
+ 1390               	.LM192:
+ 1391               	/* prologue: frame size=0 */
+ 1392 07bc EF92      		push r14
+ 1393 07be FF92      		push r15
+ 1394 07c0 0F93      		push r16
+ 1395 07c2 1F93      		push r17
+ 1396               	/* prologue end (size=4) */
+ 1397               	.LM193:
+ 1398 07c4 84E0      		ldi r24,lo8(4)
+ 1399 07c6 8093 0000 		sts ircmd_state,r24
+ 1400               	.LM194:
+ 1401 07ca 1092 0000 		sts ircmd_buf,__zero_reg__
+ 1402               	.LM195:
+ 1403 07ce 1092 0000 		sts TCPSendFlag,__zero_reg__
+ 1404               	.LM196:
+ 1405 07d2 0E94 0000 		call nicIsLinked
+ 1406 07d6 8093 0000 		sts elink,r24
+ 1407               	.LM197:
+ 1408 07da 8AE0      		ldi r24,lo8(10)
+ 1409 07dc 90E0      		ldi r25,hi8(10)
+ 1410 07de 0E94 0000 		call TIMER_Wait_Tick
+ 1411 07e2 EE24      		clr r14
+ 1412               	.LVL87:
+ 1413               	.LVL88:
+ 1414               	.L248:
+ 1415               	.LM198:
+ 1416 07e4 0E94 0000 		call poll_serial
+ 1417               	.LM199:
+ 1418 07e8 8091 0000 		lds r24,sockets
+ 1419 07ec 0E94 0000 		call tcp_status
+ 1420 07f0 0497      		sbiw r24,4
+ 1421 07f2 01F4      		brne .L200
+ 1422 07f4 0A99      		sbic 33-0x20,2
+ 1423 07f6 00C0      		rjmp .L200
+ 1424               	.LM200:
+ 1425 07f8 A898      		cbi 53-0x20,0
+ 1426 07fa 00C0      		rjmp .L203
+ 1427               	.L200:
+ 1428               	.LM201:
+ 1429 07fc A89A      		sbi 53-0x20,0
+ 1430               	.L203:
+ 1431               	.LM202:
+ 1432 07fe E394      		inc r14
+ 1433               	.LM203:
+ 1434 0800 01F0      		breq .+2
+ 1435 0802 00C0      		rjmp .L204
+ 1436               	.LM204:
+ 1437 0804 80E0      		ldi r24,lo8(0)
+ 1438 0806 0E94 0000 		call tcp_process
+ 1439               	.LM205:
+ 1440 080a 8091 0000 		lds r24,mm+14
+ 1441 080e 80FF      		sbrs r24,0
+ 1442 0810 00C0      		rjmp .L206
+ 1443               	.LM206:
+ 1444 0812 8091 0000 		lds r24,elink
+ 1445 0816 9927      		clr r25
+ 1446 0818 8170      		andi r24,lo8(1)
+ 1447 081a 9070      		andi r25,hi8(1)
+ 1448 081c 0E94 0000 		call dhcp_process
+ 1449               	.L206:
+ 1450               	.LM207:
+ 1451 0820 0E94 0000 		call Check_Reset_EEPROM
+ 1452               	.LM208:
+ 1453 0824 0E94 0000 		call nicIsLinked
+ 1454 0828 2091 0000 		lds r18,elink
+ 1455 082c 3327      		clr r19
+ 1456 082e 2170      		andi r18,lo8(1)
+ 1457 0830 3070      		andi r19,hi8(1)
+ 1458 0832 8217      		cp r24,r18
+ 1459 0834 9307      		cpc r25,r19
+ 1460 0836 01F0      		breq .L208
+ 1461               	.LM209:
+ 1462 0838 0E94 0000 		call nicIsLinked
+ 1463 083c 2091 0000 		lds r18,elink
+ 1464 0840 892B      		or r24,r25
+ 1465 0842 01F0      		breq .L210
+ 1466               	.LM210:
+ 1467 0844 822F      		mov r24,r18
+ 1468 0846 8160      		ori r24,lo8(1)
+ 1469 0848 8093 0000 		sts elink,r24
+ 1470               	.LM211:
+ 1471 084c 87FF      		sbrs r24,7
+ 1472 084e 00C0      		rjmp .L208
+ 1473               	.LM212:
+ 1474 0850 8F77      		andi r24,lo8(127)
+ 1475 0852 8093 0000 		sts elink,r24
+ 1476               	.LM213:
+ 1477 0856 81E0      		ldi r24,lo8(1)
+ 1478 0858 0E94 0000 		call displayMessage
+ 1479 085c 00C0      		rjmp .L208
+ 1480               	.L210:
+ 1481               	.LM214:
+ 1482 085e 2E7F      		andi r18,lo8(-2)
+ 1483 0860 2093 0000 		sts elink,r18
+ 1484               	.L208:
+ 1485               	.LM215:
+ 1486 0864 8091 0000 		lds r24,sockets
+ 1487 0868 0E94 0000 		call tcp_status
+ 1488 086c 0497      		sbiw r24,4
+ 1489 086e 01F4      		brne .L213
+ 1490               	.LM216:
+ 1491 0870 C69A      		sbi 56-0x20,6
+ 1492 0872 00C0      		rjmp .L215
+ 1493               	.L213:
+ 1494               	.LM217:
+ 1495 0874 C698      		cbi 56-0x20,6
+ 1496               	.L215:
+ 1497               	.LM218:
+ 1498 0876 8091 0000 		lds r24,sockets+1
+ 1499 087a 0E94 0000 		call tcp_status
+ 1500 087e 0497      		sbiw r24,4
+ 1501 0880 01F4      		brne .L216
+ 1502               	.LM219:
+ 1503 0882 C79A      		sbi 56-0x20,7
+ 1504 0884 00C0      		rjmp .L218
+ 1505               	.L216:
+ 1506               	.LM220:
+ 1507 0886 C798      		cbi 56-0x20,7
+ 1508               	.L218:
+ 1509               	.LM221:
+ 1510 0888 9D99      		sbic 51-0x20,5
+ 1511 088a 00C0      		rjmp .L219
+ 1512               	.LM222:
+ 1513 088c 8091 0000 		lds r24,sockets+1
+ 1514 0890 0E94 0000 		call tcp_status
+ 1515 0894 0497      		sbiw r24,4
+ 1516 0896 01F4      		brne .L219
+ 1517               	.LM223:
+ 1518 0898 8091 0000 		lds r24,sockets+1
+ 1519 089c 0E94 0000 		call tcp_close
+ 1520               	.LM224:
+ 1521 08a0 1092 0000 		sts sockets+1,__zero_reg__
+ 1522               	.L219:
+ 1523               	.LM225:
+ 1524 08a4 9C99      		sbic 51-0x20,4
+ 1525 08a6 00C0      		rjmp .L204
+ 1526               	.LM226:
+ 1527 08a8 8091 0000 		lds r24,sockets
+ 1528 08ac 0E94 0000 		call tcp_status
+ 1529 08b0 0497      		sbiw r24,4
+ 1530 08b2 01F4      		brne .L204
+ 1531               	.LM227:
+ 1532 08b4 8091 0000 		lds r24,sockets
+ 1533 08b8 0E94 0000 		call tcp_close
+ 1534               	.LM228:
+ 1535 08bc 1092 0000 		sts sockets,__zero_reg__
+ 1536               	.L204:
+ 1537               	.LM229:
+ 1538 08c0 0E94 0000 		call EscapeAction
+ 1539 08c4 8823      		tst r24
+ 1540 08c6 01F0      		breq .L224
+ 1541               	.LM230:
+ 1542 08c8 8091 0000 		lds r24,ircmd_state
+ 1543 08cc 8330      		cpi r24,lo8(3)
+ 1544 08ce 01F0      		breq .L226
+ 1545 08d0 8630      		cpi r24,lo8(6)
+ 1546 08d2 01F4      		brne .L224
+ 1547               	.LM231:
+ 1548 08d4 84E0      		ldi r24,lo8(4)
+ 1549 08d6 8093 0000 		sts ircmd_state,r24
+ 1550               	.LM232:
+ 1551 08da 81E0      		ldi r24,lo8(1)
+ 1552 08dc 0E94 0000 		call TCPSend
+ 1553 08e0 00C0      		rjmp .L229
+ 1554               	.L226:
+ 1555               	.LM233:
+ 1556 08e2 81E0      		ldi r24,lo8(1)
+ 1557 08e4 8093 0000 		sts ircmd_state,r24
+ 1558               	.L229:
+ 1559               	.LM234:
+ 1560 08e8 80E0      		ldi r24,lo8(.LC0)
+ 1561 08ea 90E0      		ldi r25,hi8(.LC0)
+ 1562 08ec 0E94 0000 		call CONSOLE_puts
+ 1563               	.LM235:
+ 1564 08f0 80E0      		ldi r24,lo8(0)
+ 1565 08f2 0E94 0000 		call displayMessage
+ 1566               	.LM236:
+ 1567 08f6 0E94 0000 		call EscapeReset
+ 1568               	.L224:
+ 1569               	.LM237:
+ 1570 08fa 0E94 0000 		call CONSOLE_kbhit
+ 1571 08fe 8823      		tst r24
+ 1572 0900 01F0      		breq .L230
+ 1573               	.LM238:
+ 1574 0902 0E94 0000 		call CONSOLE_getch
+ 1575 0906 F82E      		mov r15,r24
+ 1576               	.LM239:
+ 1577 0908 8091 0000 		lds r24,ircmd_state
+ 1578 090c 8430      		cpi r24,lo8(4)
+ 1579 090e 01F0      		breq .L232
+ 1580 0910 8630      		cpi r24,lo8(6)
+ 1581 0912 01F4      		brne .L230
+ 1582 0914 00C0      		rjmp .L233
+ 1583               	.L232:
+ 1584               	.LM240:
+ 1585 0916 8F2D      		mov r24,r15
+ 1586 0918 0E94 0000 		call irCommand
+ 1587               	.LM241:
+ 1588 091c 0E94 0000 		call EscapeReset
+ 1589 0920 00C0      		rjmp .L230
+ 1590               	.L233:
+ 1591               	.LM242:
+ 1592 0922 8F2D      		mov r24,r15
+ 1593 0924 0E94 0000 		call EscapeSequence
+ 1594 0928 082F      		mov r16,r24
+ 1595               	.LM243:
+ 1596 092a 8F3F      		cpi r24,lo8(-1)
+ 1597 092c 01F0      		breq .L230
+ 1598               	.LVL89:
+ 1599               	.LM244:
+ 1600 092e 8823      		tst r24
+ 1601 0930 01F4      		brne .L235
+ 1602 0932 00C0      		rjmp .L236
+ 1603               	.L237:
+ 1604               	.LM245:
+ 1605 0934 8091 0000 		lds r24,mm+1
+ 1606               	.LVL90:
+ 1607 0938 0E94 0000 		call WriteTCPChar
+ 1608               	.LM246:
+ 1609 093c 1F5F      		subi r17,lo8(-(1))
+ 1610 093e 1017      		cp r17,r16
+ 1611 0940 01F4      		brne .L237
+ 1612               	.LVL91:
+ 1613               	.L236:
+ 1614               	.LM247:
+ 1615 0942 8F2D      		mov r24,r15
+ 1616 0944 0E94 0000 		call WriteTCPChar
+ 1617 0948 8823      		tst r24
+ 1618 094a 01F0      		breq .L230
+ 1619               	.LM248:
+ 1620 094c 8F2D      		mov r24,r15
+ 1621 094e 9927      		clr r25
+ 1622 0950 0E94 0000 		call CONSOLE_pushch
+ 1623               	.LVL92:
+ 1624               	.L230:
+ 1625               	.LM249:
+ 1626 0954 8091 0000 		lds r24,ircmd_state
+ 1627 0958 80FD      		sbrc r24,0
+ 1628 095a 00C0      		rjmp .L248
+ 1629               	.LM250:
+ 1630 095c 8630      		cpi r24,lo8(6)
+ 1631 095e 01F0      		breq .+2
+ 1632 0960 00C0      		rjmp .L248
+ 1633               	.LM251:
+ 1634 0962 80E0      		ldi r24,lo8(0)
+ 1635 0964 0E94 0000 		call TCPSend
+ 1636               	.LM252:
+ 1637 0968 0E94 0000 		call TCPState
+ 1638 096c 00C0      		rjmp .L248
+ 1639               	.LVL93:
+ 1640               	.L235:
+ 1641 096e 10E0      		ldi r17,lo8(0)
+ 1642 0970 00C0      		rjmp .L237
+ 1643               	/* epilogue: frame size=0 */
+ 1644               	/* epilogue: noreturn */
+ 1645               	/* epilogue end (size=0) */
+ 1646               	/* function irCommands size 225 (221) */
+ 1647               	.LFE24:
+ 1649               		.data
+ 1650               	.LC2:
+ 1651 0016 4F4B 202D 		.string	"OK - "
+ 1651      2000 
+ 1652               	.LC3:
+ 1653 001c 3020 6D73 		.string	"0 ms"
+ 1653      00
+ 1654               		.text
+ 1655               	.global	icmp_echo_rx
+ 1657               	icmp_echo_rx:
+ 1658               	.LFB15:
+ 1659               	.LM253:
+ 1660               	/* prologue: frame size=0 */
+ 1661               	/* prologue end (size=0) */
+ 1662               	.LVL94:
+ 1663               	.LM254:
+ 1664 0972 80E0      		ldi r24,lo8(.LC2)
+ 1665 0974 90E0      		ldi r25,hi8(.LC2)
+ 1666               	.LVL95:
+ 1667 0976 0E94 0000 		call CONSOLE_puts
+ 1668               	.LVL96:
+ 1669               	.LM255:
+ 1670 097a 0E94 0000 		call TIMER_Get_Tick
+ 1671 097e 2091 0000 		lds r18,TCPSendTime
+ 1672 0982 3091 0000 		lds r19,(TCPSendTime)+1
+ 1673 0986 821B      		sub r24,r18
+ 1674 0988 930B      		sbc r25,r19
+ 1675 098a 0E94 0000 		call printShort
+ 1676               	.LM256:
+ 1677 098e 80E0      		ldi r24,lo8(.LC3)
+ 1678 0990 90E0      		ldi r25,hi8(.LC3)
+ 1679 0992 0E94 0000 		call CONSOLE_puts
+ 1680               	.LM257:
+ 1681 0996 8091 0000 		lds r24,TCPSendTime
+ 1682 099a 9091 0000 		lds r25,(TCPSendTime)+1
+ 1683 099e 885E      		subi r24,lo8(-(-1000))
+ 1684 09a0 9340      		sbci r25,hi8(-(-1000))
+ 1685 09a2 9093 0000 		sts (TCPSendTime)+1,r25
+ 1686 09a6 8093 0000 		sts TCPSendTime,r24
+ 1687               	.LM258:
+ 1688 09aa 1092 0000 		sts tmpflag,__zero_reg__
+ 1689               	/* epilogue: frame size=0 */
+ 1690 09ae 0895      		ret
+ 1691               	/* epilogue end (size=1) */
+ 1692               	/* function icmp_echo_rx size 31 (30) */
+ 1693               	.LFE15:
+ 1695               		.lcomm reset_timer.2629,2
+ 1696               		.lcomm reset_status.2628,1
+ 1697               		.lcomm ircount,1
+ 1698               		.lcomm ccount,1
+ 1699               		.lcomm TCPSendFlag,1
+ 1700               		.lcomm escape_tick,2
+ 1701               		.lcomm escapeCount,1
+ 1702               		.lcomm escapeTime,1
+ 1703               		.comm boot_version,2,1
+ 1704               		.comm crc_boot,2,1
+ 1705               		.comm bootloader,2,1
+ 1706               		.comm ircmd_state,1,1
+ 1707               		.comm snd_buff,128,1
+ 1708               		.comm snd_count,2,1
+ 1709               		.comm TCPSendTime,2,1
+ 1710               		.comm ircmd_buf,66,1
+ 1711               		.comm soc_num,1,1
+ 1712               		.comm active_soc,1,1
+ 1713               		.comm sockets,3,1
+ 1714               		.comm dtrflag,1,1
+ 1715               		.comm elink,1,1
+ 1716               		.comm tmpflag,1,1
+ 1853               	.Letext0:
+DEFINED SYMBOLS
+                            *ABS*:00000000 ircmd.c
+C:\DOCUME~1\mike\LOCALS~1\Temp/cc0ldKvg.s:3      *ABS*:0000003f __SREG__
+C:\DOCUME~1\mike\LOCALS~1\Temp/cc0ldKvg.s:4      *ABS*:0000003e __SP_H__
+C:\DOCUME~1\mike\LOCALS~1\Temp/cc0ldKvg.s:5      *ABS*:0000003d __SP_L__
+C:\DOCUME~1\mike\LOCALS~1\Temp/cc0ldKvg.s:6      *ABS*:00000000 __tmp_reg__
+C:\DOCUME~1\mike\LOCALS~1\Temp/cc0ldKvg.s:7      *ABS*:00000001 __zero_reg__
+C:\DOCUME~1\mike\LOCALS~1\Temp/cc0ldKvg.s:20     .text:00000000 SocketSelect
+                            *COM*:00000001 soc_num
+C:\DOCUME~1\mike\LOCALS~1\Temp/cc0ldKvg.s:58     .text:0000001a TCPState
+                            *COM*:00000001 active_soc
+                            *COM*:00000003 sockets
+                            *COM*:00000001 ircmd_state
+                            *COM*:00000002 snd_count
+C:\DOCUME~1\mike\LOCALS~1\Temp/cc0ldKvg.s:120    .text:00000078 Check_Reset_EEPROM
+C:\DOCUME~1\mike\LOCALS~1\Temp/cc0ldKvg.s:1695   .bss:00000002 reset_status.2628
+                             .bss:00000000 reset_timer.2629
+C:\DOCUME~1\mike\LOCALS~1\Temp/cc0ldKvg.s:188    .text:000000d2 EscapeTime
+C:\DOCUME~1\mike\LOCALS~1\Temp/cc0ldKvg.s:1701   .bss:00000009 escapeTime
+C:\DOCUME~1\mike\LOCALS~1\Temp/cc0ldKvg.s:1699   .bss:00000006 escape_tick
+C:\DOCUME~1\mike\LOCALS~1\Temp/cc0ldKvg.s:234    .text:0000010c EscapeAction
+                            *COM*:00000001 dtrflag
+C:\DOCUME~1\mike\LOCALS~1\Temp/cc0ldKvg.s:1700   .bss:00000008 escapeCount
+C:\DOCUME~1\mike\LOCALS~1\Temp/cc0ldKvg.s:285    .text:0000014a EscapeReset
+C:\DOCUME~1\mike\LOCALS~1\Temp/cc0ldKvg.s:306    .text:00000160 EscapeSequence
+C:\DOCUME~1\mike\LOCALS~1\Temp/cc0ldKvg.s:383    .text:000001c0 WriteTCPChar
+C:\DOCUME~1\mike\LOCALS~1\Temp/cc0ldKvg.s:1698   .bss:00000005 TCPSendFlag
+                            *COM*:00000002 TCPSendTime
+                            *COM*:00000080 snd_buff
+C:\DOCUME~1\mike\LOCALS~1\Temp/cc0ldKvg.s:440    .text:0000021a tcp_socket_rx
+C:\DOCUME~1\mike\LOCALS~1\Temp/cc0ldKvg.s:490    .text:00000252 TCPSend
+C:\DOCUME~1\mike\LOCALS~1\Temp/cc0ldKvg.s:578    .text:000002da Get_IP
+C:\DOCUME~1\mike\LOCALS~1\Temp/cc0ldKvg.s:630    .text:0000030c irCommandProcessor
+                            *COM*:00000042 ircmd_buf
+                            *COM*:00000001 elink
+                            *COM*:00000001 tmpflag
+C:\DOCUME~1\mike\LOCALS~1\Temp/cc0ldKvg.s:1657   .text:00000972 icmp_echo_rx
+C:\DOCUME~1\mike\LOCALS~1\Temp/cc0ldKvg.s:1228   .text:000006e6 irCommand
+C:\DOCUME~1\mike\LOCALS~1\Temp/cc0ldKvg.s:1696   .bss:00000003 ircount
+C:\DOCUME~1\mike\LOCALS~1\Temp/cc0ldKvg.s:1697   .bss:00000004 ccount
+C:\DOCUME~1\mike\LOCALS~1\Temp/cc0ldKvg.s:1388   .text:000007bc irCommands
+                            *COM*:00000002 boot_version
+                            *COM*:00000002 crc_boot
+                            *COM*:00000002 bootloader
+
+UNDEFINED SYMBOLS
+__do_copy_data
+__do_clear_bss
+tcp_status
+tcp_close
+CONSOLE_puts
+displayMessage
+TIMER_Get_Second
+__eeprom_write_byte_1C1D1E
+TIMER_Get_Tick
+mm
+CONSOLE_putch
+tcp_send
+s2ip
+resolve_name
+toupper
+isalnum
+ICMP_Echo_Callback
+ICMP_Send_Ping
+poll_serial
+ICMP_Echo_Terminate
+DhcpLeaseTime
+dhcp_init
+printIP
+s2p
+printByte
+udpcmd
+sRegister
+global_init
+Get_Byte
+__eeprom_read_byte_1C1D1E
+absolute
+enc28j60RegDump
+nic_intialize
+tcp_open
+TIMER_Wait_Tick
+CONSOLE_getch
+CONSOLE_kbhit
+nicIsLinked
+tcp_process
+dhcp_process
+CONSOLE_pushch
+printShort

@@ -1,0 +1,163 @@
+   1               		.file	"memory.c"
+   2               		.arch atmega64
+   3               	__SREG__ = 0x3f
+   4               	__SP_H__ = 0x3e
+   5               	__SP_L__ = 0x3d
+   6               	__tmp_reg__ = 0
+   7               	__zero_reg__ = 1
+   8               		.global __do_copy_data
+   9               		.global __do_clear_bss
+  17               	.Ltext0:
+  18               	.global	MEM_GetBlock
+  20               	MEM_GetBlock:
+  21               	.LFB3:
+  22               	.LM1:
+  23               	/* prologue: frame size=0 */
+  24               	/* prologue end (size=0) */
+  25               	.LM2:
+  26 0000 E091 0000 		lds r30,free_list
+  27 0004 F091 0000 		lds r31,(free_list)+1
+  28               	.LVL0:
+  29               	.LM3:
+  30 0008 3097      		sbiw r30,0
+  31 000a 01F0      		breq .L2
+  32               	.LM4:
+  33 000c 8281      		ldd r24,Z+2
+  34 000e 9381      		ldd r25,Z+3
+  35 0010 9093 0000 		sts (free_list)+1,r25
+  36 0014 8093 0000 		sts free_list,r24
+  37               	.LM5:
+  38 0018 8091 0000 		lds r24,used_count
+  39 001c 8F5F      		subi r24,lo8(-(1))
+  40 001e 8093 0000 		sts used_count,r24
+  41               	.L2:
+  42               	.LM6:
+  43 0022 CF01      		movw r24,r30
+  44               	/* epilogue: frame size=0 */
+  45 0024 0895      		ret
+  46               	/* epilogue end (size=1) */
+  47               	/* function MEM_GetBlock size 19 (18) */
+  48               	.LFE3:
+  50               	.global	MEM_FreeBlock
+  52               	MEM_FreeBlock:
+  53               	.LFB4:
+  54               	.LM7:
+  55               	/* prologue: frame size=0 */
+  56               	/* prologue end (size=0) */
+  57               	.LVL1:
+  58 0026 FC01      		movw r30,r24
+  59               	.LM8:
+  60 0028 8050      		subi r24,lo8(memory)
+  61 002a 9040      		sbci r25,hi8(memory)
+  62 002c 00F0      		brlo .L11
+  63               	.LM9:
+  64 002e 80E0      		ldi r24,hi8(memory+28928)
+  65 0030 E030      		cpi r30,lo8(memory+28928)
+  66 0032 F807      		cpc r31,r24
+  67               	.LVL2:
+  68 0034 01F0      		breq .+2
+  69 0036 00F4      		brsh .L11
+  70               	.LM10:
+  71 0038 8081      		ld r24,Z
+  72 003a 9181      		ldd r25,Z+1
+  73 003c 8F5E      		subi r24,lo8(-16657)
+  74 003e 9E4B      		sbci r25,hi8(-16657)
+  75 0040 01F4      		brne .L11
+  76               	.LM11:
+  77 0042 2091 0000 		lds r18,used_count
+  78 0046 2223      		tst r18
+  79 0048 01F0      		breq .L11
+  80               	.LM12:
+  81 004a 8091 0000 		lds r24,free_list
+  82 004e 9091 0000 		lds r25,(free_list)+1
+  83 0052 9383      		std Z+3,r25
+  84 0054 8283      		std Z+2,r24
+  85               	.LM13:
+  86 0056 F093 0000 		sts (free_list)+1,r31
+  87 005a E093 0000 		sts free_list,r30
+  88               	.LM14:
+  89 005e 2150      		subi r18,lo8(-(-1))
+  90 0060 2093 0000 		sts used_count,r18
+  91               	.LVL3:
+  92               	.L11:
+  93 0064 0895      		ret
+  94               	/* epilogue: frame size=0 */
+  95               	/* epilogue: noreturn */
+  96               	/* epilogue end (size=0) */
+  97               	/* function MEM_FreeBlock size 34 (34) */
+  98               	.LFE4:
+ 100               	.global	MEM_init
+ 102               	MEM_init:
+ 103               	.LFB2:
+ 104               	.LM15:
+ 105               	/* prologue: frame size=0 */
+ 106               	/* prologue end (size=0) */
+ 107 0066 E0E0      		ldi r30,lo8(memory)
+ 108 0068 F0E0      		ldi r31,hi8(memory)
+ 109 006a 2FEE      		ldi r18,lo8(-16657)
+ 110 006c 3EEB      		ldi r19,hi8(-16657)
+ 111 006e AF01      		movw r20,r30
+ 112 0070 6EEB      		ldi r22,lo8(-66)
+ 113 0072 DF01      		movw r26,r30
+ 114 0074 1A96      		adiw r26,10
+ 115               	.L13:
+ 116               	.LM16:
+ 117 0076 CF01      		movw r24,r30
+ 118 0078 8853      		subi r24,lo8(-(200))
+ 119 007a 9F4F      		sbci r25,hi8(-(200))
+ 120 007c 9383      		std Z+3,r25
+ 121 007e 8283      		std Z+2,r24
+ 122               	.LM17:
+ 123 0080 3183      		std Z+1,r19
+ 124 0082 2083      		st Z,r18
+ 125               	.LM18:
+ 126 0084 FD01      		movw r30,r26
+ 127 0086 762F      		mov r23,r22
+ 128 0088 1192      		st Z+,__zero_reg__
+ 129 008a 7A95      	        dec r23
+ 130 008c 01F4      		brne .-6
+ 131 008e A853      		subi r26,lo8(-(200))
+ 132 0090 BF4F      		sbci r27,hi8(-(200))
+ 133               	.LM19:
+ 134 0092 FC01      		movw r30,r24
+ 135 0094 80E0      		ldi r24,hi8(memory+810)
+ 136 0096 A030      		cpi r26,lo8(memory+810)
+ 137 0098 B807      		cpc r27,r24
+ 138 009a 01F4      		brne .L13
+ 139               	.LM20:
+ 140 009c 1092 0000 		sts (memory+602)+1,__zero_reg__
+ 141 00a0 1092 0000 		sts memory+602,__zero_reg__
+ 142               	.LM21:
+ 143 00a4 3093 0000 		sts (memory+600)+1,r19
+ 144 00a8 2093 0000 		sts memory+600,r18
+ 145               	.LM22:
+ 146 00ac 5093 0000 		sts (free_list)+1,r21
+ 147 00b0 4093 0000 		sts free_list,r20
+ 148               	.LM23:
+ 149 00b4 1092 0000 		sts used_count,__zero_reg__
+ 150               	/* epilogue: frame size=0 */
+ 151 00b8 0895      		ret
+ 152               	/* epilogue end (size=1) */
+ 153               	/* function MEM_init size 42 (41) */
+ 154               	.LFE2:
+ 156               		.lcomm used_count,1
+ 157               		.comm free_list,2,1
+ 158               		.comm memory,800,1
+ 199               	.Letext0:
+DEFINED SYMBOLS
+                            *ABS*:00000000 memory.c
+C:\DOCUME~1\mike\LOCALS~1\Temp/ccZ50nkC.s:3      *ABS*:0000003f __SREG__
+C:\DOCUME~1\mike\LOCALS~1\Temp/ccZ50nkC.s:4      *ABS*:0000003e __SP_H__
+C:\DOCUME~1\mike\LOCALS~1\Temp/ccZ50nkC.s:5      *ABS*:0000003d __SP_L__
+C:\DOCUME~1\mike\LOCALS~1\Temp/ccZ50nkC.s:6      *ABS*:00000000 __tmp_reg__
+C:\DOCUME~1\mike\LOCALS~1\Temp/ccZ50nkC.s:7      *ABS*:00000001 __zero_reg__
+C:\DOCUME~1\mike\LOCALS~1\Temp/ccZ50nkC.s:20     .text:00000000 MEM_GetBlock
+                            *COM*:00000002 free_list
+                             .bss:00000000 used_count
+C:\DOCUME~1\mike\LOCALS~1\Temp/ccZ50nkC.s:52     .text:00000026 MEM_FreeBlock
+                            *COM*:00000320 memory
+C:\DOCUME~1\mike\LOCALS~1\Temp/ccZ50nkC.s:102    .text:00000066 MEM_init
+
+UNDEFINED SYMBOLS
+__do_copy_data
+__do_clear_bss

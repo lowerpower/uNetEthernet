@@ -1,0 +1,1821 @@
+
+
+--Log Started---
+read from file
+
+Using MAC 00:00:14:77:69:6E
+IP      :10.10.11.9
+Netmask :255.255.255.0
+Gateway :10.10.11.1
+Pri DNS :10.10.11.2
+Sec DNS :64.40.160.10
+
+
+--Log Started---
+read from file
+
+Using MAC 00:00:14:77:69:6E
+IP      :10.10.11.9
+Netmask :255.255.255.0
+Gateway :10.10.11.1
+Pri DNS :10.10.11.2
+Sec DNS :64.40.160.10
+irt0200.102.60.61:1024
+OK
+this one works here
+
+OK
+irr0
+OK
+
+OK
+
+
+--Log Started---
+read from file
+
+Using MAC 00:00:14:77:69:6E
+IP      :10.10.11.9
+Netmask :255.255.255.0
+Gateway :10.10.11.1
+Pri DNS :10.10.11.2
+Sec DNS :64.40.160.10
+ir
+OK
+ir
+OK
+ir
+OK
+ir
+OK
+irt0200.180.69.250:80
+timer timeout
+FAIL TCP
+
+
+--Log Started---
+read from file
+
+
+--Log Started---
+read from file
+
+Using MAC 00:00:14:77:69:6E
+IP      :10.10.11.9
+Netmask :255.255.255.0
+Gateway :10.10.11.1
+Pri DNS :10.10.11.2
+Sec DNS :64.40.160.10
+
+
+--Log Started---
+read from file
+
+Using MAC 00:00:14:77:69:6E
+IP      :10.10.11.9
+Netmask :255.255.255.0
+Gateway :10.10.11.1
+Pri DNS :10.10.11.2
+Sec DNS :64.40.160.10
+
+
+--Log Started---
+read from file
+
+Using MAC 00:00:14:77:69:6E
+IP      :10.10.11.9
+Netmask :255.255.255.0
+Gateway :10.10.11.1
+Pri DNS :10.10.11.2
+Sec DNS :64.40.160.10
+
+
+--Log Started---
+read from file
+
+Using MAC 00:00:14:77:69:6E
+IP      :10.10.11.9
+Netmask :255.255.255.0
+Gateway :10.10.11.1
+Pri DNS :10.10.11.2
+Sec DNS :64.40.160.10
+
+
+--Log Started---
+read from file
+
+Using MAC 00:00:14:77:69:6E
+IP      :10.10.11.9
+Netmask :255.255.255.0
+Gateway :10.10.11.1
+Pri DNS :10.10.11.2
+Sec DNS :64.40.160.10
+
+
+--Log Started---
+read from file
+
+Using MAC 00:00:14:77:69:6E
+IP      :10.10.11.9
+Netmask :255.255.255.0
+Gateway :10.10.11.1
+Pri DNS :10.10.11.2
+Sec DNS :64.40.160.10
+
+
+--Log Started---
+read from file
+
+Using MAC 00:00:14:77:69:6E
+IP      :10.10.11.9
+Netmask :255.255.255.0
+Gateway :10.10.11.1
+Pri DNS :10.10.11.2
+Sec DNS :64.40.160.10
+
+
+--Log Started---
+read from file
+
+Using MAC 00:00:14:77:69:6E
+IP      :10.10.11.9
+Netmask :255.255.255.0
+Gateway :10.10.11.1
+Pri DNS :10.10.11.2
+Sec DNS :64.40.160.10
+
+
+--Log Started---
+read from file
+
+
+--Log Started---
+read from file
+
+Using MAC 00:00:14:77:69:6E
+IP      :10.10.11.9
+Netmask :255.255.255.0
+Gateway :10.10.11.1
+Pri DNS :10.10.11.2
+Sec DNS :64.40.160.10
+
+
+--Log Started---
+read from file
+
+Using MAC 00:00:14:77:69:6E
+IP      :10.10.11.9
+Netmask :255.255.255.0
+Gateway :10.10.11.1
+Pri DNS :10.10.11.2
+Sec DNS :64.40.160.10
+
+
+--Log Started---
+read from file
+
+Using MAC 00:00:14:77:69:6E
+IP      :10.10.11.9
+Netmask :255.255.255.0
+Gateway :10.10.11.1
+Pri DNS :10.10.11.2
+Sec DNS :64.40.160.10
+
+
+--Log Started---
+read from file
+
+Using MAC 00:00:14:77:69:6E
+IP      :10.10.11.9
+Netmask :255.255.255.0
+Gateway :10.10.11.1
+Pri DNS :10.10.11.2
+Sec DNS :64.40.160.10
+
+
+--Log Started---
+read from file
+
+Using MAC 00:00:14:77:69:6E
+IP      :10.10.11.9
+Netmask :255.255.255.0
+Gateway :10.10.11.1
+Pri DNS :10.10.11.2
+Sec DNS :64.40.160.10
+
+
+--Log Started---
+read from file
+
+Using MAC 00:00:14:77:69:6E
+IP      :10.10.11.9
+Netmask :255.255.255.0
+Gateway :10.10.11.1
+Pri DNS :10.10.11.2
+Sec DNS :64.40.160.10
+dhcp callback
+dhcp callback
+
+
+--Log Started---
+read from file
+
+Using MAC 00:00:14:77:69:6E
+IP      :10.10.11.9
+Netmask :255.255.255.0
+Gateway :10.10.11.1
+Pri DNS :10.10.11.2
+Sec DNS :64.40.160.10
+dhcp callback
+dhcp callback
+
+
+--Log Started---
+read from file
+
+Using MAC 00:00:14:77:69:6E
+IP      :10.10.11.9
+Netmask :255.255.255.0
+Gateway :10.10.11.1
+Pri DNS :10.10.11.2
+Sec DNS :64.40.160.10
+dhcp callback
+dhcp callback
+
+
+--Log Started---
+read from file
+
+Using MAC 00:00:14:77:69:6E
+IP      :10.10.11.9
+Netmask :255.255.255.0
+Gateway :10.10.11.1
+Pri DNS :10.10.11.2
+Sec DNS :64.40.160.10
+dhcp callback
+
+
+--Log Started---
+read from file
+
+Using MAC 00:00:14:77:69:6E
+IP      :10.10.11.9
+Netmask :255.255.255.0
+Gateway :10.10.11.1
+Pri DNS :10.10.11.2
+Sec DNS :64.40.160.10
+dhcp callback
+dhcp offer
+
+
+--Log Started---
+read from file
+
+Using MAC 00:00:14:77:69:6E
+IP      :10.10.11.9
+Netmask :255.255.255.0
+Gateway :10.10.11.1
+Pri DNS :10.10.11.2
+Sec DNS :64.40.160.10
+dhcp callback
+dhcp offer
+
+
+--Log Started---
+read from file
+
+Using MAC 00:00:14:77:69:6E
+IP      :0.0.0.0
+Netmask :0.0.0.0
+Gateway :0.0.0.0
+Pri DNS :0.0.0.0
+Sec DNS :0.0.0.0
+dhcp callback
+dhcp offer
+
+
+--Log Started---
+read from file
+
+Using MAC 00:00:14:77:69:6E
+IP      :0.0.0.0
+Netmask :0.0.0.0
+Gateway :0.0.0.0
+Pri DNS :0.0.0.0
+Sec DNS :0.0.0.0
+dhcp callback
+dhcp offer
+dhcp callback
+
+
+--Log Started---
+read from file
+
+Using MAC 00:00:14:77:69:6E
+IP      :0.0.0.0
+Netmask :0.0.0.0
+Gateway :0.0.0.0
+Pri DNS :0.0.0.0
+Sec DNS :0.0.0.0
+dhcp callback
+dhcp offer
+dhcp callback
+dhcp offer
+
+
+--Log Started---
+read from file
+
+Using MAC 00:00:14:77:69:6E
+IP      :0.0.0.0
+Netmask :0.0.0.0
+Gateway :0.0.0.0
+Pri DNS :0.0.0.0
+Sec DNS :0.0.0.0
+dhcp callback
+dhcp offer
+dhcp callback
+
+Using MAC 00:00:14:77:69:6E
+IP      :0.0.0.0
+Netmask :0.0.0.0
+Gateway :0.0.0.0
+Pri DNS :0.0.0.0
+Sec DNS :0.0.0.0
+dhcp offer
+
+
+--Log Started---
+read from file
+
+Using MAC 00:00:14:77:69:6E
+IP      :0.0.0.0
+Netmask :0.0.0.0
+Gateway :0.0.0.0
+Pri DNS :0.0.0.0
+Sec DNS :0.0.0.0
+dhcp callback
+dhcp offer
+dhcp callback
+
+Using MAC 00:00:14:77:69:6E
+IP      :0.0.0.0
+Netmask :0.0.0.0
+Gateway :0.0.0.0
+Pri DNS :0.0.0.0
+Sec DNS :0.0.0.0
+dhcp offer
+
+
+--Log Started---
+read from file
+
+Using MAC 00:00:14:77:69:6E
+IP      :0.0.0.0
+Netmask :0.0.0.0
+Gateway :0.0.0.0
+Pri DNS :0.0.0.0
+Sec DNS :0.0.0.0
+dhcp callback
+dhcp offer
+dhcp callback
+
+Using MAC 00:00:14:77:69:6E
+IP      :10.10.11.16
+Netmask :255.255.255.0
+Gateway :10.10.11.1
+Pri DNS :0.0.0.0
+Sec DNS :0.0.0.0
+dhcp offer
+
+
+--Log Started---
+read from file
+
+Using MAC 00:00:14:77:69:6E
+IP      :0.0.0.0
+Netmask :0.0.0.0
+Gateway :0.0.0.0
+Pri DNS :0.0.0.0
+Sec DNS :0.0.0.0
+dhcp callback
+dhcp offer
+dhcp callback
+
+Using MAC 00:00:14:77:69:6E
+IP      :10.10.11.16
+Netmask :255.255.255.0
+Gateway :10.10.11.1
+Pri DNS :0.0.0.0
+Sec DNS :0.0.0.0
+dhcp offer
+
+
+--Log Started---
+read from file
+
+Using MAC 00:00:14:77:69:6E
+IP      :0.0.0.0
+Netmask :0.0.0.0
+Gateway :0.0.0.0
+Pri DNS :0.0.0.0
+Sec DNS :0.0.0.0
+dhcp callback
+dhcp offer
+dhcp callback
+
+Using MAC 00:00:14:77:69:6E
+IP      :10.10.11.15
+Netmask :255.255.255.0
+Gateway :10.10.11.1
+Pri DNS :0.0.0.0
+Sec DNS :0.0.0.0
+dhcp offer
+
+
+--Log Started---
+read from file
+
+Using MAC 00:00:14:77:69:6E
+IP      :0.0.0.0
+Netmask :0.0.0.0
+Gateway :0.0.0.0
+Pri DNS :0.0.0.0
+Sec DNS :0.0.0.0
+bad dest ip
+bad dest ip
+dhcp callback
+dhcp offer
+dhcp callback
+
+Using MAC 00:00:14:77:69:6E
+IP      :10.10.11.15
+Netmask :255.255.255.0
+Gateway :10.10.11.1
+Pri DNS :0.0.0.0
+Sec DNS :0.0.0.0
+dhcp offer
+dhcp callback
+
+
+--Log Started---
+read from file
+
+Using MAC 00:00:14:77:69:6E
+IP      :0.0.0.0
+Netmask :0.0.0.0
+Gateway :0.0.0.0
+Pri DNS :0.0.0.0
+Sec DNS :0.0.0.0
+dhcp callback
+dhcp offer
+dhcp callback
+
+Using MAC 00:00:14:77:69:6E
+IP      :10.10.11.15
+Netmask :255.255.255.0
+Gateway :10.10.11.1
+Pri DNS :0.0.0.0
+Sec DNS :0.0.0.0
+dhcp offer
+dhcp callback
+DHCP OK!
+
+
+--Log Started---
+read from file
+
+Using MAC 00:00:14:77:69:6E
+IP      :0.0.0.0
+Netmask :0.0.0.0
+Gateway :0.0.0.0
+Pri DNS :0.0.0.0
+Sec DNS :0.0.0.0
+ir
+OK
+ir
+OK
+ir
+OK
+ir
+OK
+
+
+--Log Started---
+read from file
+
+Using MAC 00:00:14:77:69:6E
+IP      :0.0.0.0
+Netmask :0.0.0.0
+Gateway :0.0.0.0
+Pri DNS :0.0.0.0
+Sec DNS :0.0.0.0
+
+
+--Log Started---
+read from file
+
+Using MAC 00:00:14:77:69:6E
+IP      :0.0.0.0
+Netmask :0.0.0.0
+Gateway :0.0.0.0
+Pri DNS :0.0.0.0
+Sec DNS :0.0.0.0
+
+
+--Log Started---
+read from file
+
+Using MAC 00:00:14:77:69:6E
+IP      :0.0.0.0
+Netmask :0.0.0.0
+Gateway :0.0.0.0
+Pri DNS :0.0.0.0
+Sec DNS :0.0.0.0
+dhcp callback
+dhcp offer
+dhcp callback
+
+Using MAC 00:00:14:77:69:6E
+IP      :10.10.11.15
+Netmask :255.255.255.0
+Gateway :10.10.11.1
+Pri DNS :0.0.0.0
+Sec DNS :0.0.0.0
+dhcp offer
+dhcp callback
+DHCP OK!
+ir
+OK
+ir
+OK
+ir
+OK
+ir
+OK
+ir
+OK
+ir
+OK
+bad dest ip
+ir
+OK
+ir
+OK
+ir
+OK
+ir
+OK
+ir
+OK
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+
+
+--Log Started---
+read from file
+
+Using MAC 00:00:14:77:69:6E
+IP      :0.0.0.0
+Netmask :0.0.0.0
+Gateway :0.0.0.0
+Pri DNS :0.0.0.0
+Sec DNS :0.0.0.0
+dhcp callback
+dhcp offer
+dhcp callback
+
+Using MAC 00:00:14:77:69:6E
+IP      :10.10.11.15
+Netmask :255.255.255.0
+Gateway :10.10.11.1
+Pri DNS :0.0.0.0
+Sec DNS :0.0.0.0
+dhcp offer
+dhcp callback
+DHCP OK!
+bad dest ip
+bad dest ip
+
+
+--Log Started---
+read from file
+
+
+--Log Started---
+read from file
+
+Using MAC 00:00:14:77:69:6E
+IP      :0.0.0.0
+Netmask :0.0.0.0
+Gateway :0.0.0.0
+Pri DNS :0.0.0.0
+Sec DNS :0.0.0.0
+dhcp callback
+dhcp offer
+dhcp callback
+
+Using MAC 00:00:14:77:69:6E
+IP      :10.10.11.15
+Netmask :255.255.255.0
+Gateway :10.10.11.1
+Pri DNS :0.0.0.0
+Sec DNS :0.0.0.0
+dhcp offer
+dhcp callback
+DHCP OK!
+
+
+--Log Started---
+read from file
+
+Using MAC 00:00:14:77:69:6E
+IP      :0.0.0.0
+Netmask :0.0.0.0
+Gateway :0.0.0.0
+Pri DNS :0.0.0.0
+Sec DNS :0.0.0.0
+dhcp callback
+dhcp offer
+dhcp callback
+
+Using MAC 00:00:14:77:69:6E
+IP      :10.10.11.15
+Netmask :255.255.255.0
+Gateway :10.10.11.1
+Pri DNS :0.0.0.0
+Sec DNS :0.0.0.0
+dhcp offer
+dhcp callback
+DHCP OK!
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+bad dest ip
+ir
+OK
+bad dest ip
+bad dest ip
+bad dest ip
+
+
+--Log Started---
+read from file
+
+Using MAC 00:00:14:77:69:6E
+IP      :0.0.0.0
+Netmask :0.0.0.0
+Gateway :0.0.0.0
+Pri DNS :0.0.0.0
+Sec DNS :0.0.0.0
+dhcp callback
+dhcp offer
+dhcp callback
+
+Using MAC 00:00:14:77:69:6E
+IP      :10.10.11.15
+Netmask :255.255.255.0
+Gateway :10.10.11.1
+Pri DNS :10.10.11.2
+Sec DNS :64.40.160.10
+dhcp offer
+dhcp callback
+DHCP OK!
+bad dest ip
+
+
+--Log Started---
+read from file
+
+Using MAC 00:00:14:77:69:6E
+IP      :0.0.0.0
+Netmask :0.0.0.0
+Gateway :0.0.0.0
+Pri DNS :0.0.0.0
+Sec DNS :0.0.0.0
+dhcp callback
+dhcp offer
+dhcp callback
+
+Using MAC 00:00:14:77:69:6E
+IP      :10.10.11.15
+Netmask :255.255.255.0
+Gateway :10.10.11.1
+Pri DNS :10.10.11.2
+Sec DNS :64.40.160.10
+dhcp offer
+dhcp callback
+DHCP OK!
+irp mycal.net
+OK - 00 ms
+ir
+OK
+bad dest ip
+
+
+--Log Started---
+read from file
+
+Using MAC 00:00:14:77:69:6E
+IP      :0.0.0.0
+Netmask :0.0.0.0
+Gateway :0.0.0.0
+Pri DNS :0.0.0.0
+Sec DNS :0.0.0.0
+dhcp callback
+dhcp offer
+dhcp callback
+
+Using MAC 00:00:14:77:69:6E
+IP      :10.10.11.15
+Netmask :255.255.255.0
+Gateway :10.10.11.1
+Pri DNS :10.10.11.2
+Sec DNS :64.40.160.10
+dhcp offer
+dhcp callback
+DHCP OK!
+
+
+--Log Started---
+read from file
+
+Using MAC 00:00:14:77:69:6E
+IP      :0.0.0.0
+Netmask :0.0.0.0
+Gateway :0.0.0.0
+Pri DNS :0.0.0.0
+Sec DNS :0.0.0.0
+dhcp callback
+dhcp offer
+dhcp callback
+
+Using MAC 00:00:14:77:69:6E
+IP      :10.10.11.15
+Netmask :255.255.255.0
+Gateway :10.10.11.1
+Pri DNS :10.10.11.2
+Sec DNS :64.40.160.10
+dhcp offer
+dhcp callback
+DHCP OK!
+dhcp callback
+dhcp offer
+dhcp callback
+
+Using MAC 00:00:14:77:69:6E
+IP      :10.10.11.16
+Netmask :255.255.255.0
+Gateway :10.10.11.1
+Pri DNS :10.10.11.2
+Sec DNS :64.40.160.10
+dhcp offer
+dhcp callback
+DHCP OK!
+dhcp callback
+dhcp offer
+dhcp callback
+
+Using MAC 00:00:14:77:69:6E
+IP      :10.10.11.15
+Netmask :255.255.255.0
+Gateway :10.10.11.1
+Pri DNS :10.10.11.2
+Sec DNS :64.40.160.10
+dhcp offer
+dhcp callback
+DHCP OK!
+dhcp callback
+dhcp offer
+dhcp callback
+
+Using MAC 00:00:14:77:69:6E
+IP      :10.10.11.16
+Netmask :255.255.255.0
+Gateway :10.10.11.1
+Pri DNS :10.10.11.2
+Sec DNS :64.40.160.10
+dhcp offer
+dhcp callback
+DHCP OK!
+dhcp callback
+dhcp offer
+dhcp callback
+
+Using MAC 00:00:14:77:69:6E
+IP      :10.10.11.15
+Netmask :255.255.255.0
+Gateway :10.10.11.1
+Pri DNS :10.10.11.2
+Sec DNS :64.40.160.10
+dhcp offer
+dhcp callback
+DHCP OK!
+
+
+--Log Started---
+read from file
+
+Using MAC 00:00:14:77:69:6E
+IP      :0.0.0.0
+Netmask :0.0.0.0
+Gateway :0.0.0.0
+Pri DNS :0.0.0.0
+Sec DNS :0.0.0.0
+dhcp callback
+dhcp offer
+dhcp callback
+
+Using MAC 00:00:14:77:69:6E
+IP      :10.10.11.15
+Netmask :255.255.255.0
+Gateway :10.10.11.1
+Pri DNS :10.10.11.2
+Sec DNS :64.40.160.10
+dhcp offer
+dhcp callback
+DHCP OK!
+bad dest ip
+dhcp callback
+dhcp offer
+dhcp callback
+
+Using MAC 00:00:14:77:69:6E
+IP      :10.10.11.16
+Netmask :255.255.255.0
+Gateway :10.10.11.1
+Pri DNS :10.10.11.2
+Sec DNS :64.40.160.10
+dhcp offer
+dhcp callback
+DHCP OK!
+dhcp callback
+dhcp offer
+dhcp callback
+
+Using MAC 00:00:14:77:69:6E
+IP      :10.10.11.15
+Netmask :255.255.255.0
+Gateway :10.10.11.1
+Pri DNS :10.10.11.2
+Sec DNS :64.40.160.10
+dhcp offer
+dhcp callback
+DHCP OK!
+
+
+--Log Started---
+read from file
+
+Using MAC 00:00:14:77:69:6E
+IP      :0.0.0.0
+Netmask :0.0.0.0
+Gateway :0.0.0.0
+Pri DNS :0.0.0.0
+Sec DNS :0.0.0.0
+dhcp callback
+dhcp offer
+dhcp callback
+
+Using MAC 00:00:14:77:69:6E
+IP      :10.10.11.15
+Netmask :255.255.255.0
+Gateway :10.10.11.1
+Pri DNS :10.10.11.2
+Sec DNS :64.40.160.10
+dhcp offer
+dhcp callback
+DHCP OK!
+ir
+OK
+irp mycal.net
+OK - 00 ms
+irp svn.net
+OK - 40 ms
+ir
+OK
+
+
+--Log Started---
+read from file
+
+Using MAC 00:00:14:77:69:6E
+IP      :0.0.0.0
+Netmask :0.0.0.0
+Gateway :0.0.0.0
+Pri DNS :0.0.0.0
+Sec DNS :0.0.0.0
+dhcp callback
+dhcp offer
+dhcp callback
+
+Using MAC 00:00:14:77:69:6E
+IP      :10.10.11.15
+Netmask :255.255.255.0
+Gateway :10.10.11.1
+Pri DNS :10.10.11.2
+Sec DNS :64.40.160.10
+dhcp offer
+dhcp callback
+DHCP OK!
+
+
+--Log Started---
+read from file
+
+Using MAC 00:00:14:77:69:6E
+IP      :0.0.0.0
+Netmask :0.0.0.0
+Gateway :0.0.0.0
+Pri DNS :0.0.0.0
+Sec DNS :0.0.0.0
+
+
+--Log Started---
+read from file
+
+Using MAC 00:00:14:77:69:6E
+IP      :0.0.0.0
+Netmask :0.0.0.0
+Gateway :0.0.0.0
+Pri DNS :0.0.0.0
+Sec DNS :0.0.0.0
+
+
+--Log Started---
+read from file
+
+Using MAC 00:00:14:77:69:6E
+IP      :0.0.0.0
+Netmask :0.0.0.0
+Gateway :0.0.0.0
+Pri DNS :0.0.0.0
+Sec DNS :0.0.0.0
+dhcp callback
+dhcp offer
+dhcp callback
+
+Using MAC 00:00:14:77:69:6E
+IP      :10.10.11.15
+Netmask :255.255.255.0
+Gateway :10.10.11.1
+Pri DNS :10.10.11.2
+Sec DNS :64.40.160.10
+dhcp offer
+dhcp callback
+DHCP OK!
+irp 10.10.11.1
+OK - 00 ms

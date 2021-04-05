@@ -1,0 +1,213 @@
+
+
+--Log Started---
+read from file
+
+Using MAC 00:00:14:77:69:6E
+IP      :10.10.11.9
+Netmask :255.255.255.0
+Gateway :10.10.11.1
+Pri DNS :10.10.11.2
+
+150
+
+0
+
+0
+
+0
+
+0
+
+0
+
+0
+
+
+--Log Started---
+read from file
+
+Using MAC 00:00:14:77:69:6E
+IP      :10.10.11.9
+Netmask :255.255.255.0
+Gateway :10.10.11.1
+Pri DNS :10.10.11.2
+Sec DNS :64.40.160.10
+irp mycal.net
+OK - 00 ms
+irp svn.net
+OK - 270 ms
+irp svn.net
+OK - 270 ms
+irp svn.net
+OK - 120 ms
+irp svn.net
+OK - 40 ms
+irp svn.net
+OK - 160 ms
+irp 10.10.11.2
+OK - 00 ms
+irp 10.10.11.2
+OK - 00 ms
+irp 10.10.11.21
+OK - 00 ms
+irp svn.net
+OK - 80 ms
+irp svn.net
+OK - 190 ms
+irp svn.net
+OK - 230 ms
+irp svn.net
+OK - 40 ms
+irp www.hayahooc.com
+FAIL DNS
+ir
+OK
+irn www.hoo.com
+OK
+204.13.161.23
+irn www.yahoo.com
+FAIL DNS
+irn www.yahoo.com
+FAIL DNS
+
+
+--Log Started---
+read from file
+
+Using MAC 00:00:14:77:69:6E
+IP      :10.10.11.9
+Netmask :255.255.255.0
+Gateway :10.10.11.1
+Pri DNS :10.10.11.2
+Sec DNS :64.40.160.10
+ir
+OK
+ir
+OK
+irn www.yahoo.com
+FAIL DNS
+
+
+--Log Started---
+read from file
+
+Using MAC 00:00:14:77:69:6E
+IP      :10.10.11.9
+Netmask :255.255.255.0
+Gateway :10.10.11.1
+Pri DNS :10.10.11.2
+Sec DNS :64.40.160.10
+irn www.yahoo.com
+OK
+66.94.230.49
+
+
+--Log Started---
+read from file
+
+Using MAC 00:00:14:77:69:6E
+IP      :10.10.11.9
+Netmask :255.255.255.0
+Gateway :10.10.11.1
+Pri DNS :10.10.11.2
+Sec DNS :64.40.160.10
+irp 10.10.11.2
+OK - 00 ms
+
+--Log Started---
+read from file
+
+Using MAC 00:00:14:77:69:6E
+IP      :10.10.11.9
+Netmask :255.255.255.0
+Gateway :10.10.11.1
+Pri DNS :10.10.11.2
+Sec DNS :64.40.160.10
+irp svn.net
+OK - 3590 ms
+ikr
+ERROR
+ir
+OK
+irp svn.net
+FAIL
+irp svn.net
+FAIL
+irp svn.net
+FAIL
+irp 10.10.11.1
+OK - 00 ms
+irp svn.net
+OK - 310 ms
+irp svn.net
+FAIL
+
+
+--Log Started---
+read from file
+
+Using MAC 00:00:14:77:69:6E
+IP      :10.10.11.9
+Netmask :255.255.255.0
+Gateway :10.10.11.1
+Pri DNS :10.10.11.2
+Sec DNS :64.40.160.10
+irp 10.10.11.1
+OK - 00 ms
+
+--Log Started---
+read from file
+
+Using MAC 00:00:14:77:69:6E
+IP      :10.10.11.9
+Netmask :255.255.255.0
+Gateway :10.10.11.1
+Pri DNS :10.10.11.2
+Sec DNS :64.40.160.10
+irp svn.net
+OK - 470 ms
+
+--Log Started---
+read from file
+
+Using MAC 00:00:14:77:69:6E
+IP      :10.10.11.9
+Netmask :255.255.255.0
+Gateway :10.10.11.1
+Pri DNS :10.10.11.2
+Sec DNS :64.40.160.10
+irp 10.10.11.2
+OK - 00 ms
+ir
+OK
+ir
+OK
+irp svn.net
+OK - 160 ms
+irp svn.net
+OK - 30 ms
+irp svn.net
+OK - 40 ms
+
+
+--Log Started---
+read from file
+
+Using MAC 00:00:14:77:69:6E
+IP      :10.10.11.9
+Netmask :255.255.255.0
+Gateway :10.10.11.1
+Pri DNS :10.10.11.2
+Sec DNS :64.40.160.10
+irt0200.102.60.61:1024
+OK
+helo
+hellow work
+
+a rat in the house may eat the ice cream
+
+iririr
+OK
+irx0
+OK

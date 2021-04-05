@@ -1,0 +1,310 @@
+   1               		.file	"time.c"
+   2               		.arch atmega64
+   3               	__SREG__ = 0x3f
+   4               	__SP_H__ = 0x3e
+   5               	__SP_L__ = 0x3d
+   6               	__tmp_reg__ = 0
+   7               	__zero_reg__ = 1
+   8               		.global __do_copy_data
+   9               		.global __do_clear_bss
+  17               	.Ltext0:
+  18               	.global	__vector_16
+  20               	__vector_16:
+  21               	.LFB9:
+  22               	.LM1:
+  23               	/* prologue: frame size=0 */
+  24 0000 1F92      		push __zero_reg__
+  25 0002 0F92      		push __tmp_reg__
+  26 0004 0FB6      		in __tmp_reg__,__SREG__
+  27 0006 0F92      		push __tmp_reg__
+  28 0008 1124      		clr __zero_reg__
+  29 000a 8F93      		push r24
+  30 000c 9F93      		push r25
+  31               	/* prologue end (size=7) */
+  32               	.LM2:
+  33 000e 8091 0000 		lds r24,TIMER_Counter
+  34 0012 8F5F      		subi r24,lo8(-(1))
+  35 0014 8093 0000 		sts TIMER_Counter,r24
+  36               	.LM3:
+  37 0018 8091 0000 		lds r24,TIMER_Tick
+  38 001c 9091 0000 		lds r25,(TIMER_Tick)+1
+  39 0020 0196      		adiw r24,1
+  40 0022 9093 0000 		sts (TIMER_Tick)+1,r25
+  41 0026 8093 0000 		sts TIMER_Tick,r24
+  42               	.LM4:
+  43 002a 8091 0000 		lds r24,TIMER_Counter
+  44 002e 8934      		cpi r24,lo8(73)
+  45 0030 00F0      		brlo .L2
+  46               	.LM5:
+  47 0032 8091 0000 		lds r24,TIMER_Second
+  48 0036 8F5F      		subi r24,lo8(-(1))
+  49 0038 8093 0000 		sts TIMER_Second,r24
+  50               	.LM6:
+  51 003c 1092 0000 		sts TIMER_Counter,__zero_reg__
+  52               	.LM7:
+  53 0040 8091 0000 		lds r24,TIMER_wdt
+  54 0044 8823      		tst r24
+  55 0046 01F0      		breq .L2
+  56               	.LM8:
+  57 0048 8091 0000 		lds r24,TIMER_wdt
+  58 004c 8150      		subi r24,lo8(-(-1))
+  59 004e 8093 0000 		sts TIMER_wdt,r24
+  60               	.LM9:
+  61 0052 8091 0000 		lds r24,TIMER_wdt
+  62 0056 8823      		tst r24
+  63 0058 01F4      		brne .L2
+  64               	.LM10:
+  65               	/* #APP */
+  66 005a 0C94 0000 		jmp 0x0000
+  67               	/* #NOAPP */
+  68               	.L2:
+  69               	.LM11:
+  70 005e 8EEB      		ldi r24,lo8(-66)
+  71 0060 82BF      		out 82-0x20,r24
+  72               	.LM12:
+  73 0062 C498      		cbi 56-0x20,4
+  74               	.LM13:
+  75 0064 C598      		cbi 56-0x20,5
+  76               	/* epilogue: frame size=0 */
+  77 0066 9F91      		pop r25
+  78 0068 8F91      		pop r24
+  79 006a 0F90      		pop __tmp_reg__
+  80 006c 0FBE      		out __SREG__,__tmp_reg__
+  81 006e 0F90      		pop __tmp_reg__
+  82 0070 1F90      		pop __zero_reg__
+  83 0072 1895      		reti
+  84               	/* epilogue end (size=7) */
+  85               	/* function __vector_16 size 58 (44) */
+  86               	.LFE9:
+  88               	.global	timer_expire
+  90               	timer_expire:
+  91               	.LFB12:
+  92               	.LM14:
+  93               	/* prologue: frame size=0 */
+  94               	/* prologue end (size=0) */
+  95               	.LM15:
+  96 0074 1092 0000 		sts (time_start)+1,__zero_reg__
+  97 0078 1092 0000 		sts time_start,__zero_reg__
+  98               	.LM16:
+  99 007c 80E0      		ldi r24,lo8(0)
+ 100 007e 90E0      		ldi r25,hi8(0)
+ 101               	/* epilogue: frame size=0 */
+ 102 0080 0895      		ret
+ 103               	/* epilogue end (size=1) */
+ 104               	/* function timer_expire size 7 (6) */
+ 105               	.LFE12:
+ 107               	.global	TIMER_Init
+ 109               	TIMER_Init:
+ 110               	.LFB13:
+ 111               	.LM17:
+ 112               	/* prologue: frame size=0 */
+ 113               	/* prologue end (size=0) */
+ 114               	.LM18:
+ 115 0082 81E0      		ldi r24,lo8(1)
+ 116 0084 87BF      		out 87-0x20,r24
+ 117               	.LM19:
+ 118 0086 87E0      		ldi r24,lo8(7)
+ 119 0088 83BF      		out 83-0x20,r24
+ 120               	.LM20:
+ 121 008a 87EB      		ldi r24,lo8(-73)
+ 122 008c 82BF      		out 82-0x20,r24
+ 123               	/* epilogue: frame size=0 */
+ 124 008e 0895      		ret
+ 125               	/* epilogue end (size=1) */
+ 126               	/* function TIMER_Init size 7 (6) */
+ 127               	.LFE13:
+ 129               	.global	TIMER_Get_Tick
+ 131               	TIMER_Get_Tick:
+ 132               	.LFB14:
+ 133               	.LM21:
+ 134               	/* prologue: frame size=0 */
+ 135               	/* prologue end (size=0) */
+ 136               	.LM22:
+ 137 0090 8091 0000 		lds r24,TIMER_Tick
+ 138 0094 9091 0000 		lds r25,(TIMER_Tick)+1
+ 139               	/* epilogue: frame size=0 */
+ 140 0098 0895      		ret
+ 141               	/* epilogue end (size=1) */
+ 142               	/* function TIMER_Get_Tick size 5 (4) */
+ 143               	.LFE14:
+ 145               	.global	TIMER_Get_Second
+ 147               	TIMER_Get_Second:
+ 148               	.LFB15:
+ 149               	.LM23:
+ 150               	/* prologue: frame size=0 */
+ 151               	/* prologue end (size=0) */
+ 152               	.LM24:
+ 153 009a 8091 0000 		lds r24,TIMER_Second
+ 154               	.LM25:
+ 155 009e 9927      		clr r25
+ 156               	/* epilogue: frame size=0 */
+ 157 00a0 0895      		ret
+ 158               	/* epilogue end (size=1) */
+ 159               	/* function TIMER_Get_Second size 4 (3) */
+ 160               	.LFE15:
+ 162               	.global	delay_us
+ 164               	delay_us:
+ 165               	.LFB17:
+ 166               	.LM26:
+ 167               	/* prologue: frame size=0 */
+ 168               	/* prologue end (size=0) */
+ 169               	.LVL0:
+ 170               	/* epilogue: frame size=0 */
+ 171 00a2 0895      		ret
+ 172               	/* epilogue end (size=1) */
+ 173               	/* function delay_us size 1 (0) */
+ 174               	.LFE17:
+ 176               	.global	timer_set
+ 178               	timer_set:
+ 179               	.LFB10:
+ 180               	.LM27:
+ 181               	/* prologue: frame size=0 */
+ 182               	/* prologue end (size=0) */
+ 183               	.LBB4:
+ 184               	.LBB5:
+ 185               	.LM28:
+ 186 00a4 2091 0000 		lds r18,TIMER_Second
+ 187               	.LBE5:
+ 188               	.LBE4:
+ 189               	.LM29:
+ 190 00a8 822F      		mov r24,r18
+ 191 00aa 9927      		clr r25
+ 192 00ac 9093 0000 		sts (time_start)+1,r25
+ 193 00b0 8093 0000 		sts time_start,r24
+ 194               	.LM30:
+ 195 00b4 2223      		tst r18
+ 196 00b6 01F4      		brne .L20
+ 197               	.LM31:
+ 198 00b8 81E0      		ldi r24,lo8(1)
+ 199 00ba 90E0      		ldi r25,hi8(1)
+ 200 00bc 9093 0000 		sts (time_start)+1,r25
+ 201 00c0 8093 0000 		sts time_start,r24
+ 202               	.L20:
+ 203 00c4 0895      		ret
+ 204               	/* epilogue: frame size=0 */
+ 205               	/* epilogue: noreturn */
+ 206               	/* epilogue end (size=0) */
+ 207               	/* function timer_set size 17 (17) */
+ 208               	.LFE10:
+ 210               	.global	TIMER_Wait_Tick
+ 212               	TIMER_Wait_Tick:
+ 213               	.LFB16:
+ 214               	.LM32:
+ 215               	/* prologue: frame size=0 */
+ 216               	/* prologue end (size=0) */
+ 217               	.LVL1:
+ 218               	.LBB10:
+ 219               	.LBB11:
+ 220               	.LM33:
+ 221 00c6 4091 0000 		lds r20,TIMER_Tick
+ 222 00ca 5091 0000 		lds r21,(TIMER_Tick)+1
+ 223               	.L22:
+ 224               	.LBE11:
+ 225               	.LBE10:
+ 226               	.LBB12:
+ 227               	.LBB13:
+ 228               	.LM34:
+ 229 00ce 2091 0000 		lds r18,TIMER_Tick
+ 230 00d2 3091 0000 		lds r19,(TIMER_Tick)+1
+ 231               	.LBE13:
+ 232               	.LBE12:
+ 233               	.LM35:
+ 234 00d6 241B      		sub r18,r20
+ 235 00d8 350B      		sbc r19,r21
+ 236 00da 37FF      		sbrs r19,7
+ 237 00dc 00C0      		rjmp .L23
+ 238 00de 3095      		com r19
+ 239 00e0 2195      		neg r18
+ 240 00e2 3F4F      		sbci r19,lo8(-1)
+ 241               	.L23:
+ 242 00e4 8217      		cp r24,r18
+ 243 00e6 9307      		cpc r25,r19
+ 244 00e8 00F4      		brsh .L22
+ 245               	/* epilogue: frame size=0 */
+ 246 00ea 0895      		ret
+ 247               	/* epilogue end (size=1) */
+ 248               	/* function TIMER_Wait_Tick size 19 (18) */
+ 249               	.LFE16:
+ 251               	.global	timer_timeout
+ 253               	timer_timeout:
+ 254               	.LFB11:
+ 255               	.LM36:
+ 256               	/* prologue: frame size=0 */
+ 257               	/* prologue end (size=0) */
+ 258               	.LVL2:
+ 259 00ec AC01      		movw r20,r24
+ 260               	.LM37:
+ 261 00ee 2091 0000 		lds r18,time_start
+ 262 00f2 3091 0000 		lds r19,(time_start)+1
+ 263 00f6 2115      		cp r18,__zero_reg__
+ 264 00f8 3105      		cpc r19,__zero_reg__
+ 265 00fa 01F4      		brne .L29
+ 266               	.LVL3:
+ 267               	.LM38:
+ 268 00fc 81E0      		ldi r24,lo8(1)
+ 269 00fe 90E0      		ldi r25,hi8(1)
+ 270 0100 0895      		ret
+ 271               	.LVL4:
+ 272               	.L29:
+ 273               	.LBB16:
+ 274               	.LBB17:
+ 275               	.LM39:
+ 276 0102 8091 0000 		lds r24,TIMER_Second
+ 277 0106 60E0      		ldi r22,lo8(0)
+ 278 0108 70E0      		ldi r23,hi8(0)
+ 279 010a 9927      		clr r25
+ 280 010c 821B      		sub r24,r18
+ 281 010e 930B      		sbc r25,r19
+ 282 0110 4817      		cp r20,r24
+ 283 0112 5907      		cpc r21,r25
+ 284 0114 00F4      		brsh .L32
+ 285 0116 61E0      		ldi r22,lo8(1)
+ 286 0118 70E0      		ldi r23,hi8(1)
+ 287               	.L32:
+ 288 011a CB01      		movw r24,r22
+ 289               	.LBE17:
+ 290               	.LBE16:
+ 291               	.LM40:
+ 292 011c 0895      		ret
+ 293               	/* epilogue: frame size=0 */
+ 294               	/* epilogue: noreturn */
+ 295               	/* epilogue end (size=0) */
+ 296               	/* function timer_timeout size 25 (25) */
+ 297               	.LFE11:
+ 299               		.lcomm time_start,2
+ 300               		.comm boot_version,2,1
+ 301               		.comm crc_boot,2,1
+ 302               		.comm bootloader,2,1
+ 303               		.comm TIMER_Counter,1,1
+ 304               		.comm TIMER_Tick,2,1
+ 305               		.comm TIMER_Second,1,1
+ 306               		.comm TIMER_wdt,1,1
+ 395               	.Letext0:
+DEFINED SYMBOLS
+                            *ABS*:00000000 time.c
+C:\DOCUME~1\mike\LOCALS~1\Temp/cc2JAuq5.s:3      *ABS*:0000003f __SREG__
+C:\DOCUME~1\mike\LOCALS~1\Temp/cc2JAuq5.s:4      *ABS*:0000003e __SP_H__
+C:\DOCUME~1\mike\LOCALS~1\Temp/cc2JAuq5.s:5      *ABS*:0000003d __SP_L__
+C:\DOCUME~1\mike\LOCALS~1\Temp/cc2JAuq5.s:6      *ABS*:00000000 __tmp_reg__
+C:\DOCUME~1\mike\LOCALS~1\Temp/cc2JAuq5.s:7      *ABS*:00000001 __zero_reg__
+C:\DOCUME~1\mike\LOCALS~1\Temp/cc2JAuq5.s:20     .text:00000000 __vector_16
+                            *COM*:00000001 TIMER_Counter
+                            *COM*:00000002 TIMER_Tick
+                            *COM*:00000001 TIMER_Second
+                            *COM*:00000001 TIMER_wdt
+C:\DOCUME~1\mike\LOCALS~1\Temp/cc2JAuq5.s:90     .text:00000074 timer_expire
+                             .bss:00000000 time_start
+C:\DOCUME~1\mike\LOCALS~1\Temp/cc2JAuq5.s:109    .text:00000082 TIMER_Init
+C:\DOCUME~1\mike\LOCALS~1\Temp/cc2JAuq5.s:131    .text:00000090 TIMER_Get_Tick
+C:\DOCUME~1\mike\LOCALS~1\Temp/cc2JAuq5.s:147    .text:0000009a TIMER_Get_Second
+C:\DOCUME~1\mike\LOCALS~1\Temp/cc2JAuq5.s:164    .text:000000a2 delay_us
+C:\DOCUME~1\mike\LOCALS~1\Temp/cc2JAuq5.s:178    .text:000000a4 timer_set
+C:\DOCUME~1\mike\LOCALS~1\Temp/cc2JAuq5.s:212    .text:000000c6 TIMER_Wait_Tick
+C:\DOCUME~1\mike\LOCALS~1\Temp/cc2JAuq5.s:253    .text:000000ec timer_timeout
+                            *COM*:00000002 boot_version
+                            *COM*:00000002 crc_boot
+                            *COM*:00000002 bootloader
+
+UNDEFINED SYMBOLS
+__do_copy_data
+__do_clear_bss

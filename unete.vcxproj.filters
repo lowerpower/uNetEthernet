@@ -1,0 +1,159 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{d91630b2-f609-453f-891a-f8f9e2c4b743}</UniqueIdentifier>
+      <Extensions>cpp;c;cxx;rc;def;r;odl;idl;hpj;bat</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{6ddd6f22-02ee-4304-aca7-7bece174b371}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{8f2dade3-2900-43ea-ab06-9b34c9355f53}</UniqueIdentifier>
+      <Extensions>ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="arp.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="autobaud.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="conio.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="console.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dhcp.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="emain.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="enc28j60.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="globals.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ircmd.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="memory.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mip.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="msg.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mtcp.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mudp.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="resolve.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="sreg.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="time.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="udpcmd.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="winpcap_drv.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="arp.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="autobaud.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="conio.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="console.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="debug.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dhcp.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="econfig.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="emain.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="globals.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ircmd.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="memory.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="micmp.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="mip.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="msg.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="mtcp.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="mTypes.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="mudp.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="net_packets.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="nic.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ports.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="resolve.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="sreg.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="time.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="udpcmd.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="makefile">
+      <Filter>Resource Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="bg200mac.txt" />
+    <CustomBuild Include="Debug\unetconfig.txt" />
+    <CustomBuild Include="wln_bootloader.txt" />
+    <CustomBuild Include="wln_spi_protocol.txt" />
+  </ItemGroup>
+</Project>

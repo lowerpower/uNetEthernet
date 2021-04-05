@@ -1,0 +1,207 @@
+
+/****************************************************************************
+Copyright Info		:  	All Rights Reserved - (c) Adya Systems & Software Pvt. Ltd.	
+Name			:  	wln_embedded_spi_Protocol.c - Wln Driver module                           				
+Creation Date		:  	24-Jan -2006                                          					
+Description		:  	
+
+SPI device hardware protocol abstraction file for low level spi functions. The functions 
+in this file takes care of device spi interface level abstraction. 
+
+Changed History	:                                                       						
+<Date>          <Author>    <Version>        < Description >              					
+****************************************************************************/
+include <types.h>
+#include "wln_internal.h"  //defines constants and declares various packet structures
+#include "spi_driver.h"  //declares low level spi functions 
+#include "wln_embedded_spi_protocol.h"  //declares wrapper functions to low level spi functions
+
+/********************************************************************************************************
+Name		spi_writeToSlaveReg                            
+
+Arguments	iTgtRegAddr		:Target register address, as specified in the Obj Spec.
+			shValue			:word to write.
+			  
+Return		None
+
+Description	Prepares a write reg package and sends to the target.
+		
+********************************************************************************************************/
+void spi_writeToSlaveReg(int16_t iTgtRegAddr, int16_t shValue)
+{   
+	static int16_t shWr = 0;
+	shWr = WR_COMMAND | (iTgtRegAddr << 10) | shValue;
+
+	//write register package
+	spi_write16(shWr);	
+}
+
+
+
+/********************************************************************************************************
+Name		spi_readFromSlaveReg                            
+
+Arguments	iTgtRegAddr	:Target register address, as specified in the Obj Spec.
+			pshValue		:pointer where the read data to be put. Note that, 
+						 this pointer should be allocated by the user of this function
+			  
+Return		None
+
+Description	Prepares a Read reg package and sends to the target, and gets the data.		
+********************************************************************************************************/
+void spi_readFromSlaveReg(int16_t iTgtRegAddr, uint16_t* pshValue)
+{   
+
+	static int16_t sh = 0;	
+	
+	*pshValue = 0;
+
+	sh = RD_COMMAND | (iTgtRegAddr<<10);
+	//write register package
+	
+	spi_write16(sh);  
+
+	// read 1st cycle : write to the interface 0 for enabling the clock & get the data
+
+	sh = 0;
+	sh = spi_write8(0);
+	
+	*pshValue = (sh<<8);
+
+	// read 2nd cycle : write to the interface 0 for enabling the clock.
+
+	sh = 0;
+	sh = spi_write8(0);
+	
+	*pshValue |= sh;
+}
+
+
+/******************************************************************************************************** 
+Name		spi_sendM2SDMAPkg                            
+
+Arguments	iSize		:Length of package for the DMA
+			  
+Return		None
+
+Description	Sends the M2S DMA initialization package length.		
+********************************************************************************************************/
+void spi_sendM2SDMAPkg(uint32_t iSize)
+{   
+	// send M2S DMA initialization package, with MSB 10 bits  
+	spi_writeToSlaveReg(HOST_DMA_M2S_INIT_REG,((iSize & 0x3FF0000) >> 16));
+	// send M2S DMA length package, with LSB 16 bits  
+	spi_write16((iSize & 0xFFFF));
+	
+}
+
+
+/********************************************************************************************************  
+Name		spi_sendS2MDMAPkg                            
+
+Arguments	piSize		:Contains length of package for the DMA returned by the function
+			  
+Return		None
+
+Description	sends the S2M DMA initialization package and returns the length.		
+********************************************************************************************************/
+
+void spi_sendS2MDMAPkg(int32_t* piSize)
+{   
+	int16_t   shVal = 0;
+
+	shVal = 0;
+	*piSize = 0;    
+	
+	// send S2M DMA initialization package.: write the value: 0 
+	shVal = RD_COMMAND | (HOST_DMA_S2M_INIT_REG << 10) | 0;
+	spi_write16(shVal);
+
+	// read M2S DMA Length package 16 bits */
+	//read 1st byte [MSB]: write to the interface 0 for enabling the clock.
+
+	shVal = 0;
+	shVal = spi_write8(0);
+	*piSize = (shVal<<8);
+
+	// read 2nd cycle [LSB]: write to the interface 0 for enabling the clock.
+
+	shVal = 0;
+	shVal = spi_write8(0);
+	*piSize |= shVal;
+
+}
+
+
+
+/********************************************************************************************************  
+Name		spi_write_buffer                            
+
+Arguments	Buffer	:Buffer to write.
+			Length	: Length of the buffer to write
+			  
+Return		None
+
+Description	It actually calls the spi_write8 function to write the bytes in the buffer. 		
+********************************************************************************************************/
+
+void spi_write_buffer( uint8_t *Buffer, uint32_t Length)
+{
+	uint32_t i;
+
+	for(i=0;i<Length;i++)
+	{
+		spi_write8((uint8_t )Buffer[i]);
+	}
+}
+
+
+
+/********************************************************************************************************  
+Name		spi_read_buffer                            
+
+Arguments	Buffer	:Buffer to read.
+			Length	: Length of the buffer to read
+			  
+Return		None
+
+Description	It actually calls the spi_write8 function to read the bytes in the buffer. 		
+********************************************************************************************************/
+void spi_read_buffer( uint8_t *Buffer, uint32_t Length)
+{
+	uint32_t i;
+
+	for(i=0;i<Length;i++)Buffer[i]=spi_write8(0xff);
+
+}
+
+
+
+/******************************************************************************************************** 
+Name		spi_write_multiple_buffer                            
+
+Arguments	Buffer1	:Buffer1 to write.
+			Buffer2	:Buffer2 to write.
+			Buffer3	:Buffer3 to write.
+			Buffer4	:Buffer4 to write.
+			  
+			Length1	: Length of the buffer1 to write
+			Length2	: Length of the buffer2 to write
+			Length3	: Length of the buffer3 to write
+			Length4	: Length of the buffer4 to write
+		  
+Return		None
+
+Description	It actually calls the spi_write8 function to write the bytes in multiple buffer. 			
+********************************************************************************************************/
+
+void spi_write_multiple_buffer( uint8_t *Buffer1, uint32_t Length1,uint8_t *Buffer2, uint32_t Lengt
+{
+	uint32_t i;
+
+	if(Length1) for(i=0;i<Length1;i++) spi_write8((uint8_t )Buffer1[i]); 
+	if(Length2) for(i=0;i<Length2;i++) spi_write8((uint8_t )Buffer2[i]); 
+	if(Length3) for(i=0;i<Length3;i++) spi_write8((uint8_t )Buffer3[i]); 
+	if(Length4) for(i=0;i<Length4;i++) spi_write8((uint8_t )Buffer4[i]); 
+}
+

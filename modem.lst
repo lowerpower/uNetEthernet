@@ -1,0 +1,711 @@
+   1               		.file	"modem.c"
+   2               		.arch atmega64
+   3               	__SREG__ = 0x3f
+   4               	__SP_H__ = 0x3e
+   5               	__SP_L__ = 0x3d
+   6               	__tmp_reg__ = 0
+   7               	__zero_reg__ = 1
+   8               		.global __do_copy_data
+   9               		.global __do_clear_bss
+  17               	.Ltext0:
+  18               	.global	__vector_30
+  20               	__vector_30:
+  21               	.LFB9:
+  22               	.LM1:
+  23               	/* prologue: frame size=0 */
+  24 0000 1F92      		push __zero_reg__
+  25 0002 0F92      		push __tmp_reg__
+  26 0004 0FB6      		in __tmp_reg__,__SREG__
+  27 0006 0F92      		push __tmp_reg__
+  28 0008 1124      		clr __zero_reg__
+  29 000a 2F93      		push r18
+  30 000c 3F93      		push r19
+  31 000e 4F93      		push r20
+  32 0010 5F93      		push r21
+  33 0012 6F93      		push r22
+  34 0014 7F93      		push r23
+  35 0016 8F93      		push r24
+  36 0018 9F93      		push r25
+  37 001a AF93      		push r26
+  38 001c BF93      		push r27
+  39 001e EF93      		push r30
+  40 0020 FF93      		push r31
+  41               	/* prologue end (size=17) */
+  42               	.LM2:
+  43 0022 8091 9C00 		lds r24,156
+  44 0026 9927      		clr r25
+  45 0028 0E94 0000 		call inp
+  46 002c 9C01      		movw r18,r24
+  47               	.LM3:
+  48 002e 8091 0000 		lds r24,UART1_RxSize
+  49 0032 8032      		cpi r24,lo8(32)
+  50 0034 B8F4      		brsh .L1
+  51               	.LM4:
+  52 0036 8091 0000 		lds r24,UART1_RxTail
+  53 003a E82F      		mov r30,r24
+  54 003c FF27      		clr r31
+  55 003e E050      		subi r30,lo8(-(UART1_RxBuffer))
+  56 0040 F040      		sbci r31,hi8(-(UART1_RxBuffer))
+  57 0042 2083      		st Z,r18
+  58 0044 8F5F      		subi r24,lo8(-(1))
+  59 0046 8093 0000 		sts UART1_RxTail,r24
+  60               	.LM5:
+  61 004a 8091 0000 		lds r24,UART1_RxTail
+  62 004e 8032      		cpi r24,lo8(32)
+  63 0050 10F0      		brlo .L3
+  64               	.LM6:
+  65 0052 1092 0000 		sts UART1_RxTail,__zero_reg__
+  66               	.L3:
+  67               	.LM7:
+  68 0056 8091 0000 		lds r24,UART1_RxSize
+  69 005a 8F5F      		subi r24,lo8(-(1))
+  70 005c 8093 0000 		sts UART1_RxSize,r24
+  71               	.LM8:
+  72 0060 8091 0000 		lds r24,UART1_RxSize
+  73               	.L1:
+  74               	/* epilogue: frame size=0 */
+  75 0064 FF91      		pop r31
+  76 0066 EF91      		pop r30
+  77 0068 BF91      		pop r27
+  78 006a AF91      		pop r26
+  79 006c 9F91      		pop r25
+  80 006e 8F91      		pop r24
+  81 0070 7F91      		pop r23
+  82 0072 6F91      		pop r22
+  83 0074 5F91      		pop r21
+  84 0076 4F91      		pop r20
+  85 0078 3F91      		pop r19
+  86 007a 2F91      		pop r18
+  87 007c 0F90      		pop __tmp_reg__
+  88 007e 0FBE      		out __SREG__,__tmp_reg__
+  89 0080 0F90      		pop __tmp_reg__
+  90 0082 1F90      		pop __zero_reg__
+  91 0084 1895      		reti
+  92               	/* epilogue end (size=17) */
+  93               	/* function __vector_30 size 67 (33) */
+  94               	.LFE9:
+  96               	.global	__vector_32
+  98               	__vector_32:
+  99               	.LFB10:
+ 100               	.LM9:
+ 101               	/* prologue: frame size=0 */
+ 102 0086 1F92      		push __zero_reg__
+ 103 0088 0F92      		push __tmp_reg__
+ 104 008a 0FB6      		in __tmp_reg__,__SREG__
+ 105 008c 0F92      		push __tmp_reg__
+ 106 008e 1124      		clr __zero_reg__
+ 107 0090 8F93      		push r24
+ 108               	/* prologue end (size=6) */
+ 109               	.LM10:
+ 110 0092 81E0      		ldi r24,lo8(1)
+ 111 0094 8093 0000 		sts UART1_Ready,r24
+ 112               	/* epilogue: frame size=0 */
+ 113 0098 8F91      		pop r24
+ 114 009a 0F90      		pop __tmp_reg__
+ 115 009c 0FBE      		out __SREG__,__tmp_reg__
+ 116 009e 0F90      		pop __tmp_reg__
+ 117 00a0 1F90      		pop __zero_reg__
+ 118 00a2 1895      		reti
+ 119               	/* epilogue end (size=6) */
+ 120               	/* function __vector_32 size 15 (3) */
+ 121               	.LFE10:
+ 123               	.global	UART1_Init
+ 125               	UART1_Init:
+ 126               	.LFB11:
+ 127               	.LM11:
+ 128               	/* prologue: frame size=0 */
+ 129 00a4 0F93      		push r16
+ 130 00a6 1F93      		push r17
+ 131               	/* prologue end (size=2) */
+ 132 00a8 8C01      		movw r16,r24
+ 133               	.LM12:
+ 134 00aa 1092 0000 		sts UART1_RxTail,__zero_reg__
+ 135 00ae 8091 0000 		lds r24,UART1_RxTail
+ 136 00b2 8093 0000 		sts UART1_RxHead,r24
+ 137 00b6 8091 0000 		lds r24,UART1_RxHead
+ 138 00ba 8093 0000 		sts UART1_RxSize,r24
+ 139               	.LM13:
+ 140 00be 81E0      		ldi r24,lo8(1)
+ 141 00c0 8093 0000 		sts UART1_Ready,r24
+ 142               	.LM14:
+ 143 00c4 8091 9A00 		lds r24,154
+ 144 00c8 9927      		clr r25
+ 145 00ca BC01      		movw r22,r24
+ 146 00cc 88ED      		ldi r24,lo8(216)
+ 147 00ce 90E0      		ldi r25,hi8(216)
+ 148 00d0 0E94 0000 		call outp
+ 149               	.LM15:
+ 150 00d4 8091 9900 		lds r24,153
+ 151 00d8 9927      		clr r25
+ 152 00da BC01      		movw r22,r24
+ 153 00dc C801      		movw r24,r16
+ 154 00de 0E94 0000 		call outp
+ 155               	.LM16:
+ 156 00e2 8091 9800 		lds r24,152
+ 157 00e6 9927      		clr r25
+ 158 00e8 BC01      		movw r22,r24
+ 159 00ea 812F      		mov r24,r17
+ 160 00ec 9927      		clr r25
+ 161 00ee 0E94 0000 		call outp
+ 162               	/* epilogue: frame size=0 */
+ 163 00f2 1F91      		pop r17
+ 164 00f4 0F91      		pop r16
+ 165 00f6 0895      		ret
+ 166               	/* epilogue end (size=3) */
+ 167               	/* function UART1_Init size 42 (37) */
+ 168               	.LFE11:
+ 170               	.global	MODEM_init
+ 172               	MODEM_init:
+ 173               	.LFB8:
+ 174               	.LM17:
+ 175               	/* prologue: frame size=0 */
+ 176               	/* prologue end (size=0) */
+ 177               	.LM18:
+ 178 00f8 0097      		sbiw r24,0
+ 179 00fa 11F4      		brne .L9
+ 180               	.LM19:
+ 181 00fc 83E0      		ldi r24,lo8(3)
+ 182 00fe 90E0      		ldi r25,hi8(3)
+ 183               	.L9:
+ 184               	.LM20:
+ 185 0100 1092 0000 		sts pushch,__zero_reg__
+ 186               	.LM21:
+ 187 0104 0E94 0000 		call UART1_Init
+ 188               	.LM22:
+ 189 0108 80E0      		ldi r24,lo8(0)
+ 190 010a 90E0      		ldi r25,hi8(0)
+ 191               	/* epilogue: frame size=0 */
+ 192 010c 0895      		ret
+ 193               	/* epilogue end (size=1) */
+ 194               	/* function MODEM_init size 11 (10) */
+ 195               	.LFE8:
+ 197               	.global	MODEM_putch
+ 199               	MODEM_putch:
+ 200               	.LFB14:
+ 201               	.LM23:
+ 202               	/* prologue: frame size=0 */
+ 203 010e CF93      		push r28
+ 204               	/* prologue end (size=1) */
+ 205 0110 C82F      		mov r28,r24
+ 206               	.L17:
+ 207               	.LBB2:
+ 208               	.LBB3:
+ 209               	.LM24:
+ 210 0112 8091 0000 		lds r24,UART1_Ready
+ 211 0116 8823      		tst r24
+ 212 0118 19F4      		brne .L16
+ 213               	.LBB4:
+ 214 011a 0E94 0000 		call wait
+ 215 011e F9CF      		rjmp .L17
+ 216               	.L16:
+ 217               	.LBE4:
+ 218               	.LM25:
+ 219 0120 1092 0000 		sts UART1_Ready,__zero_reg__
+ 220               	.LM26:
+ 221 0124 8091 9C00 		lds r24,156
+ 222 0128 9927      		clr r25
+ 223 012a BC01      		movw r22,r24
+ 224 012c 8C2F      		mov r24,r28
+ 225 012e 9927      		clr r25
+ 226 0130 0E94 0000 		call outp
+ 227               	.LBE3:
+ 228               	.LBE2:
+ 229               	/* epilogue: frame size=0 */
+ 230 0134 CF91      		pop r28
+ 231 0136 0895      		ret
+ 232               	/* epilogue end (size=2) */
+ 233               	/* function MODEM_putch size 21 (18) */
+ 234               	.LFE14:
+ 236               	.global	MODEM_getch
+ 238               	MODEM_getch:
+ 239               	.LFB15:
+ 240               	.LM27:
+ 241               	/* prologue: frame size=0 */
+ 242               	/* prologue end (size=0) */
+ 243               	.LM28:
+ 244 0138 8091 0000 		lds r24,pushch
+ 245 013c 8823      		tst r24
+ 246 013e 21F0      		breq .L19
+ 247               	.LM29:
+ 248 0140 9927      		clr r25
+ 249               	.LM30:
+ 250 0142 1092 0000 		sts pushch,__zero_reg__
+ 251 0146 0895      		ret
+ 252               	.L19:
+ 253               	.LM31:
+ 254 0148 8091 0000 		lds r24,UART1_RxSize
+ 255 014c 8823      		tst r24
+ 256 014e 01F1      		breq .L21
+ 257               	.L22:
+ 258               	.LBB5:
+ 259               	.LBB6:
+ 260               	.LM32:
+ 261 0150 8091 0000 		lds r24,UART1_RxSize
+ 262 0154 8823      		tst r24
+ 263 0156 E1F3      		breq .L22
+ 264               	.LM33:
+ 265 0158 8091 0000 		lds r24,UART1_RxHead
+ 266 015c E82F      		mov r30,r24
+ 267 015e FF27      		clr r31
+ 268 0160 E050      		subi r30,lo8(-(UART1_RxBuffer))
+ 269 0162 F040      		sbci r31,hi8(-(UART1_RxBuffer))
+ 270 0164 8F5F      		subi r24,lo8(-(1))
+ 271 0166 8093 0000 		sts UART1_RxHead,r24
+ 272 016a E081      		ld r30,Z
+ 273               	.LM34:
+ 274 016c 8091 0000 		lds r24,UART1_RxHead
+ 275 0170 8032      		cpi r24,lo8(32)
+ 276 0172 10F0      		brlo .L25
+ 277               	.LM35:
+ 278 0174 1092 0000 		sts UART1_RxHead,__zero_reg__
+ 279               	.L25:
+ 280               	.LM36:
+ 281               	/* #APP */
+ 282 0178 F894      		cli
+ 283               	.LM37:
+ 284               	/* #NOAPP */
+ 285 017a 8091 0000 		lds r24,UART1_RxSize
+ 286 017e 8150      		subi r24,lo8(-(-1))
+ 287 0180 8093 0000 		sts UART1_RxSize,r24
+ 288               	.LM38:
+ 289 0184 8091 0000 		lds r24,UART1_RxSize
+ 290               	.LM39:
+ 291               	/* #APP */
+ 292 0188 7894      		sei
+ 293               	/* #NOAPP */
+ 294               	.LBE6:
+ 295               	.LBE5:
+ 296               	.LM40:
+ 297 018a 8E2F      		mov r24,r30
+ 298 018c 9927      		clr r25
+ 299 018e 0895      		ret
+ 300               	.L21:
+ 301               	.LM41:
+ 302 0190 8FEF      		ldi r24,lo8(-1)
+ 303 0192 9FEF      		ldi r25,hi8(-1)
+ 304               	.LM42:
+ 305 0194 0895      		ret
+ 306               	/* epilogue: frame size=0 */
+ 307               	/* epilogue: noreturn */
+ 308               	/* epilogue end (size=0) */
+ 309               	/* function MODEM_getch size 49 (49) */
+ 310               	.LFE15:
+ 312               	.global	MODEM_pushch
+ 314               	MODEM_pushch:
+ 315               	.LFB16:
+ 316               	.LM43:
+ 317               	/* prologue: frame size=0 */
+ 318               	/* prologue end (size=0) */
+ 319               	.LM44:
+ 320 0196 8093 0000 		sts pushch,r24
+ 321               	/* epilogue: frame size=0 */
+ 322 019a 0895      		ret
+ 323               	/* epilogue end (size=1) */
+ 324               	/* function MODEM_pushch size 3 (2) */
+ 325               	.LFE16:
+ 327               	.global	MODEM_kbhit
+ 329               	MODEM_kbhit:
+ 330               	.LFB17:
+ 331               	.LM45:
+ 332               	/* prologue: frame size=0 */
+ 333               	/* prologue end (size=0) */
+ 334               	.LM46:
+ 335 019c 8091 0000 		lds r24,pushch
+ 336 01a0 8823      		tst r24
+ 337 01a2 21F4      		brne .L32
+ 338               	.LM47:
+ 339 01a4 8091 0000 		lds r24,UART1_RxSize
+ 340 01a8 8823      		tst r24
+ 341 01aa 19F0      		breq .L31
+ 342               	.L32:
+ 343               	.LM48:
+ 344 01ac 81E0      		ldi r24,lo8(1)
+ 345 01ae 90E0      		ldi r25,hi8(1)
+ 346 01b0 0895      		ret
+ 347               	.L31:
+ 348               	.LM49:
+ 349 01b2 80E0      		ldi r24,lo8(0)
+ 350 01b4 90E0      		ldi r25,hi8(0)
+ 351               	.LM50:
+ 352 01b6 0895      		ret
+ 353               	/* epilogue: frame size=0 */
+ 354               	/* epilogue: noreturn */
+ 355               	/* epilogue end (size=0) */
+ 356               	/* function MODEM_kbhit size 14 (14) */
+ 357               	.LFE17:
+ 359               	.global	MODEM_puts
+ 361               	MODEM_puts:
+ 362               	.LFB18:
+ 363               	.LM51:
+ 364               	/* prologue: frame size=0 */
+ 365 01b8 CF93      		push r28
+ 366 01ba DF93      		push r29
+ 367               	/* prologue end (size=2) */
+ 368 01bc EC01      		movw r28,r24
+ 369               	.LM52:
+ 370 01be 892B      		or r24,r25
+ 371 01c0 49F0      		breq .L33
+ 372               	.LM53:
+ 373 01c2 8881      		ld r24,Y
+ 374 01c4 8823      		tst r24
+ 375 01c6 31F0      		breq .L33
+ 376               	.L37:
+ 377 01c8 8991      		ld r24,Y+
+ 378 01ca 0E94 0000 		call MODEM_putch
+ 379 01ce 8881      		ld r24,Y
+ 380 01d0 8823      		tst r24
+ 381 01d2 D1F7      		brne .L37
+ 382               	.L33:
+ 383               	/* epilogue: frame size=0 */
+ 384 01d4 DF91      		pop r29
+ 385 01d6 CF91      		pop r28
+ 386 01d8 0895      		ret
+ 387               	/* epilogue end (size=3) */
+ 388               	/* function MODEM_puts size 17 (12) */
+ 389               	.LFE18:
+ 391               	.global	MODEM_reads
+ 393               	MODEM_reads:
+ 394               	.LFB19:
+ 395               	.LM54:
+ 396               	/* prologue: frame size=0 */
+ 397 01da CF92      		push r12
+ 398 01dc DF92      		push r13
+ 399 01de EF92      		push r14
+ 400 01e0 FF92      		push r15
+ 401 01e2 0F93      		push r16
+ 402 01e4 1F93      		push r17
+ 403 01e6 CF93      		push r28
+ 404               	/* prologue end (size=7) */
+ 405 01e8 6C01      		movw r12,r24
+ 406 01ea 7B01      		movw r14,r22
+ 407               	.LM55:
+ 408 01ec C0E0      		ldi r28,lo8(0)
+ 409               	.LM56:
+ 410 01ee 0E94 0000 		call TIMER_Get_Tick
+ 411 01f2 082F      		mov r16,r24
+ 412               	.LM57:
+ 413 01f4 14C0      		rjmp .L48
+ 414               	.L44:
+ 415               	.LM58:
+ 416 01f6 0E94 0000 		call MODEM_kbhit
+ 417 01fa 8823      		tst r24
+ 418 01fc 81F0      		breq .L48
+ 419               	.LM59:
+ 420 01fe 8601      		movw r16,r12
+ 421 0200 0C0F      		add r16,r28
+ 422 0202 111D      		adc r17,__zero_reg__
+ 423 0204 CF5F      		subi r28,lo8(-(1))
+ 424 0206 0E94 0000 		call MODEM_getch
+ 425 020a F801      		movw r30,r16
+ 426 020c 8083      		st Z,r24
+ 427               	.LM60:
+ 428 020e 0E94 0000 		call TIMER_Get_Tick
+ 429 0212 082F      		mov r16,r24
+ 430               	.LM61:
+ 431 0214 8C2F      		mov r24,r28
+ 432 0216 9927      		clr r25
+ 433 0218 8E15      		cp r24,r14
+ 434 021a 9F05      		cpc r25,r15
+ 435 021c 29F0      		breq .L41
+ 436               	.L48:
+ 437               	.LM62:
+ 438 021e 0E94 0000 		call TIMER_Get_Tick
+ 439 0222 801B      		sub r24,r16
+ 440 0224 8330      		cpi r24,lo8(3)
+ 441 0226 38F3      		brlo .L44
+ 442               	.L41:
+ 443               	.LM63:
+ 444 0228 0C2F      		mov r16,r28
+ 445 022a 1127      		clr r17
+ 446 022c C801      		movw r24,r16
+ 447 022e 0E94 0000 		call printShort
+ 448               	.LM64:
+ 449 0232 C801      		movw r24,r16
+ 450               	/* epilogue: frame size=0 */
+ 451 0234 CF91      		pop r28
+ 452 0236 1F91      		pop r17
+ 453 0238 0F91      		pop r16
+ 454 023a FF90      		pop r15
+ 455 023c EF90      		pop r14
+ 456 023e DF90      		pop r13
+ 457 0240 CF90      		pop r12
+ 458 0242 0895      		ret
+ 459               	/* epilogue end (size=8) */
+ 460               	/* function MODEM_reads size 53 (38) */
+ 461               	.LFE19:
+ 463               		.data
+ 464               	.LC0:
+ 465 0000 0D0A 00   		.string	"\r\n"
+ 466               		.text
+ 467               	.global	MODEM_Camera_SendCmd
+ 469               	MODEM_Camera_SendCmd:
+ 470               	.LFB20:
+ 471               	.LM65:
+ 472               	/* prologue: frame size=13 */
+ 473 0244 DF92      		push r13
+ 474 0246 EF92      		push r14
+ 475 0248 FF92      		push r15
+ 476 024a 0F93      		push r16
+ 477 024c 1F93      		push r17
+ 478 024e CF93      		push r28
+ 479 0250 DF93      		push r29
+ 480 0252 CDB7      		in r28,__SP_L__
+ 481 0254 DEB7      		in r29,__SP_H__
+ 482 0256 2D97      		sbiw r28,13
+ 483 0258 0FB6      		in __tmp_reg__,__SREG__
+ 484 025a F894      		cli
+ 485 025c DEBF      		out __SP_H__,r29
+ 486 025e 0FBE      		out __SREG__,__tmp_reg__
+ 487 0260 CDBF      		out __SP_L__,r28
+ 488               	/* prologue end (size=15) */
+ 489 0262 182F      		mov r17,r24
+ 490 0264 F62E      		mov r15,r22
+ 491 0266 E42E      		mov r14,r20
+ 492 0268 D22E      		mov r13,r18
+ 493               	.LM66:
+ 494 026a 8AEA      		ldi r24,lo8(-86)
+ 495 026c 0E94 0000 		call MODEM_putch
+ 496               	.LM67:
+ 497 0270 812F      		mov r24,r17
+ 498 0272 0E94 0000 		call MODEM_putch
+ 499               	.LM68:
+ 500 0276 8F2D      		mov r24,r15
+ 501 0278 0E94 0000 		call MODEM_putch
+ 502               	.LM69:
+ 503 027c 8E2D      		mov r24,r14
+ 504 027e 0E94 0000 		call MODEM_putch
+ 505               	.LM70:
+ 506 0282 8D2D      		mov r24,r13
+ 507 0284 0E94 0000 		call MODEM_putch
+ 508               	.LM71:
+ 509 0288 802F      		mov r24,r16
+ 510 028a 0E94 0000 		call MODEM_putch
+ 511               	.LM72:
+ 512 028e 66E0      		ldi r22,lo8(6)
+ 513 0290 70E0      		ldi r23,hi8(6)
+ 514 0292 CE01      		movw r24,r28
+ 515 0294 0196      		adiw r24,1
+ 516 0296 0E94 0000 		call MODEM_reads
+ 517 029a 8630      		cpi r24,lo8(6)
+ 518 029c 99F4      		brne .L50
+ 519 029e 00E0      		ldi r16,lo8(0)
+ 520 02a0 10E0      		ldi r17,hi8(0)
+ 521 02a2 95E0      		ldi r25,lo8(5)
+ 522 02a4 F92E      		mov r15,r25
+ 523               	.L54:
+ 524               	.LM73:
+ 525 02a6 FE01      		movw r30,r28
+ 526 02a8 E00F      		add r30,r16
+ 527 02aa F11F      		adc r31,r17
+ 528 02ac 8181      		ldd r24,Z+1
+ 529 02ae 0E94 0000 		call printByte
+ 530               	.LM74:
+ 531 02b2 FA94      		dec r15
+ 532 02b4 0F5F      		subi r16,lo8(-(1))
+ 533 02b6 1F4F      		sbci r17,hi8(-(1))
+ 534 02b8 F7FE      		sbrs r15,7
+ 535 02ba F5CF      		rjmp .L54
+ 536               	.LM75:
+ 537 02bc 80E0      		ldi r24,lo8(.LC0)
+ 538 02be 90E0      		ldi r25,hi8(.LC0)
+ 539 02c0 0E94 0000 		call CONSOLE_puts
+ 540               	.L50:
+ 541               	/* epilogue: frame size=13 */
+ 542 02c4 2D96      		adiw r28,13
+ 543 02c6 0FB6      		in __tmp_reg__,__SREG__
+ 544 02c8 F894      		cli
+ 545 02ca DEBF      		out __SP_H__,r29
+ 546 02cc 0FBE      		out __SREG__,__tmp_reg__
+ 547 02ce CDBF      		out __SP_L__,r28
+ 548 02d0 DF91      		pop r29
+ 549 02d2 CF91      		pop r28
+ 550 02d4 1F91      		pop r17
+ 551 02d6 0F91      		pop r16
+ 552 02d8 FF90      		pop r15
+ 553 02da EF90      		pop r14
+ 554 02dc DF90      		pop r13
+ 555 02de 0895      		ret
+ 556               	/* epilogue end (size=14) */
+ 557               	/* function MODEM_Camera_SendCmd size 78 (49) */
+ 558               	.LFE20:
+ 560               	.global	MODEM_Init_Camera
+ 562               	MODEM_Init_Camera:
+ 563               	.LFB21:
+ 564               	.LM76:
+ 565               	/* prologue: frame size=13 */
+ 566 02e0 FF92      		push r15
+ 567 02e2 0F93      		push r16
+ 568 02e4 1F93      		push r17
+ 569 02e6 CF93      		push r28
+ 570 02e8 DF93      		push r29
+ 571 02ea CDB7      		in r28,__SP_L__
+ 572 02ec DEB7      		in r29,__SP_H__
+ 573 02ee 2D97      		sbiw r28,13
+ 574 02f0 0FB6      		in __tmp_reg__,__SREG__
+ 575 02f2 F894      		cli
+ 576 02f4 DEBF      		out __SP_H__,r29
+ 577 02f6 0FBE      		out __SREG__,__tmp_reg__
+ 578 02f8 CDBF      		out __SP_L__,r28
+ 579               	/* prologue end (size=13) */
+ 580               	.LM77:
+ 581 02fa 21E0      		ldi r18,lo8(1)
+ 582 02fc F22E      		mov r15,r18
+ 583               	.L62:
+ 584               	.LM78:
+ 585 02fe 8AEA      		ldi r24,lo8(-86)
+ 586 0300 0E94 0000 		call MODEM_putch
+ 587               	.LM79:
+ 588 0304 8DE0      		ldi r24,lo8(13)
+ 589 0306 0E94 0000 		call MODEM_putch
+ 590               	.LM80:
+ 591 030a 80E0      		ldi r24,lo8(0)
+ 592 030c 0E94 0000 		call MODEM_putch
+ 593               	.LM81:
+ 594 0310 80E0      		ldi r24,lo8(0)
+ 595 0312 0E94 0000 		call MODEM_putch
+ 596               	.LM82:
+ 597 0316 80E0      		ldi r24,lo8(0)
+ 598 0318 0E94 0000 		call MODEM_putch
+ 599               	.LM83:
+ 600 031c 80E0      		ldi r24,lo8(0)
+ 601 031e 0E94 0000 		call MODEM_putch
+ 602               	.LM84:
+ 603 0322 85E0      		ldi r24,lo8(5)
+ 604 0324 90E0      		ldi r25,hi8(5)
+ 605 0326 0E94 0000 		call TIMER_Wait_Tick
+ 606               	.LM85:
+ 607 032a 6CE0      		ldi r22,lo8(12)
+ 608 032c 70E0      		ldi r23,hi8(12)
+ 609 032e CE01      		movw r24,r28
+ 610 0330 0196      		adiw r24,1
+ 611 0332 0E94 0000 		call MODEM_reads
+ 612 0336 8C30      		cpi r24,lo8(12)
+ 613 0338 49F4      		brne .L58
+ 614               	.LM86:
+ 615 033a 8981      		ldd r24,Y+1
+ 616 033c 8A3A      		cpi r24,lo8(-86)
+ 617 033e 31F4      		brne .L58
+ 618 0340 0A81      		ldd r16,Y+2
+ 619 0342 0E30      		cpi r16,lo8(14)
+ 620 0344 19F4      		brne .L58
+ 621 0346 1B81      		ldd r17,Y+3
+ 622 0348 1D30      		cpi r17,lo8(13)
+ 623 034a 51F0      		breq .L66
+ 624               	.L58:
+ 625               	.LM87:
+ 626 034c 8F2D      		mov r24,r15
+ 627 034e F394      		inc r15
+ 628 0350 8E3F      		cpi r24,lo8(-2)
+ 629 0352 A8F2      		brlo .L62
+ 630               	.L59:
+ 631               	.LM88:
+ 632 0354 8DEF      		ldi r24,lo8(-3)
+ 633 0356 8F15      		cp r24,r15
+ 634 0358 A8F4      		brsh .L63
+ 635               	.LM89:
+ 636 035a 80E0      		ldi r24,lo8(0)
+ 637 035c 90E0      		ldi r25,hi8(0)
+ 638 035e 14C0      		rjmp .L57
+ 639               	.L66:
+ 640               	.LM90:
+ 641 0360 0E94 0000 		call MODEM_putch
+ 642               	.LM91:
+ 643 0364 802F      		mov r24,r16
+ 644 0366 0E94 0000 		call MODEM_putch
+ 645               	.LM92:
+ 646 036a 812F      		mov r24,r17
+ 647 036c 0E94 0000 		call MODEM_putch
+ 648               	.LM93:
+ 649 0370 8C81      		ldd r24,Y+4
+ 650 0372 0E94 0000 		call MODEM_putch
+ 651               	.LM94:
+ 652 0376 80E0      		ldi r24,lo8(0)
+ 653 0378 0E94 0000 		call MODEM_putch
+ 654               	.LM95:
+ 655 037c 80E0      		ldi r24,lo8(0)
+ 656 037e 0E94 0000 		call MODEM_putch
+ 657               	.LM96:
+ 658 0382 E8CF      		rjmp .L59
+ 659               	.L63:
+ 660               	.LM97:
+ 661 0384 81E0      		ldi r24,lo8(1)
+ 662 0386 90E0      		ldi r25,hi8(1)
+ 663               	.L57:
+ 664               	/* epilogue: frame size=13 */
+ 665 0388 2D96      		adiw r28,13
+ 666 038a 0FB6      		in __tmp_reg__,__SREG__
+ 667 038c F894      		cli
+ 668 038e DEBF      		out __SP_H__,r29
+ 669 0390 0FBE      		out __SREG__,__tmp_reg__
+ 670 0392 CDBF      		out __SP_L__,r28
+ 671 0394 DF91      		pop r29
+ 672 0396 CF91      		pop r28
+ 673 0398 1F91      		pop r17
+ 674 039a 0F91      		pop r16
+ 675 039c FF90      		pop r15
+ 676 039e 0895      		ret
+ 677               	/* epilogue end (size=12) */
+ 678               	/* function MODEM_Init_Camera size 96 (71) */
+ 679               	.LFE21:
+ 681               	.global	MODEM_Get_Pic
+ 683               	MODEM_Get_Pic:
+ 684               	.LFB22:
+ 685               	.LM98:
+ 686               	/* prologue: frame size=0 */
+ 687               	/* prologue end (size=0) */
+ 688               	/* epilogue: frame size=0 */
+ 689 03a0 0895      		ret
+ 690               	/* epilogue end (size=1) */
+ 691               	/* function MODEM_Get_Pic size 1 (0) */
+ 692               	.LFE22:
+ 694               		.comm boot_version,2,1
+ 695               		.comm crc_boot,2,1
+ 696               		.comm bootloader,2,1
+ 697               		.lcomm pushch,1
+ 698               		.comm UART1_RxBuffer,32,1
+ 699               		.comm UART1_RxSize,1,1
+ 700               		.comm UART1_RxHead,1,1
+ 701               		.comm UART1_RxTail,1,1
+ 702               		.comm UART1_Ready,1,1
+ 703               	.Letext0:
+DEFINED SYMBOLS
+                            *ABS*:00000000 modem.c
+C:\DOCUME~1\mike\LOCALS~1\Temp/cccZaaaa.s:3      *ABS*:0000003f __SREG__
+C:\DOCUME~1\mike\LOCALS~1\Temp/cccZaaaa.s:4      *ABS*:0000003e __SP_H__
+C:\DOCUME~1\mike\LOCALS~1\Temp/cccZaaaa.s:5      *ABS*:0000003d __SP_L__
+C:\DOCUME~1\mike\LOCALS~1\Temp/cccZaaaa.s:6      *ABS*:00000000 __tmp_reg__
+C:\DOCUME~1\mike\LOCALS~1\Temp/cccZaaaa.s:7      *ABS*:00000001 __zero_reg__
+C:\DOCUME~1\mike\LOCALS~1\Temp/cccZaaaa.s:20     .text:00000000 __vector_30
+                            *COM*:00000001 UART1_RxSize
+                            *COM*:00000001 UART1_RxTail
+                            *COM*:00000020 UART1_RxBuffer
+C:\DOCUME~1\mike\LOCALS~1\Temp/cccZaaaa.s:98     .text:00000086 __vector_32
+                            *COM*:00000001 UART1_Ready
+C:\DOCUME~1\mike\LOCALS~1\Temp/cccZaaaa.s:125    .text:000000a4 UART1_Init
+                            *COM*:00000001 UART1_RxHead
+C:\DOCUME~1\mike\LOCALS~1\Temp/cccZaaaa.s:172    .text:000000f8 MODEM_init
+                             .bss:00000000 pushch
+C:\DOCUME~1\mike\LOCALS~1\Temp/cccZaaaa.s:199    .text:0000010e MODEM_putch
+C:\DOCUME~1\mike\LOCALS~1\Temp/cccZaaaa.s:238    .text:00000138 MODEM_getch
+C:\DOCUME~1\mike\LOCALS~1\Temp/cccZaaaa.s:314    .text:00000196 MODEM_pushch
+C:\DOCUME~1\mike\LOCALS~1\Temp/cccZaaaa.s:329    .text:0000019c MODEM_kbhit
+C:\DOCUME~1\mike\LOCALS~1\Temp/cccZaaaa.s:361    .text:000001b8 MODEM_puts
+C:\DOCUME~1\mike\LOCALS~1\Temp/cccZaaaa.s:393    .text:000001da MODEM_reads
+C:\DOCUME~1\mike\LOCALS~1\Temp/cccZaaaa.s:469    .text:00000244 MODEM_Camera_SendCmd
+C:\DOCUME~1\mike\LOCALS~1\Temp/cccZaaaa.s:562    .text:000002e0 MODEM_Init_Camera
+C:\DOCUME~1\mike\LOCALS~1\Temp/cccZaaaa.s:683    .text:000003a0 MODEM_Get_Pic
+                            *COM*:00000002 boot_version
+                            *COM*:00000002 crc_boot
+                            *COM*:00000002 bootloader
+
+UNDEFINED SYMBOLS
+__do_copy_data
+__do_clear_bss
+inp
+outp
+wait
+TIMER_Get_Tick
+printShort
+printByte
+CONSOLE_puts
+TIMER_Wait_Tick

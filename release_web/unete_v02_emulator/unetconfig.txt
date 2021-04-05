@@ -1,0 +1,12 @@
+#
+# unete config file
+#
+# iface, dhcp, ip, mask, gateway, pridns, secdns - please use that order
+#
+iface 0
+dhcp 1
+ip 10.10.11.9
+mask 255.255.255.0
+gateway 10.10.11.1
+pridns 10.10.11.2
+secdns 64.40.160.10

@@ -1,0 +1,477 @@
+   1               		.file	"console.c"
+   2               		.arch atmega64
+   3               	__SREG__ = 0x3f
+   4               	__SP_H__ = 0x3e
+   5               	__SP_L__ = 0x3d
+   6               	__tmp_reg__ = 0
+   7               	__zero_reg__ = 1
+   8               		.global __do_copy_data
+   9               		.global __do_clear_bss
+  17               	.Ltext0:
+  18               	.global	__vector_18
+  20               	__vector_18:
+  21               	.LFB9:
+  22               	.LM1:
+  23               	/* prologue: frame size=0 */
+  24 0000 1F92      		push __zero_reg__
+  25 0002 0F92      		push __tmp_reg__
+  26 0004 0FB6      		in __tmp_reg__,__SREG__
+  27 0006 0F92      		push __tmp_reg__
+  28 0008 1124      		clr __zero_reg__
+  29 000a 8F93      		push r24
+  30 000c 9F93      		push r25
+  31 000e EF93      		push r30
+  32 0010 FF93      		push r31
+  33               	/* prologue end (size=9) */
+  34               	.LM2:
+  35 0012 C59A      		sbi 56-0x20,5
+  36               	.LM3:
+  37 0014 9CB1      		in r25,44-0x20
+  38               	.LVL0:
+  39               	.LM4:
+  40 0016 8091 0000 		lds r24,UART0_RxSize
+  41 001a 8534      		cpi r24,lo8(69)
+  42 001c 00F4      		brsh .L7
+  43               	.LM5:
+  44 001e 8091 0000 		lds r24,UART0_RxTail
+  45 0022 E82F      		mov r30,r24
+  46 0024 FF27      		clr r31
+  47 0026 E050      		subi r30,lo8(-(UART0_RxBuffer))
+  48 0028 F040      		sbci r31,hi8(-(UART0_RxBuffer))
+  49 002a 9083      		st Z,r25
+  50 002c 8F5F      		subi r24,lo8(-(1))
+  51 002e 8093 0000 		sts UART0_RxTail,r24
+  52               	.LM6:
+  53 0032 8091 0000 		lds r24,UART0_RxTail
+  54 0036 8534      		cpi r24,lo8(69)
+  55 0038 00F0      		brlo .L4
+  56               	.LM7:
+  57 003a 1092 0000 		sts UART0_RxTail,__zero_reg__
+  58               	.L4:
+  59               	.LM8:
+  60 003e 8091 0000 		lds r24,UART0_RxSize
+  61 0042 8F5F      		subi r24,lo8(-(1))
+  62 0044 8093 0000 		sts UART0_RxSize,r24
+  63               	.LM9:
+  64 0048 8091 0000 		lds r24,UART0_RxSize
+  65 004c 8134      		cpi r24,lo8(65)
+  66 004e 00F0      		brlo .L7
+  67               	.LM10:
+  68 0050 1A9A      		sbi 35-0x20,2
+  69               	.LM11:
+  70 0052 A89A      		sbi 53-0x20,0
+  71               	.L7:
+  72               	/* epilogue: frame size=0 */
+  73 0054 FF91      		pop r31
+  74 0056 EF91      		pop r30
+  75 0058 9F91      		pop r25
+  76 005a 8F91      		pop r24
+  77 005c 0F90      		pop __tmp_reg__
+  78 005e 0FBE      		out __SREG__,__tmp_reg__
+  79 0060 0F90      		pop __tmp_reg__
+  80 0062 1F90      		pop __zero_reg__
+  81 0064 1895      		reti
+  82               	/* epilogue end (size=9) */
+  83               	/* function __vector_18 size 51 (33) */
+  84               	.LFE9:
+  86               	.global	__vector_20
+  88               	__vector_20:
+  89               	.LFB10:
+  90               	.LM12:
+  91               	/* prologue: frame size=0 */
+  92 0066 1F92      		push __zero_reg__
+  93 0068 0F92      		push __tmp_reg__
+  94 006a 0FB6      		in __tmp_reg__,__SREG__
+  95 006c 0F92      		push __tmp_reg__
+  96 006e 1124      		clr __zero_reg__
+  97 0070 8F93      		push r24
+  98               	/* prologue end (size=6) */
+  99               	.LM13:
+ 100 0072 81E0      		ldi r24,lo8(1)
+ 101 0074 8093 0000 		sts UART0_Ready,r24
+ 102               	/* epilogue: frame size=0 */
+ 103 0078 8F91      		pop r24
+ 104 007a 0F90      		pop __tmp_reg__
+ 105 007c 0FBE      		out __SREG__,__tmp_reg__
+ 106 007e 0F90      		pop __tmp_reg__
+ 107 0080 1F90      		pop __zero_reg__
+ 108 0082 1895      		reti
+ 109               	/* epilogue end (size=6) */
+ 110               	/* function __vector_20 size 15 (3) */
+ 111               	.LFE10:
+ 113               	.global	UART0_Init
+ 115               	UART0_Init:
+ 116               	.LFB11:
+ 117               	.LM14:
+ 118               	/* prologue: frame size=0 */
+ 119               	/* prologue end (size=0) */
+ 120               	.LVL1:
+ 121               	.LM15:
+ 122 0084 1092 0000 		sts UART0_RxTail,__zero_reg__
+ 123 0088 2091 0000 		lds r18,UART0_RxTail
+ 124 008c 2093 0000 		sts UART0_RxHead,r18
+ 125 0090 2091 0000 		lds r18,UART0_RxHead
+ 126 0094 2093 0000 		sts UART0_RxSize,r18
+ 127               	.LM16:
+ 128 0098 21E0      		ldi r18,lo8(1)
+ 129 009a 2093 0000 		sts UART0_Ready,r18
+ 130               	.LM17:
+ 131 009e 28ED      		ldi r18,lo8(-40)
+ 132 00a0 2AB9      		out 42-0x20,r18
+ 133               	.LM18:
+ 134 00a2 89B9      		out 41-0x20,r24
+ 135               	.LM19:
+ 136 00a4 892F      		mov r24,r25
+ 137 00a6 9927      		clr r25
+ 138               	.LVL2:
+ 139 00a8 8093 9000 		sts 144,r24
+ 140               	.LM20:
+ 141 00ac 1A98      		cbi 35-0x20,2
+ 142               	.LM21:
+ 143 00ae 1B98      		cbi 35-0x20,3
+ 144               	.LM22:
+ 145 00b0 1092 0000 		sts (pushch)+1,__zero_reg__
+ 146 00b4 1092 0000 		sts pushch,__zero_reg__
+ 147               	/* epilogue: frame size=0 */
+ 148 00b8 0895      		ret
+ 149               	/* epilogue end (size=1) */
+ 150               	/* function UART0_Init size 27 (26) */
+ 151               	.LFE11:
+ 153               	.global	wait
+ 155               	wait:
+ 156               	.LFB12:
+ 157               	.LM23:
+ 158               	/* prologue: frame size=0 */
+ 159               	/* prologue end (size=0) */
+ 160               	/* epilogue: frame size=0 */
+ 161 00ba 0895      		ret
+ 162               	/* epilogue end (size=1) */
+ 163               	/* function wait size 1 (0) */
+ 164               	.LFE12:
+ 166               	.global	getch
+ 168               	getch:
+ 169               	.LFB13:
+ 170               	.LM24:
+ 171               	/* prologue: frame size=0 */
+ 172               	/* prologue end (size=0) */
+ 173               	.L16:
+ 174               	.LM25:
+ 175 00bc 8091 0000 		lds r24,UART0_RxSize
+ 176 00c0 8823      		tst r24
+ 177 00c2 01F0      		breq .L16
+ 178               	.LM26:
+ 179 00c4 8091 0000 		lds r24,UART0_RxHead
+ 180 00c8 E82F      		mov r30,r24
+ 181 00ca FF27      		clr r31
+ 182 00cc E050      		subi r30,lo8(-(UART0_RxBuffer))
+ 183 00ce F040      		sbci r31,hi8(-(UART0_RxBuffer))
+ 184 00d0 E081      		ld r30,Z
+ 185               	.LVL3:
+ 186 00d2 8F5F      		subi r24,lo8(-(1))
+ 187 00d4 8093 0000 		sts UART0_RxHead,r24
+ 188               	.LM27:
+ 189 00d8 8091 0000 		lds r24,UART0_RxHead
+ 190 00dc 8534      		cpi r24,lo8(69)
+ 191 00de 00F0      		brlo .L18
+ 192               	.LM28:
+ 193 00e0 1092 0000 		sts UART0_RxHead,__zero_reg__
+ 194               	.L18:
+ 195               	.LM29:
+ 196               	/* #APP */
+ 197 00e4 F894      		cli
+ 198               	.LM30:
+ 199               	/* #NOAPP */
+ 200 00e6 8091 0000 		lds r24,UART0_RxSize
+ 201 00ea 8150      		subi r24,lo8(-(-1))
+ 202 00ec 8093 0000 		sts UART0_RxSize,r24
+ 203               	.LM31:
+ 204 00f0 8091 0000 		lds r24,UART0_RxSize
+ 205 00f4 8134      		cpi r24,lo8(65)
+ 206 00f6 00F4      		brsh .L20
+ 207               	.LM32:
+ 208 00f8 1A98      		cbi 35-0x20,2
+ 209               	.L20:
+ 210               	.LM33:
+ 211               	/* #APP */
+ 212 00fa 7894      		sei
+ 213               	.LM34:
+ 214               	/* #NOAPP */
+ 215 00fc 8E2F      		mov r24,r30
+ 216 00fe 9927      		clr r25
+ 217               	/* epilogue: frame size=0 */
+ 218 0100 0895      		ret
+ 219               	/* epilogue end (size=1) */
+ 220               	/* function getch size 37 (36) */
+ 221               	.LFE13:
+ 223               	.global	putch
+ 225               	putch:
+ 226               	.LFB14:
+ 227               	.LM35:
+ 228               	/* prologue: frame size=0 */
+ 229               	/* prologue end (size=0) */
+ 230               	.LVL4:
+ 231 0102 982F      		mov r25,r24
+ 232               	.LM36:
+ 233 0104 C49A      		sbi 56-0x20,4
+ 234               	.LM37:
+ 235 0106 8091 0000 		lds r24,mm+6
+ 236               	.LVL5:
+ 237 010a 82FF      		sbrs r24,2
+ 238 010c 00C0      		rjmp .L34
+ 239               	.L39:
+ 240               	.LM38:
+ 241 010e 8091 0000 		lds r24,UART0_Ready
+ 242 0112 8823      		tst r24
+ 243 0114 01F0      		breq .L39
+ 244 0116 0E99      		sbic 33-0x20,6
+ 245 0118 00C0      		rjmp .L39
+ 246 011a 00C0      		rjmp .L29
+ 247               	.L34:
+ 248               	.LM39:
+ 249 011c 8091 0000 		lds r24,UART0_Ready
+ 250 0120 8823      		tst r24
+ 251 0122 01F0      		breq .L34
+ 252               	.L29:
+ 253               	.LM40:
+ 254 0124 1092 0000 		sts UART0_Ready,__zero_reg__
+ 255               	.LM41:
+ 256 0128 9CB9      		out 44-0x20,r25
+ 257               	.LM42:
+ 258 012a 892F      		mov r24,r25
+ 259 012c 9927      		clr r25
+ 260               	/* epilogue: frame size=0 */
+ 261 012e 0895      		ret
+ 262               	/* epilogue end (size=1) */
+ 263               	/* function putch size 23 (22) */
+ 264               	.LFE14:
+ 266               	.global	CONSOLE_init
+ 268               	CONSOLE_init:
+ 269               	.LFB15:
+ 270               	.LM43:
+ 271               	/* prologue: frame size=0 */
+ 272               	/* prologue end (size=0) */
+ 273               	.LVL6:
+ 274               	.LM44:
+ 275 0130 0E94 0000 		call UART0_Init
+ 276               	.LVL7:
+ 277               	/* epilogue: frame size=0 */
+ 278 0134 0895      		ret
+ 279               	/* epilogue end (size=1) */
+ 280               	/* function CONSOLE_init size 3 (2) */
+ 281               	.LFE15:
+ 283               	.global	CONSOLE_putch
+ 285               	CONSOLE_putch:
+ 286               	.LFB16:
+ 287               	.LM45:
+ 288               	/* prologue: frame size=0 */
+ 289               	/* prologue end (size=0) */
+ 290               	.LVL8:
+ 291               	.LM46:
+ 292 0136 0E94 0000 		call putch
+ 293               	.LVL9:
+ 294               	/* epilogue: frame size=0 */
+ 295 013a 0895      		ret
+ 296               	/* epilogue end (size=1) */
+ 297               	/* function CONSOLE_putch size 3 (2) */
+ 298               	.LFE16:
+ 300               	.global	CONSOLE_getch
+ 302               	CONSOLE_getch:
+ 303               	.LFB17:
+ 304               	.LM47:
+ 305               	/* prologue: frame size=0 */
+ 306               	/* prologue end (size=0) */
+ 307               	.LM48:
+ 308 013c 8091 0000 		lds r24,pushch
+ 309 0140 9091 0000 		lds r25,(pushch)+1
+ 310 0144 0097      		sbiw r24,0
+ 311 0146 01F0      		breq .L45
+ 312               	.LM49:
+ 313 0148 1092 0000 		sts (pushch)+1,__zero_reg__
+ 314 014c 1092 0000 		sts pushch,__zero_reg__
+ 315 0150 00C0      		rjmp .L47
+ 316               	.L45:
+ 317               	.LM50:
+ 318 0152 0E94 0000 		call getch
+ 319               	.L47:
+ 320               	.LVL10:
+ 321               	.LM51:
+ 322 0156 9927      		clr r25
+ 323               	.LVL11:
+ 324               	/* epilogue: frame size=0 */
+ 325 0158 0895      		ret
+ 326               	/* epilogue end (size=1) */
+ 327               	/* function CONSOLE_getch size 15 (14) */
+ 328               	.LFE17:
+ 330               	.global	CONSOLE_kbhit
+ 332               	CONSOLE_kbhit:
+ 333               	.LFB18:
+ 334               	.LM52:
+ 335               	/* prologue: frame size=0 */
+ 336               	/* prologue end (size=0) */
+ 337               	.LM53:
+ 338 015a 8091 0000 		lds r24,pushch
+ 339 015e 9091 0000 		lds r25,(pushch)+1
+ 340 0162 892B      		or r24,r25
+ 341 0164 01F0      		breq .L50
+ 342               	.LM54:
+ 343 0166 81E0      		ldi r24,lo8(1)
+ 344 0168 90E0      		ldi r25,hi8(1)
+ 345 016a 0895      		ret
+ 346               	.L50:
+ 347 016c 8091 0000 		lds r24,UART0_RxSize
+ 348 0170 20E0      		ldi r18,lo8(0)
+ 349 0172 30E0      		ldi r19,hi8(0)
+ 350 0174 8823      		tst r24
+ 351 0176 01F0      		breq .L53
+ 352 0178 21E0      		ldi r18,lo8(1)
+ 353 017a 30E0      		ldi r19,hi8(1)
+ 354               	.L53:
+ 355 017c C901      		movw r24,r18
+ 356               	.LM55:
+ 357 017e 0895      		ret
+ 358               	/* epilogue: frame size=0 */
+ 359               	/* epilogue: noreturn */
+ 360               	/* epilogue end (size=0) */
+ 361               	/* function CONSOLE_kbhit size 19 (19) */
+ 362               	.LFE18:
+ 364               	.global	CONSOLE_pushch
+ 366               	CONSOLE_pushch:
+ 367               	.LFB19:
+ 368               	.LM56:
+ 369               	/* prologue: frame size=0 */
+ 370               	/* prologue end (size=0) */
+ 371               	.LVL12:
+ 372               	.LM57:
+ 373 0180 9927      		clr r25
+ 374 0182 9160      		ori r25,hi8(256)
+ 375 0184 9093 0000 		sts (pushch)+1,r25
+ 376 0188 8093 0000 		sts pushch,r24
+ 377               	/* epilogue: frame size=0 */
+ 378 018c 0895      		ret
+ 379               	/* epilogue end (size=1) */
+ 380               	/* function CONSOLE_pushch size 7 (6) */
+ 381               	.LFE19:
+ 383               	.global	CONSOLE_cputs
+ 385               	CONSOLE_cputs:
+ 386               	.LFB20:
+ 387               	.LM58:
+ 388               	/* prologue: frame size=0 */
+ 389 018e CF93      		push r28
+ 390 0190 DF93      		push r29
+ 391               	/* prologue end (size=2) */
+ 392               	.LVL13:
+ 393 0192 EC01      		movw r28,r24
+ 394 0194 00C0      		rjmp .L58
+ 395               	.LVL14:
+ 396               	.L59:
+ 397               	.LBB6:
+ 398               	.LM59:
+ 399 0196 2196      		adiw r28,1
+ 400 0198 F901      		movw r30,r18
+ 401               	/* #APP */
+ 402 019a 8491      		lpm r24, Z
+ 403               		
+ 404               	.LVL15:
+ 405               	/* #NOAPP */
+ 406               	.LBE6:
+ 407 019c 0E94 0000 		call CONSOLE_putch
+ 408               	.LVL16:
+ 409               	.L58:
+ 410 01a0 9E01      		movw r18,r28
+ 411               	.LVL17:
+ 412               	.LBB7:
+ 413               	.LM60:
+ 414 01a2 FE01      		movw r30,r28
+ 415               	/* #APP */
+ 416 01a4 8491      		lpm r24, Z
+ 417               		
+ 418               	.LVL18:
+ 419               	/* #NOAPP */
+ 420               	.LBE7:
+ 421 01a6 8823      		tst r24
+ 422 01a8 01F4      		brne .L59
+ 423               	/* epilogue: frame size=0 */
+ 424 01aa DF91      		pop r29
+ 425 01ac CF91      		pop r28
+ 426 01ae 0895      		ret
+ 427               	/* epilogue end (size=3) */
+ 428               	/* function CONSOLE_cputs size 23 (18) */
+ 429               	.LFE20:
+ 431               	.global	CONSOLE_puts
+ 433               	CONSOLE_puts:
+ 434               	.LFB21:
+ 435               	.LM61:
+ 436               	/* prologue: frame size=0 */
+ 437 01b0 CF93      		push r28
+ 438 01b2 DF93      		push r29
+ 439               	/* prologue end (size=2) */
+ 440               	.LVL19:
+ 441 01b4 EC01      		movw r28,r24
+ 442               	.LM62:
+ 443 01b6 892B      		or r24,r25
+ 444 01b8 01F4      		brne .L67
+ 445 01ba 00C0      		rjmp .L66
+ 446               	.LVL20:
+ 447               	.L65:
+ 448               	.LM63:
+ 449 01bc 2196      		adiw r28,1
+ 450 01be 0E94 0000 		call CONSOLE_putch
+ 451               	.LVL21:
+ 452               	.L67:
+ 453               	.LM64:
+ 454 01c2 8881      		ld r24,Y
+ 455 01c4 8823      		tst r24
+ 456 01c6 01F4      		brne .L65
+ 457               	.LVL22:
+ 458               	.L66:
+ 459               	/* epilogue: frame size=0 */
+ 460 01c8 DF91      		pop r29
+ 461 01ca CF91      		pop r28
+ 462 01cc 0895      		ret
+ 463               	/* epilogue end (size=3) */
+ 464               	/* function CONSOLE_puts size 15 (10) */
+ 465               	.LFE21:
+ 467               		.lcomm pushch,2
+ 468               		.comm boot_version,2,1
+ 469               		.comm crc_boot,2,1
+ 470               		.comm bootloader,2,1
+ 471               		.comm UART0_RxBuffer,69,1
+ 472               		.comm UART0_RxSize,1,1
+ 473               		.comm UART0_RxHead,1,1
+ 474               		.comm UART0_RxTail,1,1
+ 475               		.comm UART0_Ready,1,1
+ 596               	.Letext0:
+DEFINED SYMBOLS
+                            *ABS*:00000000 console.c
+C:\DOCUME~1\mike\LOCALS~1\Temp/ccmwgnVE.s:3      *ABS*:0000003f __SREG__
+C:\DOCUME~1\mike\LOCALS~1\Temp/ccmwgnVE.s:4      *ABS*:0000003e __SP_H__
+C:\DOCUME~1\mike\LOCALS~1\Temp/ccmwgnVE.s:5      *ABS*:0000003d __SP_L__
+C:\DOCUME~1\mike\LOCALS~1\Temp/ccmwgnVE.s:6      *ABS*:00000000 __tmp_reg__
+C:\DOCUME~1\mike\LOCALS~1\Temp/ccmwgnVE.s:7      *ABS*:00000001 __zero_reg__
+C:\DOCUME~1\mike\LOCALS~1\Temp/ccmwgnVE.s:20     .text:00000000 __vector_18
+                            *COM*:00000001 UART0_RxSize
+                            *COM*:00000001 UART0_RxTail
+                            *COM*:00000045 UART0_RxBuffer
+C:\DOCUME~1\mike\LOCALS~1\Temp/ccmwgnVE.s:88     .text:00000066 __vector_20
+                            *COM*:00000001 UART0_Ready
+C:\DOCUME~1\mike\LOCALS~1\Temp/ccmwgnVE.s:115    .text:00000084 UART0_Init
+                            *COM*:00000001 UART0_RxHead
+                             .bss:00000000 pushch
+C:\DOCUME~1\mike\LOCALS~1\Temp/ccmwgnVE.s:155    .text:000000ba wait
+C:\DOCUME~1\mike\LOCALS~1\Temp/ccmwgnVE.s:168    .text:000000bc getch
+C:\DOCUME~1\mike\LOCALS~1\Temp/ccmwgnVE.s:225    .text:00000102 putch
+C:\DOCUME~1\mike\LOCALS~1\Temp/ccmwgnVE.s:268    .text:00000130 CONSOLE_init
+C:\DOCUME~1\mike\LOCALS~1\Temp/ccmwgnVE.s:285    .text:00000136 CONSOLE_putch
+C:\DOCUME~1\mike\LOCALS~1\Temp/ccmwgnVE.s:302    .text:0000013c CONSOLE_getch
+C:\DOCUME~1\mike\LOCALS~1\Temp/ccmwgnVE.s:332    .text:0000015a CONSOLE_kbhit
+C:\DOCUME~1\mike\LOCALS~1\Temp/ccmwgnVE.s:366    .text:00000180 CONSOLE_pushch
+C:\DOCUME~1\mike\LOCALS~1\Temp/ccmwgnVE.s:385    .text:0000018e CONSOLE_cputs
+C:\DOCUME~1\mike\LOCALS~1\Temp/ccmwgnVE.s:433    .text:000001b0 CONSOLE_puts
+                            *COM*:00000002 boot_version
+                            *COM*:00000002 crc_boot
+                            *COM*:00000002 bootloader
+
+UNDEFINED SYMBOLS
+__do_copy_data
+__do_clear_bss
+mm

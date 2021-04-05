@@ -1,0 +1,264 @@
+
+//drivers/wlndriver/wln_embedded_bootload.c"
+/****************************************************************************
+Copyright Info		:  	All Rights Reserved - (c) Adya Systems & Software Pvt. Ltd.	
+Name			:  	wln_embedded_bootload.c - Wln Driver module                           				
+Creation Date		:  	24-Jan -2006                                          					
+Description		:  	
+
+This file implements functions responsible for downloading the cfg parser and loading 
+MAC firmware. 
+
+Changed History	:                                                       						
+<Date>          <Author>    <Version>        < Description >              					
+****************************************************************************/
+
+#include <types.h>						//declares generic types
+#include "RedmondramSPI.h"				//wlan firmware file
+#include "CfgPSeattle2.h"  				//wlan cfg parser file	
+#include "wln_internal.h"				//defines constants and declares various packet structures
+#include "common.h"						//declares common functions for all module
+#include "wln_embedded_spi_protocol.h"	//declares wrapper functions to low level spi functions
+#include "wln_embedded_bootload.h"		//declares functions to load cfg parser and firmware
+
+
+uint32_t 		redmond_mac_len; //Firmware array length
+const uint8_t *redmond_mac; //Firmware array pointer
+
+
+/*  
+Name		PhgHhalDoBootLoad                            
+
+Arguments	None                                                 
+
+Return		TRUE or FALSE
+
+Description	The PhgHhalDoBootLoad is responsible to load cfg parser and then loading of wlan firmwa
+	               This gets called inside the WLN_Power(ON).					                                    
+*/
+uint32_t PhgHhalDoBootLoad(void)
+{
+	uint8_t	u8RetryCount;
+	uint32_t	u32Result;
+	uint16_t 	parser_stat;
+	u8RetryCount = HOST_MAX_BL_RETRY_COUNT;
+	u32Result = BLFU_STATUS_FAILURE;
+
+	spi_readFromSlaveReg(HOST_S2M_MAIL_BOX_REG2, &parser_stat );
+	
+			
+	do
+	{
+		
+	  	// Download the Config Parser first 
+	  	DownLoadParser();
+		
+	  	// Set the MAC firmware length and data         
+		redmond_mac_len = redmond_mac_fw_len;
+		redmond_mac = redmond_mac_fw;
+		 
+	  	// Download the MAC Firmware        
+		 u32Result = PhgHhalDownloadMAC();
+
+	  	// Reset the Chip In case of Failure 
+		if(u32Result == BLFU_STATUS_FAILURE)
+		{
+			//Reset the chip 
+			spi_writeToSlaveReg(HOST_RESET_CNTL_REG, HOST_RESET_CNTL_VALUE);
+
+		      // Let the chip settle down for some time 
+			SleepMs(MAC_RESET_SETTLE_TIME);
+
+		}
+		
+	}
+	while((u8RetryCount--) && (u32Result == BLFU_STATUS_FAILURE));
+
+	//check status
+	if(u32Result == BLFU_STATUS_FAILURE)
+	{
+		u32Result=FALSE;
+	}
+	else
+	{
+		u32Result=TRUE;
+	}
+	return u32Result;
+	
+}
+
+
+/*  
+Name		DownLoadParser                            
+
+Arguments	None                                                 
+
+Return		None
+
+Description	This routine is used to download the Config parser file to the target. The Config parse
+			is an intermediate firmware file responsible for further downloading the MAC 
+			firmware. This is required since ROM and RAM changes the space address 
+			after download. Config parser allows the flexibility
+					 
+	              This gets called inside the PhgHhalDoBootLoad.                                      
+*/
+void DownLoadParser(void)
+{
+
+	// send packet length to SPI interface	
+	spi_sendM2SDMAPkg(cfgp_len);
+
+	// send packet buffer to SPI interface	
+	spi_write_buffer((uint8_t *)cfgp, cfgp_len);
+
+}
+
+
+/*  
+Name		PhgHhalDownloadMAC                            
+
+Arguments	None                                                 
+
+Return		BLFU_STATUS_SUCCESS or BLFU_STATUS_FAILURE 
+
+Description	The PhgHhalDownloadMAC does a boot load of files mainly the MAC file 
+			or production firmware					 
+	               This gets called inside the PhgHhalDoBootLoad.                                     
+*/
+
+uint32_t PhgHhalDownloadMAC(void)
+{
+	uint32_t u32Status;
+	uint16_t u16RespVal;
+	uint32_t u32RetryCount;
+
+	uint32_t u32Iterations;
+	uint32_t u32Count, u32TotalLenRemaining, u32CurDMALen;
+	uint8_t * pu8DmaPtr;	
+	uint16_t  u16Val;
+
+	u32Status = BLFU_STATUS_SUCCESS;
+	u16RespVal = 0;
+	u32RetryCount =0;
+	
+	u32Iterations =  (redmond_mac_len / MAX_M2S_DMA_SIZE) + 1;
+	u32Count = 0; 
+	u32TotalLenRemaining = redmond_mac_len; 
+	u32CurDMALen = 0;
+	pu8DmaPtr = (uint8_t *)redmond_mac;
+	u16Val = 0;
+	
+	// write the number of iterations required for download based on 
+	//above calculations to M2S SR3.
+	spi_writeToSlaveReg(HOST_M2S_SCRATCH_REG3,u32Iterations);
+
+
+	// wait for the response from cfgp downloaded previously for 
+	//starting img file transfer 
+	u16RespVal = 0;
+	u32RetryCount = HOST_LONG_RETRY_COUNT;
+	while ( (u16RespVal != 0x26) && (u32RetryCount)) // check the boot code for SPI2 for the value 
+	{
+		 
+		  //In the bootrom, after booting DMA completion, the ISR sets 0x24 
+		  //to the HOST_S2M_MAIL_BOX_REG2 
+	
+		spi_readFromSlaveReg(HOST_S2M_MAIL_BOX_REG2,
+								 &u16RespVal);
+
+		u32RetryCount--;
+	}
+	
+	if(u32RetryCount == 0)
+	{
+		// Sleep for a milli second and then try for last time 
+		SleepMs(SLEEP_TIME_AFTER_MAX_RETRY);
+		spi_readFromSlaveReg( HOST_S2M_MAIL_BOX_REG2,
+								 &u16RespVal);
+	}
+
+	if(u16RespVal != 0x26)
+	{
+		return BLFU_STATUS_FAILURE;
+	}
+	
+	// loop till the DMA of complete code is done       
+	while ( u32Count < u32Iterations )
+	{
+		u32Count++;
+		if ( u32TotalLenRemaining > MAX_M2S_DMA_SIZE )
+		{
+			u32CurDMALen = MAX_M2S_DMA_SIZE; 
+			u32TotalLenRemaining -= MAX_M2S_DMA_SIZE;
+		}
+		else
+		{
+			u32CurDMALen = u32TotalLenRemaining;
+		}
+	
+		// send packet length to SPI interface		
+		spi_sendM2SDMAPkg(u32CurDMALen);
+
+		// send packet buffer to SPI interface
+		spi_write_buffer((uint8_t *)pu8DmaPtr, u32CurDMALen);
+		pu8DmaPtr+=u32CurDMALen;
+
+	
+		// Now wait for the tgt to ACK this DMA 
+		u32RetryCount = HOST_LONG_RETRY_COUNT;
+		do
+		{
+			spi_readFromSlaveReg(HOST_S2M_SCRATCH_REG3,
+									 &u16Val);
+		}while ( (u16Val != u32Count) && (u32RetryCount--) );
+
+		if(u32RetryCount == 0x00)
+		{
+			// do a last try
+			SleepMs(SLEEP_TIME_AFTER_MAX_RETRY);
+			spi_readFromSlaveReg(	 HOST_S2M_SCRATCH_REG3,
+									 &u16Val);
+		}
+	
+		if(u16Val != u32Count)
+		{
+			// return failure
+			return BLFU_STATUS_FAILURE;
+		}
+	}// end of while 
+
+	// wait for the response from bldr for end of DMA 
+	u32RetryCount = HOST_LONG_RETRY_COUNT;	
+	
+	// In the bootrom, after DMA completion, the ISR sets 0x42 
+	//in the HOST_DMA_INTR_REG 
+	while ( (u16RespVal != 0x42) && (u32RetryCount--) ) // check the boot code for SPI2 for the value 
+	{
+		
+		spi_readFromSlaveReg(HOST_S2M_MAIL_BOX_REG2,
+								 (uint16_t *)&u16RespVal);
+	}
+	
+	if(u32RetryCount == 0x00)
+	{
+		// check last time to be sure
+		SleepMs(SLEEP_TIME_AFTER_MAX_RETRY);
+		spi_readFromSlaveReg(HOST_S2M_MAIL_BOX_REG2,
+								 (uint16_t *)&u16RespVal);
+	}
+
+	if(u16RespVal != 0x42)
+	{
+		//return failure
+		return BLFU_STATUS_FAILURE;
+	}
+
+	// start the firmware by writing any value in mailbox register 
+	spi_writeToSlaveReg(HOST_M2S_MAIL_BOX_REG0 ,0x08);
+	do
+	{
+		spi_readFromSlaveReg(HOST_S2M_MAIL_BOX_REG0, &u16RespVal);
+	}while(!u16RespVal);
+
+	return u32Status;
+}

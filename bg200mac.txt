@@ -1,0 +1,1499 @@
+
+/**********************************************************************************************************  
+Name		nic_init
+Arguments	None
+Return		None
+
+Description	Power - up initialization for the NIC
+*/
+
+void nic_init(void)
+{
+}
+
+
+
+void nic_send(void)
+{
+	//DEBUG_MSG1("nic_send->uip_buf %d\r\n", uip_buf);
+	//DEBUG_MSG1("nic_send->uip_appdata %d\r\n", uip_appdata);
+	//DEBUG_MSG1("nic_send->uip_len %d\r\n", uip_len);
+	WLN_Write_Packet((uint8_t *) uip_buf, (uint8_t *) uip_appdata, (uint16_t) uip_len);
+}
+
+
+/**********************************************************************************************************  
+  Name		nic_poll
+
+  Arguments	None
+  
+  Return		Length of the packet received or zero if no packet received
+  
+  Description	Polls the NIC looking for an overflow condition or a new packet in the receive buffer.
+			If a new packet exists and will fit in uip_buf, it is retrieved, and the length is returned.
+			A packet bigger than the buffer is discarded. 
+*/
+
+uint16_t nic_poll(void)
+{
+
+	uint16_t packetLength;
+
+	if(WLN_Read_Packet((uint8_t *) uip_buf, (uint16_t *) &packetLength))
+		return packetLength;
+	else
+		return 0;	
+ 	
+ }
+
+
+
+
+
+
+
+/****************************************************************************
+Copyright Info		:  	All Rights Reserved - (c) Adya Systems & Software Pvt. Ltd.	
+Name			:  	wln_embedded_driver.c - Wln Driver module                           				
+Creation Date		:  	24-Jan -2006                                          					
+Description		:  	
+
+This file implements functions exposed to upper layer. It also contains functions which are
+internal to this file and called indirectly.
+
+Changed History	:                                                       						
+<Date>          <Author>    <Version>        < Description >              					
+****************************************************************************/
+#include <types.h>						//declares generic types
+#include <lpc213x.h> 
+#include "stdio.h"
+#include "string.h"
+#include "common.h"						//declares common functions for all module
+#include "debug.h"
+#include "wln_internal.h"				//defines constants and declares various packet structures
+#include "config.h"
+#include "wln_embedded_driver.h"		//declares wlan api functions for upper layer
+#include "wln_embedded_spi_protocol.h"	//declares wrapper functions to low level spi functions
+#include "spi_driver.h"					//declares low level spi functions 
+#include "wln_embedded_bootload.h"		//declares functions to load cfg parser and firmware
+#include "wln_NVM_Data.h"				//defines defualt constant values for stInit structure variable
+#include "wln_InitConnect_Data.h"		//defines defualt constant values for stInitConnect structure var
+#include "uipopt.h" //
+
+//Global variables
+stInitConnect stInitConParams;		//to store wlan connect parameters
+stInit stInitVar; 					//to store wlan configuration parameters
+stWlanState stWlanStateStatus;	//to store wlan connect state information
+
+//SNAP header array for stHostContextTx structure type variable
+const uint8_t gau8SNAPHdr[6] = {0xAA, 0xAA, 0x03, 0x00, 0x00, 0x00};
+
+uint8_t AssocConfirmFlag=0;
+
+
+/********************************************************************************************  
+Name		WLN_Power                            
+ 
+Arguments	powerState		:   Power state values ON, OFF, SLEEP, DOZE, RESET, ACT                      
+ 
+Return		TRUE or FALSE
+ 
+Description	This does different tasks based on the passed parameter ON, OFF, SLEEP, 
+			 DOZE, RESET, ACT. This function is called by application directly. WLN_Power
+ 			 handles power management and on/off reset.
+**********************************************************************************************/
+uint8_t WLN_Power(uint8_t powerState)
+{
+ 	uint32_t u8Result;
+ 
+	IODIR1 |= 1<<23;					// as output
+	   
+	switch(powerState)
+	{
+	case ON:
+   		//Switch ON
+		IOCLR1 |= 1<<23; //active low
+		//allows hardware to settle after power up
+ 		SleepMs(10); 
+ 		//load cfg parser and MAC firmware
+ 		u8Result=PhgHhalDoBootLoad();
+
+  		if(u8Result == TRUE)
+ 		{
+ 			u8Result = WLN_InitializeMac();
+   		}
+ 		break;
+ 	case OFF:
+ 		RDEBUGMSG("Power Off -OK\n\r");
+ 		//Switch OFF
+ 		IOSET1 |= 1<<23; 
+		u8Result=TRUE;
+ 		break;
+ 	case SLEEP:
+ 		u8Result=WLN_Sleep();
+ 		break;
+   	case ACT:
+ 		u8Result=WLN_Activate();
+ 		break;
+ 	case DOZE:
+ 		u8Result=WLN_Doze();
+ 		break;
+	case RESET:
+ 		u8Result=TRUE;
+ 		break; 		
+ 	default:
+ 		u8Result=FALSE;
+	}
+ 	return u8Result;
+}
+ 
+
+/*************************************************************************************************************************  
+Name		WLN_Write_Packet                            
+ 
+Argument	txHeader		: First 54 bytes of ethernet packet                                             
+ 			txAppData		: Remaining part of the ethernet packet     
+ 
+ 			  				if txLen<=54, then complete packet is in txHeader			
+ 							Packet format (txHeader)- 	<Mac Address Destination(6) bytes>
+ 													<Mac Address Source(6) bytes>
+ 													<Ethernet packet data (txLen-12) bytes>
+ 
+ 							if txLen>54, then complete packet is in txHeader	 and remaining data will be in txAppData		
+ 							Packet format (txHeader)- 	<Mac Address Destination(6) bytes>
+ 													<Mac Address Source(6) bytes>
+ 													<Ethernet packet data (54-12) bytes>
+ 
+ 							Packet format (txAppData)- 	<Ethernet packet data (txLen-54) bytes>													
+ 			  
+ 			txLen			: Length of the ethernet packet. If the txLen<=54, then complete packet 
+ 			  				  will be contained in txHeader else first 54 bytes of ethernet packet will
+ 			  				  be present in txHeader and remaining bytes will be in txAppData.
+
+Return		TRUE or FALSE
+ 
+Description	This function receives an ethernet packet from upper layer as arguments. Then it
+ 			constructs data transmission packet of type stHostContextTx from the ethernet 
+ 			packet and adds some data to it and transmits to the target.
+****************************************************************************************************************************/
+uint8_t WLN_Write_Packet(uint8_t * txHeader, uint8_t * txAppData, uint16_t txLen)
+{
+ 	uint16_t u16RespVal;
+ 	uint32_t  u32DmaLength;
+ 
+ 	//wlan transmit packet structure variable
+ 	stHostContextTx stTxPacket;
+ 
+ 	uint16_t u16TryCount;
+ 	uint8_t u8Result;
+
+ 	//init connect wlan if disconnected
+ 	u8Result=InitConnectWlnIFDisconnected();
+  	
+ 	if (u8Result==FALSE)
+ 	{
+ 		return FALSE;
+ 	}	
+ 
+ 	if (stWlanStateStatus.u8PowerState==DOZE)
+ 	{
+ 		u8Result=WlnWakeup();
+ 		if(u8Result==FALSE)
+ 		{
+ 			return FALSE;
+ 		}	
+ 	}	
+ 	
+ 	u16TryCount=0xFFFF;
+ 	
+ 	stTxPacket.u8MsgId=THA_DTX_TXREQ; //message id
+ 	stTxPacket.u16MsduTag=0x00; //msdu tag
+ 	stTxPacket.u32TxResult=0x00;
+ 	stTxPacket.u32Reserved1=0x00;
+ 	stTxPacket.u32Priority=0x00;
+ 	stTxPacket.u32Reserved2=0x00;
+ 	stTxPacket.u32Reserved3=0x00;
+	stTxPacket.u32TID=0x00; //traffic id
+ 	stTxPacket.u8Reserved4=0;
+ 	stTxPacket.u16Length=txLen-6; //length of the ethernet packet
+ 
+	//destination mac address
+ 	stTxPacket.macAddrDst[0]=txHeader[0];
+ 	stTxPacket.macAddrDst[1]=txHeader[1];
+ 	stTxPacket.macAddrDst[2]=txHeader[2];
+ 	stTxPacket.macAddrDst[3]=txHeader[3];
+ 	stTxPacket.macAddrDst[4]=txHeader[4];
+ 	stTxPacket.macAddrDst[5]=txHeader[5];
+ 
+ 	//source mac address
+ 	stTxPacket.macAddrSrc[0]=txHeader[6];
+ 	stTxPacket.macAddrSrc[1]=txHeader[7];
+ 	stTxPacket.macAddrSrc[2]=txHeader[8];
+ 	stTxPacket.macAddrSrc[3]=txHeader[9];
+ 	stTxPacket.macAddrSrc[4]=txHeader[10];
+ 	stTxPacket.macAddrSrc[5]=txHeader[11];
+
+ 	stTxPacket.u16DataLen=0; //not being used by target
+
+ 	//DMA length calculation (see structure stHostContextTx)
+ 	//1B+4B+1B+2B+6B+6B+2B+6B+(txLen-12)
+ 	u32DmaLength=16+ txLen;
+
+ 	// send packet length to SPI interface	
+ 	spi_sendM2SDMAPkg(u32DmaLength);
+
+ 	// send packet buffer to SPI interface	
+ 	//header part of the stHostContextTx type packet
+  	spi_write_buffer((uint8_t *) &stTxPacket, 22);
+ 	
+ 	//SNAP header part of the stHostContextTx type packet
+ 	spi_write_buffer((uint8_t *) gau8SNAPHdr, 6);
+ 
+ 	//Ethernet data packet part of the stHostContextTx type packet
+ 	if (txLen<=54)
+ 	{
+ 		//ethernet packet data is in txHeader
+ 		spi_write_buffer((uint8_t *) txHeader+12, (txLen-12));
+ 	}
+ 	else
+ 	{
+  		//ethernet packet data is in txHeader- first 54 bytes
+  		spi_write_buffer((uint8_t *) txHeader+12, (54-12));
+  		//ethernet packet data is in txHeader -remain bytes
+ 		spi_write_buffer((uint8_t *) txAppData, (txLen-54));
+ 	}
+ 
+ 
+ 	//checking for S2M response
+ 	u16RespVal=0;
+ 	do
+ 	{
+ 		spi_readFromSlaveReg(HOST_S2M_MAIL_BOX_REG0, &u16RespVal);
+ 		u16TryCount--;
+ 	}while(!u16RespVal && u16TryCount>0);
+ 
+ 	if(u16RespVal)
+ 	{
+ 		u8Result=TRUE;
+ 	}
+ 	else
+ 	{
+ 		u8Result=FALSE;
+ 	}
+ 	
+ 	return u8Result;
+ }
+
+
+/*************************************************************************************************************  
+Name		WLN_Read_Packet                            
+ 
+Arguments	rxData			: Contains ethernet packet data preppared by WLN_Read_Packet.
+ 							Packet format- 	<Mac Address Destination(6) bytes>
+ 											<Mac Address Source(6) bytes>
+ 											<Ethernet packet data (rxLen-12) bytes>
+ 											
+ 			rxLen			: Length of the ethernet packet. 
+ 			  
+Return		TRUE or FALSE
+ 
+Description	This function returns an ethernet packet to upper layer. It constructs an ethernet pack
+ 			the packet of type stHostContextRx from the target sends it to the upper layer.		
+****************************************************************************************************************/
+uint8_t WLN_Read_Packet(uint8_t * rxData, uint16_t *rxLen)
+{
+	uint32_t u32DmaLength;
+	uint32_t i;
+	uint8_t u8Result;
+
+	//wlan receive packet structure variable
+ 	stHostContextRx stRcvPkt;
+ 	
+	uint8_t * pu8RxData;
+ 
+	//init connect wlan if disconnected
+ 	u8Result=InitConnectWlnIFDisconnected();
+ 	
+	if (u8Result==FALSE)
+	{
+		return FALSE;
+	}	
+
+	pu8RxData=(uint8_t *)&stRcvPkt;
+ 
+	//Read DMA length from SPI interface
+  	spi_sendS2MDMAPkg(&u32DmaLength);
+  
+  	
+	//Check valid DMA length
+  	if(!u32DmaLength) 
+  		return FALSE;	
+  
+  	//Read DMA data from SPI interface
+  	spi_read_buffer(pu8RxData, u32DmaLength);
+  
+  	//Check for valid data packet
+  	if (pu8RxData[0]!=DRX_THA_RXIND)
+  	{
+  		//handle mgmt data
+  		WLN_Handle_Mgmt(pu8RxData, u32DmaLength);
+  		return FALSE;
+  	}
+  
+ 	if(u32DmaLength>WLN_PACKET_SIZE) 
+ 		return FALSE;
+  	
+ 	//destination mac address
+ 	for(i=0;i<6;i++)
+ 	{
+ 		rxData[i]=stRcvPkt.macAddrDst[i];
+ 	}
+ 
+ 	//source mac address
+ 	for(i=0;i<6;i++)
+	{
+		rxData[6+i]=stRcvPkt.macAddrSrc[i];
+ 	}
+ 
+	//prepare ethernet packet data length
+  	*rxLen=pu8RxData[26];
+  	*rxLen <<=8;
+  	*rxLen |=pu8RxData[27];
+  
+  	//minus the snap header length from received length
+  	*rxLen -=6;
+  
+ 	//check if ethernet packet data length is greater than u32DmaLength
+ 	if (*rxLen>u32DmaLength) 
+ 		return FALSE;
+
+ 	//check if packet contains valid snap header values
+ 	if (!(stRcvPkt.au8SNAPHdr[0]==0xaa && stRcvPkt.au8SNAPHdr[1]==0xaa && stRcvPkt.au8SNAPHdr[2]==0x03
+ 		return FALSE;
+
+ 	//copy ethernet packet data in rxData buffer
+ 	for(i=0;i<*rxLen;i++)
+ 	{
+ 		if (i>(WLN_PACKET_SIZE-12)) 
+ 			break;
+
+ 		rxData[12+i]=stRcvPkt.au8Data[i];
+ 	}	
+
+ 	//ethernet packet length. add 6 bytes for destination mac adress and 6 bytes for 
+ 	//source mac address
+ 	*rxLen+=12;
+ 
+ 	return TRUE;
+ }
+
+/********************************************************************************************************** 
+Name		WLN_Scan                            
+ 
+Arguments	ScanChannels: 	Channels to scan
+ 			ScanConfirm:	 	Scan confirm. 
+ 			  
+Return		TRUE or FALSE
+ 
+Description	         
+***********************************************************************************************************/
+uint8_t WLN_Scan( uint8_t *ScanChannels, uint8_t * ScanConfirm)
+{
+	uint32_t  u32DmaLength;
+	uint8_t i;
+
+	//mgmt mlme request packet structure variable
+	stMgmtMlmeReq stMgmtReqMsg;
+
+	//scan request structure variable
+	stScanRequest stScanReq;
+
+	//prepare mgmt mlme packet to send Init parameters to target
+ 	stMgmtReqMsg.u8MessageType=MGMT_MLME_REQUEST;		//message type
+ 	stMgmtReqMsg.u64HostBufferPhysicalAddress= 0;		//host physical buffer address
+  	stMgmtReqMsg.u16ContextTag = 0;						//context tag
+  	stMgmtReqMsg.u8MgmtReqType= MGMT_MLME_SCAN_REQUEST; //mgmt request type 
+  	stMgmtReqMsg.u8SourceIdentifier = 0; //source identifire
+  
+ 
+ 	stScanReq.u8BssType = MGMT_ANY_BSS;
+ 	stScanReq.macaddrBssid[0] = 0xFF;
+ 	stScanReq.macaddrBssid[1] = 0xFF;
+ 	stScanReq.macaddrBssid[2] = 0xFF;
+ 	stScanReq.macaddrBssid[3] = 0xFF;
+ 	stScanReq.macaddrBssid[4] = 0xFF;
+ 	stScanReq.macaddrBssid[5] = 0xFF;
+ 	stScanReq.stSsid.u8ElementID = 0;
+	stScanReq.stSsid.u8Length = 0;	
+	stScanReq.u8ScanType = MGMT_ACTIVE_SCAN;	
+	stScanReq.u16ProbeDelay = 1;
+
+	if (stScanReq.u8ScanType == MGMT_ACTIVE_SCAN)
+	{
+		stScanReq.u16Tmin = ACTIVE_SCAN_MIN_CHANNNEL_TIME;
+ 		stScanReq.u16Tmax = ACTIVE_SCAN_MAX_CHANNNEL_TIME;
+ 	}
+	else
+	{
+		stScanReq.u16Tmin = PASSIVE_SCAN_MIN_CHANNNEL_TIME;
+		stScanReq.u16Tmax = PASSIVE_SCAN_MAX_CHANNNEL_TIME;
+ 	}
+
+ 	for (i=0; i < sizeof(gau8ChannelList); i++)
+ 	{
+		stScanReq.u16ChannelList[i] = gau8ChannelList[i];
+	}
+	stScanReq.u16ChannelList[i] =0; //scan list termination
+	
+
+	//calculate dma length
+	u32DmaLength=sizeof(stMgmtReqMsg)-1+sizeof(stScanRequest);
+ 
+	// send mgmt mlme request packet length to SPI interface	
+	spi_sendM2SDMAPkg(u32DmaLength);
+
+	// send mgmt mlme request packet to SPI interface	
+	spi_write_buffer((uint8_t *) &stMgmtReqMsg, sizeof(stMgmtReqMsg)-1); //packet header
+	spi_write_buffer((uint8_t *) &stScanReq, sizeof(stScanRequest)); //packet data
+
+	RDEBUGMSG("WLN_Scan-OK\n\r");
+	
+	return TRUE;
+ }
+
+
+/**********************************************************************************************************  
+Name		WLN_Statistics                            
+
+Arguments	Stats			: Pointer to statistic structure
+			  
+Return		TRUE or FALSE
+ 
+Description	              
+*/
+uint8_t WLN_Statistics(uint8_t *Stats)
+{
+	RDEBUGMSG("WLN_Statistics-OK\n\r");
+	return TRUE;
+}
+
+
+/**********************************************************************************************************   
+Name		WLN_NVM_Vars                            
+
+Arguments	None
+ 			  
+Return		TRUE or FALSE
+
+Description	This function is responsible to initialize stInit global structure variable to their 
+		default values.		
+***********************************************************************************************************/
+uint8_t WLN_NVM_Vars(void)
+{
+				
+	uint32_t i;
+
+	pstConnect pstConnectParams; //Connect parameters
+	pstNVM pstNVMParams; //NVRAM parameters
+
+	pstConnectParams=&(stInitVar.stConnectParams);
+	pstNVMParams=&(stInitVar.stNVMParams);
+	
+ 
+	//Setting default values for stInit structure- Start
+	//stConnect structure values
+	pstConnectParams->u32RtsThreshold = NVM_RTS_THRESHOLD; //rts threshold
+	
+	//pstConnectParams->u32GPIOStatusIndicationMode = NVM_GPIO_STATUS_INDICATION_MODE; //gpio status i
+ 
+ 	//default rate values
+ 	for(i = 0; i < sizeof(gau8Rates); i++)
+ 	{
+ 		pstConnectParams->u8Rates[i] = gau8Rates[i];
+ 	}
+ 
+	//pstConnectParams->u8RetryCount = NVM_RETRY_COUNT; //retry count
+ 	//pstConnectParams->u16LinkAdaptationupTime = NVM_LINK_ADAPTATION_UPTIME; //link adaptation time
+	pstConnectParams->u8DeauthOnMicFail = NVM_DEAUTH_ON_MIC_FAIL; //deauth on mic fail
+
+	//stNVM structure values
+	pstNVMParams->u32AntennaControl[0]=NVM_ANTENNA_CONTROL0;  //antenna control
+	pstNVMParams->u32AntennaControl[1]=NVM_ANTENNA_CONTROL1;
+	pstNVMParams->u32AntennaControl[2]=NVM_ANTENNA_CONTROL2;
+
+	pstNVMParams->u32GPIOConfig[0]=NVM_GPIO_CONFIG0; //gpio config values
+	pstNVMParams->u32GPIOConfig[1]=NVM_GPIO_CONFIG1;
+	pstNVMParams->u32GPIOConfig[2]=NVM_GPIO_CONFIG2;		
+ 
+ 	pstNVMParams->u32IPConfig[0]=NVM_IP_CONFIG0; //ip config values
+ 	pstNVMParams->u32IPConfig[1]=NVM_IP_CONFIG1;
+ 	pstNVMParams->u32IPConfig[2]=NVM_IP_CONFIG2;
+ 
+ 	pstNVMParams->u16FrequencyDomain = NVM_FREQUENCY_DOMAIN; //frequency doamin
+ 
+ 	pstNVMParams->s16AntennaGain = NVM_ANTENNA_GAIN;  //antenna gain
+ 
+	pstNVMParams->u16PowerSavingWarmUpTime = NVM_POWER_SAVING_WARMUPTIME; //power saving warm up time
+ 	
+ 
+	pstNVMParams->macaddress[0]=gau8MacAddress[0];//mac address
+ 	pstNVMParams->macaddress[1]=gau8MacAddress[1];
+ 	pstNVMParams->macaddress[2]=gau8MacAddress[2];
+ 	pstNVMParams->macaddress[3]=gau8MacAddress[3];
+ 	pstNVMParams->macaddress[4]=gau8MacAddress[4];
+ 	pstNVMParams->macaddress[5]=gau8MacAddress[5];
+ 
+ 	pstNVMParams->u8TxPowerLevel = NVM_TX_POWER_LEVEL;  //transmit power level
+ 
+ 	pstNVMParams->u8Preamble = NVM_PREAMBLE; //preamble value
+ 
+ 	pstNVMParams->u8LinkAdaptation = NVM_LINK_ADAPTATION; //link adaptation
+ 
+ 	pstNVMParams->u811dModeEnable = NVM_11DMODE_ENABLE; //11mode enable
+ 
+ 	pstNVMParams->s8FrontEndLoss = NVM_FRONT_ENDLOSS; //front endless
+ 
+ 	pstNVMParams->s8CorrectionFactor = NVM_CORRECTION_FACTOR; //correction factor
+ 
+ 	pstNVMParams->u8MaxTxPower = NVM_MAX_TX_POWER; //max transmit power
+ 
+ 	pstNVMParams->u8LossToRXOfAntSWinTXPower = NVM_LOSS_TORXOFANTSWINTX_POWER; //Loss To RX of Ant SW 
+ 
+ 	pstNVMParams->u8HighSignalModeEnable = NVM_HIGH_SIGNAL_MODEENABLE; //High Signal Mode Enable 			
+ 
+ 	pstNVMParams->u8HighSignalThreshold = NVM_HIGH_SIGNAL_THRESHOLD; //High Signal Threshold 			
+ 
+ 	pstNVMParams->u8LowSignalThreshold = NVM_LOW_SIGNAL_THRESHOLD;	//Low Signal Threshold 		
+ 
+ 	pstNVMParams->u8TXPowerControlByRSSIEnable = NVM_TXPOWER_CONTROL_BYRSSIENABLE;	 //TX Power Control
+ 
+ 	pstNVMParams->u8TxPowerADCCalFactor = NVM_TXPOWER_ADCCALFACTOR; //TX Power ADC Cal Factor 	
+ 
+ 	pstNVMParams->u8DiversityMode = NVM_DIVERSITY_MODE; //diversity mode 	
+ 
+ 	pstNVMParams->u8SleepClockSource = NVM_SLEEP_CLOCK_SOURCE; //Sleep Clock Source 	
+ 
+ 	pstNVMParams->u8BTCoexistence = NVM_BT_COEXISTENCE;	 //BT Coexistence 
+ 
+	pstNVMParams->s8Ch11Rate1TXPower = NVM_CH11_RATE1_TXPOWER; //Delta Temp Rate one Channel 11 	
+
+ 	pstNVMParams->s8Ch11Rate2TXPower = NVM_CH11_RATE2_TXPOWER; //Delta Temp Rate two Channel 11	
+ 
+	pstNVMParams->s8Ch1Rate1TXPower = NVM_CH1_RATE1_TXPOWER; //Delta Temp Rate one Channel 1			
+ 
+ 	pstNVMParams->s8Ch1Rate2TXPower = NVM_CH1_RATE2_TXPOWER; //Delta Temp Rate two Channel 11	
+ 
+ 	pstNVMParams->dummy = NVM_DUMMY;	//unused field
+ 
+ 	//Miscellaneous memory Write length and data
+ 	pstNVMParams->u8LengthofMiscMemWriteData=NVM_LENGTH_OF_MISCMEMWRITEDATA;
+ 	for(i = 0; i < pstNVMParams->u8LengthofMiscMemWriteData; i++)
+ 	{
+ 		pstNVMParams->u8MiscMemWriteData[i] = gau8MiscMemWriteData[i];
+ 	}		
+ 
+ 	//Miscellaneous 3WB Write length and data
+    	pstNVMParams->u8LengthofMisc3WBWriteData = NVM_LENGTH_OF_MISC3WBWRITEDATA;
+ 	for(i = 0; i < pstNVMParams->u8LengthofMisc3WBWriteData; i++)
+ 	{
+ 		pstNVMParams->u8Misc3WBWriteData[i] = gau8Misc3WBWriteData[i];
+ 	}
+ 
+ 	//padding field
+ 	stInitVar.u16S2MDmaLengthPadTo=NVM_S2M_DMA_LENGTHPADTO;//for padding
+
+	//Setting default values for stInit structure- End
+
+	RDEBUGMSG("WLN_NVM_Vars-OK\n\r");
+
+	return TRUE;	
+	
+}
+
+
+/**********************************************************************************************************   
+Name		WLN_InitConnect_Vars                            
+
+Arguments	None
+			  
+Return		TRUE or FALSE
+
+Description	This function is responsible to initialize stInitConnect global structure variable to t
+ 			default values.		
+***********************************************************************************************************/
+uint8_t WLN_InitConnect_Vars(void)
+{
+	uint32_t i;
+	
+	//Setting default values for stInitConnect structure- Start
+ 	//stInitConnect structure values
+ 	stInitConParams.u32DefDataRate = DEAFULT_DATA_RATE;								//default data rate
+ 	stInitConParams.u16BeaconListenInterval = 1;//DEFAULT_BEACONLISTENINTERVAL;		//beacon listen interv
+ 	stInitConParams.u16Channel = DEFAULT_CHANNEL;									//default channel
+ 	stInitConParams.u16PrefIBSSChannel = DEFAULT_IBSS_CHANNEL;						//ibss channel
+ 	stInitConParams.u16ProbeDelay = DEAFULT_PROBEDELAY;								//probedelay
+ 	stInitConParams.u16MinTimeOut = 25;//DEFAULT_MINTIMEOUT;						//min timeout
+ 	stInitConParams.u16MaxTimeOut = 50;//DEFAULT_MAXTIMEOUT;						//max timeout
+ 	stInitConParams.u16BeaconInterval = DEFAULT_BEACONINTERVAL;						//beacon interval
+ 	stInitConParams.u16JoinFailureTimeOut = 20;//DEFAULT_JOINFAILURETIMEOUT;		//join failure timeout
+ 
+ 
+ 	//ssid length and data
+ 	stInitConParams.u8SsidLen = strlen(gau8Ssid);
+ 	for(i = 0; i < stInitConParams.u8SsidLen; i++)
+ 	{
+ 		stInitConParams.u8Ssid[i] = gau8Ssid[i];
+ 	}	 
+ 	
+  	//MacAddrBSSID
+ 	for(i = 0; i < sizeof(gau8MacAddrBSSID); i++)
+ 	{
+ 		stInitConParams.MacAddrBSSID[i] = gau8MacAddrBSSID[i];
+  	}	 
+ 	
+ 	stInitConParams.u8AuthType = MGMT_OPEN_SYSTEM; //authentication type
+  	stInitConParams.u8ScanNeeded = DEFAULT_SCAN_NEEDED; //scan needed
+  	stInitConParams.u8ScanType = DEFAULT_SCAN_TYPE; //scan type
+ 
+  	if(u8WirelessSecurityMode)
+  	{
+  		stInitConParams.u8WEPType = ENCRYPT_WEP_64; //wep type	
+  		stInitConParams.u8WEPKeyInstalled =1; //wep key installed
+  	}
+  	else
+  	{		
+  		stInitConParams.u8WEPType = ENCRYPT_NO_ENCRYPTION; //wep type
+  		stInitConParams.u8WEPKeyInstalled = WEP_KEY_INSTALLED;
+  	}
+  		
+  
+  	//channel list data
+  	for(i = 0; i < sizeof(gau8ChannelList); i++)
+ 	{
+ 		stInitConParams.u8ScanChannelList[i] = gau8ChannelList[i];
+  	}
+  
+  	//number scan channels
+  	stInitConParams.u8NumScanChannels = DEFAULT_NUM_SCAN_CHANNELS;
+  
+  	//Setting default values for stInitConnect structure- End
+  
+  	RDEBUGMSG("WLN_InitVars-OK\n\r");
+  
+  	return TRUE;	
+  	
+ }
+
+ /**********************************************************************************************************   
+ Name		WLN_Connect                            
+ 
+ Arguments	None
+ 			  
+ Return		TRUE or FALSE
+ 
+ Description	This function calls the WLN_Start to switch on the device and downloads the firmware.
+ 			After successfully downloading the firmware and loading wlan configuration parameters
+ 			to the target, it prepares the _stInitConnectParams command and sends it the target to 
+  			connect. Once connected, it updates the connect status in the global structure and calls 
+  			WLN_Power(DOZE) to send the device into DOZE mode.		
+***********************************************************************************************************/
+uint8_t WLN_Connect(void)
+{
+ 	uint16_t u16TryCount;
+ 	uint8_t u8Result;
+ 
+	u16TryCount=0x0005;
+ 	
+ 
+ 	//initialize NVRAM structure member variables
+ 	u8Result=WLN_NVM_Vars();
+ 
+ 	//initialize InitConnect structure member variables
+ 	u8Result=WLN_InitConnect_Vars();
+ 	
+ 	//power on wlan and load configuration data
+ 	u8Result=WLN_Start();
+ 
+ 	//check status of wlan start
+ 	if(u8Result==FALSE)
+ 	{
+ 		//power off wlan device
+ 		WLN_Power(OFF);
+ 		return FALSE;
+ 	}
+ 
+ 	//set wep key request
+ 	if(u8WirelessSecurityMode ==1)
+ 		u8Result=WLN_SetWepKey();	
+ 
+ 	//Init connect wlan
+ 	do
+ 	{
+ 		u8Result=WLN_InitConnect();
+ 		u16TryCount--;
+ 		SleepMs(100);
+ 	}while(u8Result==FALSE && u16TryCount>0);
+ 
+ 	if(u8Result==FALSE)
+ 	{
+ 		//power off wlan device
+ 		WLN_Power(OFF);
+ 		return FALSE;
+ 	}	
+ 
+ 	//update wlan connect state status
+ 	stWlanStateStatus.u8ConnectState=TRUE;
+ 
+ 	//to let the target stable
+ 	SleepMs(1000);
+ 
+ 	//send device into power DOZE mode
+ 	//u8Result=WLN_Power(DOZE);
+ 
+ 	//if(u8Result==FALSE)
+ 	//{
+		//power off wlan device		
+	 	//	WLN_Power(OFF);
+	 	//	return FALSE;
+  	//}	
+  
+  	//update wlan power state status
+  	//stWlanStateStatus.u8PowerState=DOZE;
+  
+  	
+  	RDEBUGMSG("WLN_Connect -OK \n\r");
+  
+  	return TRUE;
+ 	
+ }
+
+/**********************************************************************************************************   
+Name		WLN_SetWepKey                           
+ 
+Arguments	None
+			  
+Return		TRUE or FALSE
+ 
+Description	This function sends the WEP Key with stSetWepKeyReq parameters		
+***********************************************************************************************************/
+uint8_t WLN_SetWepKey(void)
+{
+	uint8_t i;
+	uint16_t u16TryCount;	
+	uint32_t  u32DmaLength;
+
+	//mgmt mlme request packet structure variable
+	stMgmtMlmeReq stMgmtReqMsg;	
+ 
+ 	//wep key request packet structure variable
+	stSetWepKeyRequest stSetWepKeyReq;	
+	
+	uint8_t au8Keys[5] ;
+	uint8_t u8WepKeyLength = 5;
+	uint8_t *pu8WepKey;
+	uint16_t u16Index = 0;
+	
+	for(i=0;i<5;i++)
+	{
+		au8Keys[i]=gau8Wep64key[i];
+	}
+	
+	if (u8WepKeyLength == 5)
+ 	{
+	    	stSetWepKeyReq.u16MibAttrib = DOT11WEP64DEFAULTKEYSTABLE;
+	}
+ 	else if (u8WepKeyLength == 13)
+ 	{
+ 	    	stSetWepKeyReq.u16MibAttrib = DOT11WEP128DEFAULTKEYSTABLE;
+ 	}
+ 
+ 	for(u16Index = 0; u16Index < 4; u16Index++)
+ 	{
+ 	    	pu8WepKey = (uint8_t *)(stSetWepKeyReq.au8KeyMaterial+u8WepKeyLength*u16Index);
+ 	    	memcpy(pu8WepKey,au8Keys,u8WepKeyLength);
+ 	}
+ 
+  	u16TryCount=0xFFFF;
+ 
+ 	//prepare mgmt mlme packet to send stSetWepKeyReq parameters to target
+ 	stMgmtReqMsg.u8MessageType=MGMT_MIB_REQUEST;			//message type
+  	stMgmtReqMsg.u64HostBufferPhysicalAddress= 0;			//host physical buffer address
+  	stMgmtReqMsg.u16ContextTag = 0;							//context tag
+  	stMgmtReqMsg.u8MgmtReqType= MGMT_MIB_SET_REQUEST;		//mgmt request type 
+  	stMgmtReqMsg.u8SourceIdentifier = 0;					//source identifire
+ 
+ 	//calculate dma length
+ 	u32DmaLength=sizeof(stMgmtReqMsg)-1+sizeof(stSetWepKeyReq); 	
+ 
+ 	// send mgmt mlme request packet length to SPI interface
+ 	spi_sendM2SDMAPkg(u32DmaLength);
+ 
+ 	// send mgmt mlme request packet to SPI interface
+  	spi_write_buffer((uint8_t *) &stMgmtReqMsg, sizeof(stMgmtReqMsg)-1);	//packet header
+ 	spi_write_buffer((uint8_t *) &stSetWepKeyReq, sizeof(stSetWepKeyReq));	//packet data
+ 	
+ 
+ 	//wait for response
+	SleepMs(1000);
+ 	
+ 	RDEBUGMSG("WLN_SetWepKey-OK\n\r");
+ 
+ 	return TRUE;
+ 
+ }
+
+/********************************************************************************************************** 
+Name		WLN_InitConnect                            
+
+Arguments	None
+			  
+Return		TRUE or FALSE
+
+Description	This function sends the init connect request with all the stInitConnect parameters to t
+***********************************************************************************************************/
+uint8_t WLN_InitConnect(void)
+{
+ 	uint16_t u16TryCount;
+ 	uint16_t u16RespVal;
+ 	uint32_t  u32DmaLength;
+ 
+	//mgmt mlme request packet structure variable
+	stMgmtMlmeReq stMgmtReqMsg;	
+
+ 	u16TryCount=0x0020;
+
+	//prepare mgmt mlme packet to send InitConnect parameters to target
+ 	stMgmtReqMsg.u8MessageType=0;							//message type
+	stMgmtReqMsg.u64HostBufferPhysicalAddress= 0;			//host physical buffer address
+	stMgmtReqMsg.u16ContextTag = 0;							//context tag
+	stMgmtReqMsg.u8MgmtReqType= 1;							//mgmt request type // Earlier 0, changed to 1 for INIT_CONNECT req
+ 	stMgmtReqMsg.u8SourceIdentifier = 5;					//source identifier
+ 
+	//calculate dma length
+	u32DmaLength=sizeof(stMgmtReqMsg)-1+sizeof(stInitConnect);
+ 
+	// send mgmt mlme request packet length to SPI interface
+ 	spi_sendM2SDMAPkg(u32DmaLength);
+ 
+ 	// send mgmt mlme request packet to SPI interface
+ 	spi_write_buffer((uint8_t *) &stMgmtReqMsg, sizeof(stMgmtReqMsg)-1); //packet header
+ 	spi_write_buffer((uint8_t *) &stInitConParams, sizeof(stInitConnect)); //packet data
+ 
+ 	//wait for response
+ 	SleepMs(1000);
+ 
+ 	//check for response
+ 	u16RespVal=0;
+ 	do
+ 	{
+ 		/* mail box reg now changed to reg3 as target event related messages comes here*/
+ 		spi_readFromSlaveReg(HOST_S2M_MAIL_BOX_REG3, &u16RespVal);
+ 		u16TryCount--;
+ 
+ 		/*
+ 		suggested value 500, for delay of 500 target is taking long time (approx. 10 seconds) to 
+ 		reconnect after target is disconnected. 
+ 		put value 20, for delay of 20 target is reassociating with the AP very fast 
+		(approx 2 -3 seconds) 
+ 		*/
+		SleepMs(20); //500		
+ 		
+ 	}while(u16RespVal!=TGT_INIT_CONNECT && u16TryCount>0);
+
+	if(u16RespVal!=TGT_INIT_CONNECT)
+ 	{		
+ 		return FALSE;
+ 	}	
+ 
+ 	RDEBUGMSG("Checking for association\n\r");
+ 
+ 	while(AssocConfirmFlag==0)
+ 	{
+ 		uint16_t packetLength;
+ 		extern u8_t uip_buf[UIP_BUFSIZE+2];
+ 		
+ 		WLN_Read_Packet((uint8_t *) uip_buf, (uint16_t *) &packetLength);
+ 
+ 		SleepMs(1000);
+ 		
+ 	}
+
+ 	RDEBUGMSG("WLN_InitConnect-OK\n\r");
+ 	return TRUE; 	
+}
+
+
+/********************************************************************************************************** 
+Name		WLN_Start                            
+
+Arguments	None
+			  
+Return		TRUE or FALSE
+
+Description	This function calls the WLN_Power(ON) to switch on the device and downloads the firmwar
+			After successfully downloading the firmware, it loads wlan configuration parameters
+			to the target by calling WLN_Config.		
+***********************************************************************************************************/
+uint8_t WLN_Start(void)
+{
+	uint32_t  u8Result;
+
+	//switch on wlan device
+	u8Result=WLN_Power(ON);
+
+	if(u8Result==FALSE)
+	{
+		return u8Result;
+	}
+
+	RDEBUGMSG("WLN_Power(ON)-OK\n\r");
+	//load wlan configuration parameters
+	u8Result=WLN_Config();
+
+	if(u8Result==FALSE)
+	{
+		//power off wlan device		
+ 		WLN_Power(OFF);
+		return u8Result;
+	}	
+
+	RDEBUGMSG("WLN_Start-OK\n\r");
+	
+	return TRUE;
+}
+
+/********************************************************************************************************** 
+Name		WLN_Config                            
+
+Arguments	None
+			  
+Return		TRUE or FALSE
+ 
+Description	It prepares two variables of stMgmtMlmeReq, stMgmtMlmeReqInitConnect from global 
+			configuration parameters and sends packet to the target to load configuration data to the device
+***********************************************************************************************************/
+uint8_t WLN_Config(void)
+{
+	uint32_t  u32DmaLength;
+
+	//mgmt mlme request packet structure variable
+	stMgmtMlmeReq stMgmtReqMsg;
+
+ 	//prepare mgmt mlme packet to send InitConnect parameters to target
+	stMgmtReqMsg.u8MessageType=0;						//message type
+	stMgmtReqMsg.u64HostBufferPhysicalAddress= 0;		//host physical buffer address
+	stMgmtReqMsg.u16ContextTag = 0;						//context tag
+ 	stMgmtReqMsg.u8MgmtReqType= 0;						//mgmt request type 
+ 	stMgmtReqMsg.u8SourceIdentifier = 5;				//source identifire
+
+	//calculate dma length
+	u32DmaLength=sizeof(stMgmtReqMsg)-1+sizeof(stInit);
+
+	// send mgmt mlme request packet length to SPI interface	
+ 	spi_sendM2SDMAPkg(u32DmaLength);
+
+	// send mgmt mlme request packet to SPI interface	
+	spi_write_buffer((uint8_t *) &stMgmtReqMsg, sizeof(stMgmtReqMsg)-1);	//packet header
+ 	spi_write_buffer((uint8_t *) &stInitVar, sizeof(stInit));				//packet data
+	
+	//SleepMs(10);
+	SleepMs(1000);
+
+	RDEBUGMSG("WLN_Config -OK\n\r");
+		
+	return TRUE;
+}
+
+
+/*****************************************************************************************************  
+Name		WLN_Doze                            
+
+Arguments	None
+			  
+Return		TRUE or FALSE
+
+Description	It prepares two variables of stMgmtMlmeReq for power save mode and sends 
+			packet to the target to send the device into power save mode.		
+
+******************************************************************************************************/
+uint8_t WLN_Doze(void)
+{
+	uint16_t u16TryCount;
+	uint16_t u16RespVal;
+	uint32_t  u32DmaLength;
+	//uint8_t u8Result;
+
+	if (stWlanStateStatus.u8PowerState==DOZE)
+	{
+		return TRUE;
+	}	
+	u16TryCount=0xFFFF;
+
+	//mgmt mlme request packet structure variable
+	stMgmtMlmeReq stMgmtReqMsg;
+
+	//power save request structure
+	stPowerSave stPowerSaveReq;
+
+	//prepare mgmt mlme packet to send Init parameters to target
+	stMgmtReqMsg.u8MessageType=MGMT_MLME_REQUEST;					//message type
+	stMgmtReqMsg.u64HostBufferPhysicalAddress= 0;					//host physical buffer address
+
+	stMgmtReqMsg.u16ContextTag = 0;									//context tag
+
+	stMgmtReqMsg.u8MgmtReqType= MGMT_MLME_POWER_MGMT_REQUEST;		//mgmt request type 
+	stMgmtReqMsg.u8SourceIdentifier = 5;							//source identifire
+
+	stPowerSaveReq.u8PSMode = PS_STATE_POWER_SAVE;
+
+	stPowerSaveReq.bWake = FALSE;
+	stPowerSaveReq.bReceiveDTIM  = TRUE;
+
+	//calculate dma length
+	u32DmaLength=sizeof(stMgmtReqMsg)-1+sizeof(stPowerSave);
+ 
+	// send mgmt mlme request packet length to SPI interface	
+ 	spi_sendM2SDMAPkg(u32DmaLength);
+
+	// send mgmt mlme request packet to SPI interface	
+	spi_write_buffer((uint8_t *) &stMgmtReqMsg, sizeof(stMgmtReqMsg)-1);	//packet header
+	spi_write_buffer((uint8_t *) &stPowerSaveReq, sizeof(stPowerSave));		//packet data
+
+ 	//wait for response
+	SleepMs(10);
+
+	//check for response
+	u16RespVal=0;
+	do
+	{
+		spi_readFromSlaveReg(HOST_S2M_MAIL_BOX_REG3, &u16RespVal);
+		u16TryCount--;
+	}while(u16RespVal!=TGT_POWER_SAVE && u16TryCount>0);
+
+	if(u16RespVal!=TGT_POWER_SAVE)
+ 	{
+		return FALSE;
+	}	
+
+	RDEBUGMSG("WLN_Doze -OK\n\r");
+	
+	return TRUE;
+}
+
+
+
+
+/***********************************************************************************************  
+Name		WLN_Sleep                            
+
+Arguments	None
+ 			  
+Return		TRUE or FALSE
+
+Description	It prepares two variables of stMgmtMlmeReq for power sleep mode and sends 
+			packet to the target to send the device into power sleep mode.		
+
+************************************************************************************************/
+uint8_t WLN_Sleep(void)
+{
+	uint16_t u16TryCount;
+	uint16_t u16RespVal;
+	uint32_t  u32DmaLength;
+	uint8_t u8Result;
+ 
+	u8Result=WlnWakeup();
+ 	if(u8Result==FALSE)
+	{
+		return FALSE;
+	}
+
+	u16TryCount=0xFFFF;
+
+	//mgmt mlme request packet structure variable
+	stMgmtMlmeReq stMgmtReqMsg;
+
+	//power save request structure
+	stPowerSave stPowerSaveReq;
+
+ 	//prepare mgmt mlme packet to send Init parameters to target
+	stMgmtReqMsg.u8MessageType=MGMT_MLME_REQUEST;						//message type
+	stMgmtReqMsg.u64HostBufferPhysicalAddress= 0;						//host physical buffer address
+	stMgmtReqMsg.u16ContextTag = 0;										//context tag
+	stMgmtReqMsg.u8MgmtReqType= MGMT_MLME_POWER_MGMT_REQUEST;			//mgmt request type 
+	stMgmtReqMsg.u8SourceIdentifier = 5;								//source identifire
+
+	stPowerSaveReq.u8PSMode = PS_STATE_POWER_SLEEP;
+	stPowerSaveReq.bWake = FALSE;
+	stPowerSaveReq.bReceiveDTIM  = TRUE;
+
+	//calculate dma length
+	u32DmaLength=sizeof(stMgmtReqMsg)-1+sizeof(stPowerSave);
+
+	// send mgmt mlme request packet length to SPI interface	
+	spi_sendM2SDMAPkg(u32DmaLength);
+
+	// send mgmt mlme request packet to SPI interface	
+	spi_write_buffer((uint8_t *) &stMgmtReqMsg, sizeof(stMgmtReqMsg)-1); //packet header
+	spi_write_buffer((uint8_t *) &stPowerSaveReq, sizeof(stPowerSave)); //packet data
+	
+	//wait for response
+ 	SleepMs(10);
+
+	//check for response
+	u16RespVal=0;
+	do
+	{
+ 		spi_readFromSlaveReg(HOST_S2M_MAIL_BOX_REG3, &u16RespVal);
+		u16TryCount--;
+ 	}while(u16RespVal!=TGT_POWER_SLEEP && u16TryCount>0);
+
+	if(u16RespVal!=TGT_POWER_SLEEP)
+	{
+		return FALSE;
+	}	
+
+	RDEBUGMSG("Wln sleep -OK\n\r");
+		
+	return TRUE;
+}
+
+
+/******************************************************************************************  
+Name		WLN_Activate                            
+
+Arguments	None
+			  
+Return		TRUE or FALSE
+
+Description	It prepares two variables of stMgmtMlmeReq for power activate mode and sends 
+			packet to the target to send the device into active.		
+
+*******************************************************************************************/
+uint8_t WLN_Activate(void)
+{
+	uint16_t	u16TryCount;
+	uint16_t	u16RespVal;
+	uint32_t	u32DmaLength;
+	uint8_t		u8Result;
+
+	u8Result=WlnWakeup();
+	if(u8Result==FALSE)
+	{
+		return FALSE;
+	}
+	
+	u16TryCount=0xFFFF;
+
+	//mgmt mlme request packet structure variable
+	stMgmtMlmeReq stMgmtReqMsg;
+
+	//power save request structure
+	stPowerSave stPowerSaveReq;
+	
+	//prepare mgmt mlme packet to send Init parameters to target
+	stMgmtReqMsg.u8MessageType=MGMT_MLME_REQUEST;						//message type
+	stMgmtReqMsg.u64HostBufferPhysicalAddress= 0;						//host physical buffer address
+	stMgmtReqMsg.u16ContextTag = 0;										//context tag
+	stMgmtReqMsg.u8MgmtReqType= MGMT_MLME_POWER_MGMT_REQUEST;			//mgmt request type 
+	stMgmtReqMsg.u8SourceIdentifier = 5;								//source identifire
+
+	stPowerSaveReq.u8PSMode = PS_STATE_ACTIVE;
+	stPowerSaveReq.bWake = FALSE;
+	stPowerSaveReq.bReceiveDTIM  = TRUE;
+
+	//calculate dma length
+	u32DmaLength=sizeof(stMgmtReqMsg)-1+sizeof(stPowerSave);
+
+	// send mgmt mlme request packet length to SPI interface	
+	spi_sendM2SDMAPkg(u32DmaLength);
+
+	// send mgmt mlme request packet to SPI interface	
+	spi_write_buffer((uint8_t *) &stMgmtReqMsg, sizeof(stMgmtReqMsg)-1); //packet header
+	spi_write_buffer((uint8_t *) &stPowerSaveReq, sizeof(stPowerSave)); //packet data
+	
+	//wait for response
+	SleepMs(10);
+
+	//check for response
+	u16RespVal=0;
+	do
+	{
+		spi_readFromSlaveReg(HOST_S2M_MAIL_BOX_REG3, &u16RespVal);
+		u16TryCount--;
+	}while(u16RespVal!=TGT_POWER_AWAKE && u16TryCount>0);
+
+	if(u16RespVal!=TGT_POWER_AWAKE)
+	{
+		return FALSE;
+	}	
+
+	RDEBUGMSG("Wln activate -OK\n\r");
+		
+	return TRUE;
+}
+
+
+/*************************************************************************************  
+Name		WLN_Handle_Mgmt                            
+
+Arguments	pu8Data: Dma buffer data read from target
+			u32DataLength: Dma buffer length
+			  
+Return		TRUE or FALSE
+
+Description	This function handles the response of the mgmt request from the target.		
+
+*************************************************************************************/
+uint8_t WLN_Handle_Mgmt( uint8_t * pu8Data, uint32_t u32DataLength)
+{
+	pstMgmtMlmeCfm	stMlmeCfm;
+ 	
+	stMlmeCfm = (pstMgmtMlmeCfm)pu8Data;	
+
+	if (stMlmeCfm->u8MessageType!=MGMT_MLME_CONFIRM)
+		return FALSE;
+
+	switch(stMlmeCfm->u8MgmtCfmType)
+	{
+		case MGMT_MLME_SCAN_CONFIRM:
+				RDEBUGMSG("Scan Confirm\n\r");	
+				WLN_Handle_Scan(stMlmeCfm->au8MlmeResponseData, u32DataLength-13);
+			break;
+		case MGMT_MLME_ASSOCIATE_CONFIRM:
+			RDEBUGMSG("Association Confirm\n\r");	
+			IOSET0 |= 1<<12; // switch on Association LED on re-association
+			AssocConfirmFlag=1;
+			break;
+		default:
+				RDEBUGMSG("Mlme Response-default\n\r");	
+			break;
+	}
+	return TRUE;
+}
+
+
+/************************************************************************************* 
+Name		WLN_Handle_Scan                            
+
+Arguments	pu8Data: Dma buffer data read from target
+			u32DataLength: Dma buffer length
+		  
+Return		TRUE or FALSE
+
+Description	This function handles the response of the mgmt request from the target.	
+	
+*************************************************************************************/
+uint8_t WLN_Handle_Scan( uint8_t * pu8Data, uint32_t u32DataLength)
+{
+	DEBUG_ARR(pu8Data, u32DataLength);
+ 	RDEBUGMSG("WLN_Handle_Scan-OK\n\r");
+ 	return TRUE;
+}
+
+/**********************************************************************************************************   
+Name		WlnWakeup                            
+
+Arguments	None
+			  
+Return		TRUE or FALSE
+
+Description	This function wakes up the device temporarily to let the dma write operation happen.		
+***********************************************************************************************************/
+uint8_t WlnWakeup(void)
+{
+	uint16_t u16TryCount;
+	uint16_t   u8PowerState;
+
+	//write wakeup command 
+ 	spi_writeToSlaveReg(HOST_M2S_MAIL_BOX_REG3,MB3_HST_WAKEUP_TGT);
+
+	u16TryCount = 0xFF;
+	u8PowerState = 0;
+
+	//wait for target to receive the command    
+	while ( (u8PowerState != SR2_TGT_RECEIVED_WAKEUP) && (u16TryCount>0) )
+	{
+		spi_readFromSlaveReg(HOST_S2M_SCRATCH_REG2,&u8PowerState);
+ 		SleepMs(1);
+		u16TryCount--;
+ 	}
+
+	if(u8PowerState != SR2_TGT_RECEIVED_WAKEUP)
+	{
+ 		return FALSE;
+ 	}	
+
+	u16TryCount = 0xFF;
+	u8PowerState = 0xFF;
+ 
+	//wait for target to wakeup completely      
+	while ( (u8PowerState != SR3_TGT_WAKEUP_COMPLETE) && (u16TryCount>0))
+	{
+		spi_readFromSlaveReg(HOST_S2M_SCRATCH_REG3,&u8PowerState);            
+		SleepMs(1);
+ 		u16TryCount--;
+	}
+
+	if(u8PowerState != SR3_TGT_WAKEUP_COMPLETE)
+ 	{
+		return FALSE;
+	}	
+ 
+	RDEBUGMSG("WlnWakeup -OK\n\r");
+
+	return TRUE;
+}
+
+
+/**********************************************************************************************************  
+Name		InitConnectWlnIFDisconnected                            
+
+Arguments	None
+			  
+Return		TRUE or FALSE
+
+Description	This function checks the device for disconnection. If disconnected, then sends the 
+			request WLN_InitConnect.		
+
+***********************************************************************************************************/
+uint8_t InitConnectWlnIFDisconnected(void)
+{
+ 
+ 	uint16_t u16RespVal;
+	uint8_t u8Result;
+	uint16_t u16TryCount;
+ 
+ 	/*
+ 	suggested value 0x20, for this value the driver is coming out of this routine even if the AP is sw
+ 	for small time approx 1 minute. 
+ 	put value 0xFFFF, for this value the driver keeps on doing target init connect and checks for re-a
+ 	for a long time. even if the AP is switched off for more than 1 minute, re-association works. 
+ 	*/
+ 	u16TryCount=0xFFFF;//0x20
+		
+ 	//read disconnect flag from target
+	spi_readFromSlaveReg(HOST_S2M_MAIL_BOX_REG3, &u16RespVal);
+
+	//if target disconnected
+	if (u16RespVal==TGT_DISCONNECT)
+	{
+		RDEBUGMSG("Target Disconnected\n\r");
+
+ 		AssocConfirmFlag=0;
+
+		IOCLR0 |= 1 << 12;
+
+		//init connect the wlan again
+ 		do
+ 		{
+			u8Result=WLN_InitConnect();
+
+			u16TryCount--;
+			/*
+			suggested value 500, for delay of 500 target is taking long time (approx. 10 seconds) to 
+			reconnect after target is disconnected. 
+			put value 50, for delay of 50 target is reassociating with the AP very fast 
+			(approx 2 -3 seconds) 
+ 			*/
+			SleepMs(50);//500
+ 		}while(u8Result==FALSE && u16TryCount>0);
+
+ 
+		if (u8Result==FALSE)
+		{
+			RDEBUGMSG("WLN_InitConnect called -failed\n\r");
+			return FALSE;
+ 		}
+	}
+	return TRUE;
+}
+
+
+/********************************************************************************************************** 
+Name		WLN_InitConfig_Vars
+ 
+Arguments	au8ConfigData: 	points to a variable which contains the configuration data
+			  
+Return		TRUE or FALSE
+
+Description	This function reads the configuration data buffer and assigns it to global WLN configur
+			parameters
+***********************************************************************************************************/ 
+uint8_t WLN_InitConfig_Vars(pstConfigData pstCfgData)
+{
+	strcpy(gau8Ssid, pstCfgData->au8Ssid);
+
+	gau8MacAddress[0]=pstCfgData->au8MacAddress[0];
+	gau8MacAddress[1]=pstCfgData->au8MacAddress[1];
+	gau8MacAddress[2]=pstCfgData->au8MacAddress[2];
+	gau8MacAddress[3]=pstCfgData->au8MacAddress[3];
+	gau8MacAddress[4]=pstCfgData->au8MacAddress[4];
+	gau8MacAddress[5]=pstCfgData->au8MacAddress[5];
+
+	u8WirelessSecurityMode= pstCfgData->u8WirelessSecurityEnable;	
+ 	
+ 	gau8Wep64key[0]=pstCfgData->au8WepKey[0];
+	gau8Wep64key[1]=pstCfgData->au8WepKey[1];
+	gau8Wep64key[2]=pstCfgData->au8WepKey[2];
+	gau8Wep64key[3]=pstCfgData->au8WepKey[3];
+	gau8Wep64key[4]=pstCfgData->au8WepKey[4];
+
+	//RDEBUGMSG("WLN_InitConfig_Vars-OK\n\r"); 
+		
+	return 1;
+}
+
+ 
+/********************************************************************************************************** 
+Name		WLN_InitializeMac
+
+Arguments	None
+			  
+Return		Status: TRUE - Success, FALSE - Fail 
+
+Description	Initialize MAC after firmware download 
+************************************************************************************************************/
+uint8_t WLN_InitializeMac(void)
+{
+
+ 	// Write any value to M2S mailbox reg to indicate that
+ 	//  host is initialized it's reg  & waiting for target to finish initialization.
+ 
+ 	spi_writeToSlaveReg(HOST_M2S_MAIL_BOX_REG0 ,0x01);
+ 	uint16_t u16Status = 0;
+	uint32_t u32WaitCount = HOST_LONG_RETRY_COUNT;
+
+	// Wait for Target Initialization in a while loop normally this loop shall be done fast as target
+	//does not take much time to initialize
+	do
+	{
+		
+		// Clear the interrupt Status by reading register 
+       	spi_readFromSlaveReg(HOST_S2M_INTR_REG,&u16Status);
+
+		u16Status = 0;
+ 		
+		// Now read the mailbox to see if target initialization is complete after firmware download 
+      		spi_readFromSlaveReg(HOST_S2M_MAIL_BOX_REG0,&u16Status);
+
+ 	}while ( !u16Status && u32WaitCount>0);
+	
+	if(u32WaitCount ==0)
+	{
+		RDEBUGMSG("Hardware Initialization Failed\r\n");
+		return FALSE;
+	}
+
+	// Enable the interrupts for s2m mailbox 
+	spi_writeToSlaveReg(HOST_S2M_INTR_REG,INTR_ENABLE_DATA);
+
+	return TRUE;
+}
+
+
+
+
+
+
+
+

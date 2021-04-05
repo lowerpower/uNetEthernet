@@ -1,0 +1,51 @@
+<html>
+<body>
+<pre>
+<h1>Build Log</h1>
+<h3>
+--------------------Configuration: unete - Win32 Debug--------------------
+</h3>
+<h3>Command Lines</h3>
+Creating temporary file "C:\DOCUME~1\mike\LOCALS~1\Temp\RSP433.tmp" with contents
+[
+/nologo /Zp1 /MLd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_CONSOLE" /D "_MBCS.WPCAP" /Fp"Debug/unete.pch" /YX /Fo"Debug/" /Fd"Debug/" /FD /GZ /c 
+"C:\projects\nchip.com\projects\unete\winpcap_drv.c"
+]
+Creating command line "cl.exe @C:\DOCUME~1\mike\LOCALS~1\Temp\RSP433.tmp" 
+Creating temporary file "C:\DOCUME~1\mike\LOCALS~1\Temp\RSP434.tmp" with contents
+[
+kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib wpcap.lib /nologo /subsystem:console /incremental:no /pdb:"Debug/unete.pdb" /debug /machine:I386 /out:"Debug/unete.exe" /pdbtype:sept 
+.\Debug\arp.obj
+.\Debug\autobaud.obj
+.\Debug\conio.obj
+.\Debug\console.obj
+.\Debug\dhcp.obj
+.\Debug\emain.obj
+.\Debug\enc28j60.obj
+.\Debug\globals.obj
+.\Debug\ircmd.obj
+.\Debug\memory.obj
+.\Debug\mip.obj
+.\Debug\msg.obj
+.\Debug\mtcp.obj
+.\Debug\mudp.obj
+.\Debug\resolve.obj
+.\Debug\sreg.obj
+.\Debug\time.obj
+.\Debug\udpcmd.obj
+.\Debug\winpcap_drv.obj
+]
+Creating command line "link.exe @C:\DOCUME~1\mike\LOCALS~1\Temp\RSP434.tmp"
+<h3>Output Window</h3>
+Compiling...
+winpcap_drv.c
+C:\projects\nchip.com\projects\unete\winpcap_drv.c(5) : fatal error C1083: Cannot open include file: 'pcap.h': No such file or directory
+Error executing cl.exe.
+
+
+
+<h3>Results</h3>
+unete.exe - 1 error(s), 0 warning(s)
+</pre>
+</body>
+</html>
